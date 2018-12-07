@@ -11,7 +11,7 @@ import (
 
 // OpenSSL ...
 type OpenSSL struct {
-	DIR string
+	key []byte
 }
 
 // Run ...
@@ -51,7 +51,23 @@ func KeyToFile(path string) error {
 	if err != nil {
 		return err
 	}
+
 	return EncodeToFile(key, path)
+}
+
+// KeyToHex ...
+func KeyToHex(key []byte) string {
+	return fmt.Sprintf("%02x", key)
+}
+
+// SaveTo ...
+func SaveTo(path string, data string) error {
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	_, err = file.WriteString(data)
+	return err
 }
 
 // EncodeToFile ...
