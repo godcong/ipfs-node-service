@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"sync"
 	"testing"
 )
 
@@ -59,11 +60,19 @@ func TestRun2(t *testing.T) {
 
 	s := fmt.Sprintf("%02x", p)
 
-	for i := 0; i < 5; i++ {
-		tsFile := "segment-" + strconv.Itoa(i) + ".ts"
+	wg := sync.WaitGroup{}
 
-		run, e := Run("aes-128-cbc", "-e", "-in", "openssl_test.go", "-out", "encrypted_"+tsFile, "-nosalt", "-iv", Number32(i), "-K", s)
-		t.Log(run, e)
+	for i := 0; i < 100; i++ {
+
+		wg.Add(1)
+		go func(i int) {
+			tsFile := "segment-" + strconv.Itoa(i) + ".ts"
+			run, e := Run("aes-128-cbc", "-e", "-in", "openssl_test.go", "-out", "encrypted_"+tsFile, "-nosalt", "-iv", Number32(i), "-K", s)
+			t.Log(run, e)
+			wg.Done()
+		}(i)
+
 	}
+	wg.Wait()
 
 }
