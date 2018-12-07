@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 )
 
 // OpenSSL ...
@@ -101,4 +102,13 @@ func DecodeFromFile(path string) ([]byte, error) {
 		return nil, err
 	}
 	return p[:i], nil
+}
+
+// FileCount ...
+func FileCount(path, name string) int {
+	infos, err := filepath.Glob(path + "/" + name)
+	if err != nil {
+		return 0
+	}
+	return len(infos)
 }

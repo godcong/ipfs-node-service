@@ -37,3 +37,8 @@ func TestDecodeFromFile(t *testing.T) {
 	t.Log(s)
 
 }
+
+// TestFileCount ...
+func TestFileCount(t *testing.T) {
+	t.Log(FileCount(".", "*.*"))
+}
