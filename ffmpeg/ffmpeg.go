@@ -8,11 +8,12 @@ import (
 	"os/exec"
 )
 
-//FFmpeg
+// FFmpeg ...
 type FFmpeg struct {
 	DIR string
 }
 
+// Run ...
 func Run(args ...string) ([]byte, error) {
 	if args == nil {
 		args = []string{"-h"}
