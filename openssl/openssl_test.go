@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"os"
+	"strconv"
 	"testing"
 )
 
@@ -41,4 +42,28 @@ func TestDecodeFromFile(t *testing.T) {
 // TestFileCount ...
 func TestFileCount(t *testing.T) {
 	t.Log(FileCount(".", "*.*"))
+}
+
+// TestNumber32 ...
+func TestNumber32(t *testing.T) {
+	t.Log(Number32(255))
+}
+
+// TestRun2 ...
+func TestRun2(t *testing.T) {
+	file, _ := os.OpenFile("file.key", os.O_RDWR, os.ModePerm)
+	p := make([]byte, 1024)
+
+	n, _ := file.Read(p)
+	p = p[:n]
+
+	s := fmt.Sprintf("%02x", p)
+
+	for i := 0; i < 5; i++ {
+		tsFile := "segment-" + strconv.Itoa(i) + ".ts"
+
+		run, e := Run("aes-128-cbc", "-e", "-in", "openssl_test.go", "-out", "encrypted_"+tsFile, "-nosalt", "-iv", Number32(i), "-K", s)
+		t.Log(run, e)
+	}
+
 }

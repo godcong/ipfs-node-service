@@ -25,7 +25,6 @@ func Run(args ...string) ([]byte, error) {
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-
 		log.Fatal(err)
 	}
 
@@ -111,4 +110,9 @@ func FileCount(path, name string) int {
 		return 0
 	}
 	return len(infos)
+}
+
+// Number32 ...
+func Number32(i int) string {
+	return fmt.Sprintf("%032x", i)
 }
