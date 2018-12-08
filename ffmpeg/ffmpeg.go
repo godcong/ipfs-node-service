@@ -43,3 +43,11 @@ func Run(args ...string) ([]byte, error) {
 
 	return b, nil
 }
+
+func VideoToMp4(path string, out ...string) ([]byte, error) {
+	op := "out.mp4"
+	if out != nil {
+		op = out[0]
+	}
+	return Run("-i", path, "-acodec", "copy", "-vcodec", "copy", op)
+}
