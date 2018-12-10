@@ -1,8 +1,6 @@
-package openssl
+package ffmpeg
 
 import (
-	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -42,30 +40,38 @@ func Run(args ...string) ([]byte, error) {
 	cmd := exec.Command("ffmpeg", args...)
 	cmd.Env = os.Environ()
 
-	stdout, err := cmd.StdoutPipe()
+	stdout, err := cmd.CombinedOutput()
 	if err != nil {
-
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
 
 	if err := cmd.Start(); err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
 
-	b, err := ioutil.ReadAll(stdout)
-	if err != nil {
-		log.Fatal(err)
-	}
+	//b, err := ioutil.ReadAll(stdout)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 
 	if err := cmd.Wait(); err != nil {
-		fmt.Println(err.Error())
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
 
-	return b, nil
+	return stdout, nil
 }
 
-// VideoToMp4 ...
-func VideoToMp4(path string, out string) ([]byte, error) {
+// TranToMp4 ...
+func TranToMp4(path string, out string) ([]byte, error) {
+	//ffmpeg -i input.mkv -acodec libfaac -vcodec libx264 out.mp4
+	return Run("-i", path, "-acodec", "libfaac", "-vcodec", "libx264", out)
+}
+
+// CopyToMp4 ...
+func CopyToMp4(path string, out string) ([]byte, error) {
+	//ffmpeg -i input.mkv -acodec libfaac -vcodec libx264 out.mp4
 	return Run("-i", path, "-acodec", "copy", "-vcodec", "copy", out)
 }
