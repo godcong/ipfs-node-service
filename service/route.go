@@ -16,6 +16,7 @@ func Router(engine *gin.Engine) error {
 
 	group.Use()
 
+	//上传转换，并返回id
 	group.POST("/uploadTransform", func(context *gin.Context) {
 		defer context.Request.Body.Close()
 
@@ -29,15 +30,22 @@ func Router(engine *gin.Engine) error {
 		return
 	})
 
-	group.GET("/download", func(context *gin.Context) {
-		//filePath := context.Query("path")
-
+	//从url下载视频
+	group.POST("/download", func(context *gin.Context) {
+		//filePath := context.Query("URL")
 	})
 
+	//下载并转换
 	group.POST("/downloadTransform", func(context *gin.Context) {
 
 	})
 
+	//从服务器下载视频
+	group.GET("/get/:id", func(context *gin.Context) {
+
+	})
+
+	//查看状态
 	group.GET("/status/:id", func(context *gin.Context) {
 		id := context.Param("id")
 		context.String(http.StatusOK, "id: %s", id)
