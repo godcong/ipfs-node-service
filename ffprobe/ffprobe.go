@@ -1,7 +1,6 @@
 package ffprobe
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -16,23 +15,30 @@ func Run(args ...string) ([]byte, error) {
 	cmd := exec.Command("ffprobe", args...)
 	cmd.Env = os.Environ()
 
-	stdout, err := cmd.StdoutPipe()
+	//stdout, err := cmd.StdoutPipe()
+	//if err != nil {
+	//
+	//	log.Fatal(err)
+	//}
+	stderr, err := cmd.StderrPipe()
 	if err != nil {
-
 		log.Fatal(err)
 	}
-
 	if err := cmd.Start(); err != nil {
 		log.Fatal(err)
 	}
 
-	b, err := ioutil.ReadAll(stdout)
+	//b, err := ioutil.ReadAll(stdout)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+
+	b, err := ioutil.ReadAll(stderr)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	if err := cmd.Wait(); err != nil {
-		fmt.Println(err.Error())
 		log.Fatal(err)
 	}
 

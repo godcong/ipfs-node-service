@@ -29,6 +29,15 @@ func Router(engine *gin.Engine) error {
 		return
 	})
 
+	group.GET("/download", func(context *gin.Context) {
+		//filePath := context.Query("path")
+
+	})
+
+	group.POST("/downloadTransform", func(context *gin.Context) {
+
+	})
+
 	return nil
 }
 
