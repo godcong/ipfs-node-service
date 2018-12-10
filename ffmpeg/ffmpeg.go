@@ -8,9 +8,30 @@ import (
 	"os/exec"
 )
 
-// FFmpeg ...
-type FFmpeg struct {
-	DIR string
+// Media ...
+type Media struct {
+	OutPath         string
+	MessageCallback func(map[string]interface{}) error
+}
+
+// MediaType ...
+type MediaType string
+
+// OutPath ...
+const (
+	OutPath MediaType = "outpath"
+)
+
+// NewFFMpeg ...
+func NewFFMpeg(args map[MediaType]string) *Media {
+	return &Media{
+		OutPath: args[OutPath],
+	}
+}
+
+// Run ...
+func (m *Media) Run() {
+
 }
 
 // Run ...
@@ -44,10 +65,7 @@ func Run(args ...string) ([]byte, error) {
 	return b, nil
 }
 
-func VideoToMp4(path string, out ...string) ([]byte, error) {
-	op := "out.mp4"
-	if out != nil {
-		op = out[0]
-	}
-	return Run("-i", path, "-acodec", "copy", "-vcodec", "copy", op)
+// VideoToMp4 ...
+func VideoToMp4(path string, out string) ([]byte, error) {
+	return Run("-i", path, "-acodec", "copy", "-vcodec", "copy", out)
 }
