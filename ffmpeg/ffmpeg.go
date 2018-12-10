@@ -68,7 +68,7 @@ func Run(args ...string) (string, error) {
 // TranToMp4 ...
 func TranToMp4(path string, out string) (string, error) {
 	//ffmpeg -i input.mkv -acodec libfaac -vcodec libx264 out.mp4
-	return Run("-i", path, "-y", "-c:v", "libx264", "-strict", "-2", out)
+	return Run("-i", path, "-y", "-vcodec", "libx264", "-acodec", "libfaac", out)
 
 }
 
@@ -77,4 +77,9 @@ func CopyToMp4(path string, out string) (string, error) {
 	//ffmpeg -i input.mkv -acodec libfaac -vcodec libx264 out.mp4
 	//, "-vbsf", "h264_mp4toannexb",
 	return Run("-i", path, "-y", "-acodec", "copy", "-vcodec", "copy", out)
+}
+
+// TransToTS ...
+func TransToTS(path string, out string) (string, error) {
+	return Run("-i", path, "-y", "-c", "copy", "-bsf", "h264_mp4toannexb", out)
 }

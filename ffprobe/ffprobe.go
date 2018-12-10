@@ -36,6 +36,7 @@ func (p *Probe) Err() error {
 
 // IsH264AndAAC ...
 func (p *Probe) IsH264AndAAC() bool {
+	log.Println(p.output)
 	video := filterStream(p.output, "Video")
 	audio := filterStream(p.output, "Audio")
 	if CheckH264(video) && CheckAAC(audio) {
@@ -62,7 +63,7 @@ func Run(args ...string) (string, error) {
 }
 
 func filterStream(output string, stream string) string {
-	log.Println(output, stream)
+
 	sta := strings.Index(output, stream)
 	if sta == -1 {
 		return output
