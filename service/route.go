@@ -38,6 +38,11 @@ func Router(engine *gin.Engine) error {
 
 	})
 
+	group.GET("/status/:id", func(context *gin.Context) {
+		id := context.Param("id")
+		context.String(http.StatusOK, "id: %s", id)
+	})
+
 	return nil
 }
 
