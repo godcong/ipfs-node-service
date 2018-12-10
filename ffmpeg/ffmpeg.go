@@ -75,5 +75,6 @@ func TranToMp4(path string, out string) (string, error) {
 // CopyToMp4 ...
 func CopyToMp4(path string, out string) (string, error) {
 	//ffmpeg -i input.mkv -acodec libfaac -vcodec libx264 out.mp4
-	return Run("-i", path, "-y", "-acodec", "copy", "-vcodec", "copy", "-vbsf", "h264_mp4toannexb", out+".ts")
+	//, "-vbsf", "h264_mp4toannexb",
+	return Run("-i", path, "-y", "-acodec", "copy", "-vcodec", "copy", out)
 }

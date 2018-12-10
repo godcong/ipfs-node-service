@@ -62,7 +62,11 @@ func Run(args ...string) (string, error) {
 }
 
 func filterStream(output string, stream string) string {
+	log.Println(output, stream)
 	sta := strings.Index(output, stream)
+	if sta == -1 {
+		return output
+	}
 	output = output[sta:]
 	end := strings.Index(output, "Metadata")
 	if end != -1 {

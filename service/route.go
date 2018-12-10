@@ -54,6 +54,10 @@ func writeTo(path string, reader io.Reader) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	err = writer.Flush()
+	if err != nil {
+		return "", err
+	}
 	log.Println("success:", i)
 	return fileName, nil
 }
