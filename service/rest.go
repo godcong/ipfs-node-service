@@ -14,13 +14,13 @@ type RestServer struct {
 
 // NewRestServer ...
 func NewRestServer(addr string) *RestServer {
-	//ctx, cancel := context.WithCancel(context.Background())
+	eng := gin.Default()
 	s := &RestServer{
+		Engine: eng,
 		Server: &http.Server{
 			Addr:    addr,
-			Handler: gin.Default(),
+			Handler: eng,
 		},
-		//Context:,
 	}
 	return s
 }
@@ -45,4 +45,19 @@ func (s *RestServer) Stop() {
 		panic(err) // failure/timeout shutting down the server gracefully
 	}
 
+}
+
+// JSON ...
+func JSON(code int, msg string, detail ...gin.H) gin.H {
+	if detail == nil {
+		return gin.H{
+			"code": code,
+			"msg":  msg,
+		}
+	}
+	return gin.H{
+		"code":   code,
+		"msg":    msg,
+		"detail": detail[0],
+	}
 }

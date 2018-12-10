@@ -15,6 +15,7 @@ func RunMain() {
 
 	//new rest
 	serv := NewRestServer(":8080")
+	_ = Router(serv.Engine)
 
 	//start
 	serv.Start()
