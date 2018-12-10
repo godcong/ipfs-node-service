@@ -33,45 +33,47 @@ func (m *Mpeg) Run() {
 }
 
 // Run ...
-func Run(args ...string) ([]byte, error) {
+func Run(args ...string) (string, error) {
 	if args == nil {
 		args = []string{"-h"}
 	}
 	cmd := exec.Command("ffmpeg", args...)
+	log.Println(cmd.Args)
 	cmd.Env = os.Environ()
 
 	stdout, err := cmd.CombinedOutput()
 	if err != nil {
 		//log.Println(string(stdout), err)
-		return stdout, err
+		return string(stdout), err
 	}
 
-	if err := cmd.Start(); err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	//b, err := ioutil.ReadAll(stdout)
-	//if err != nil {
-	//	log.Fatal(err)
+	//if err := cmd.Start(); err != nil {
+	//	log.Println(err)
+	//	return nil, err
 	//}
 
-	if err := cmd.Wait(); err != nil {
-		log.Println(err)
-		return nil, err
-	}
+	//b, err := ioutil.ReadAll()
+	//if err != nil {
+	//	log.Println(string(b))
+	//}
 
-	return stdout, nil
+	//if err := cmd.Wait(); err != nil {
+	//	log.Println(err)
+	//	return nil, err
+	//}
+
+	return string(stdout), nil
 }
 
 // TranToMp4 ...
-func TranToMp4(path string, out string) ([]byte, error) {
+func TranToMp4(path string, out string) (string, error) {
 	//ffmpeg -i input.mkv -acodec libfaac -vcodec libx264 out.mp4
-	return Run("-i", path, "-acodec", "libfaac", "-vcodec", "libx264", out)
+	return Run("-i", path, "-y", "-c:v", "libx264", "-strict", "-2", out)
+
 }
 
 // CopyToMp4 ...
-func CopyToMp4(path string, out string) ([]byte, error) {
+func CopyToMp4(path string, out string) (string, error) {
 	//ffmpeg -i input.mkv -acodec libfaac -vcodec libx264 out.mp4
-	return Run("-i", path, "-acodec", "copy", "-vcodec", "copy", out)
+	return Run("-i", path, "-y", "-acodec", "copy", "-vcodec", "copy", "-vbsf", "h264_mp4toannexb", out+".ts")
 }

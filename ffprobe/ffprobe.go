@@ -24,9 +24,9 @@ func New(args ...string) *Probe {
 }
 
 // Run ...
-func (p *Probe) Run() {
+func (p *Probe) Run() *Probe {
 	p.output, p.err = Run(p.cmd...)
-	return
+	return p
 }
 
 // Err ...
@@ -63,9 +63,12 @@ func Run(args ...string) (string, error) {
 
 func filterStream(output string, stream string) string {
 	sta := strings.Index(output, stream)
+	output = output[sta:]
 	end := strings.Index(output, "Metadata")
-	output = output[sta:end]
-	return output
+	if end != -1 {
+		return string([]byte(output)[:end])
+	}
+	return string([]byte(output)[:end])
 }
 
 // CheckH264 ...
