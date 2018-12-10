@@ -9,22 +9,18 @@ import (
 // ToM3U8 ...
 func ToM3U8(path string) error {
 	log.Println("start")
-	stream, err := ffprobe.FilterStream(path)
-	if err != nil {
-		return err
-	}
-	acc := ffprobe.CheckAAC(stream)
-	h264 := ffprobe.CheckH264(stream)
-	if acc && h264 {
-		b, err := ffmpeg.CopyToMp4(path, path+"/out.mp4")
+	probe := ffprobe.New(path)
+
+	if probe.IsH264AndAAC() {
+		b, err := ffmpeg.CopyToMp4(path, path+"_out.mp4")
 		if err != nil {
 			log.Println(string(b))
 			return err
 		}
 	}
-	b, err := ffmpeg.TranToMp4(path, path+"/out.mp4")
+	b, err := ffmpeg.TranToMp4(path, "_out.mp4")
 	if err != nil {
-		log.Println(string(b))
+		log.Println(string(b), err)
 		return err
 	}
 	log.Println("end")

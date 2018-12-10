@@ -1,15 +1,51 @@
 package ffprobe
 
 import (
-	"bytes"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
 )
 
+// Probe ...
+type Probe struct {
+	cmd    []string
+	output string
+	err    error
+}
+
+// New ...
+func New(args ...string) *Probe {
+	return &Probe{
+		cmd:    args,
+		output: "",
+		err:    nil,
+	}
+}
+
 // Run ...
-func Run(args ...string) ([]byte, error) {
+func (p *Probe) Run() {
+	p.output, p.err = Run(p.cmd...)
+	return
+}
+
+// Err ...
+func (p *Probe) Err() error {
+	return p.err
+}
+
+// IsH264AndAAC ...
+func (p *Probe) IsH264AndAAC() bool {
+	video := filterStream(p.output, "Video")
+	audio := filterStream(p.output, "Audio")
+	if CheckH264(video) && CheckAAC(audio) {
+		return true
+	}
+	return false
+}
+
+// Run ...
+func Run(args ...string) (string, error) {
 	if args == nil {
 		args = []string{"-h"}
 	}
@@ -19,45 +55,17 @@ func Run(args ...string) ([]byte, error) {
 	stdout, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println(err)
-		return nil, err
-	}
-	//stderr, err := cmd.StderrPipe()
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	if err := cmd.Start(); err != nil {
-		log.Println(err)
-		return nil, err
+		return string(stdout), err
 	}
 
-	//b, err := ioutil.ReadAll(stdout)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-
-	//b, err := ioutil.ReadAll(stderr)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-
-	if err := cmd.Wait(); err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	return stdout, nil
+	return string(stdout), nil
 }
 
-// FilterStream ...
-func FilterStream(path string) (string, error) {
-	b, err := Run(path)
-	if err != nil {
-		return "", err
-	}
-	sta := bytes.Index(b, []byte("Stream"))
-	end := bytes.Index(b, []byte("Metadata"))
-	b = b[sta:end]
-	return string(b), nil
+func filterStream(output string, stream string) string {
+	sta := strings.Index(output, stream)
+	end := strings.Index(output, "Metadata")
+	output = output[sta:end]
+	return output
 }
 
 // CheckH264 ...

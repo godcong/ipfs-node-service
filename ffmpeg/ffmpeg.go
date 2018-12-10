@@ -6,29 +6,29 @@ import (
 	"os/exec"
 )
 
-// Media ...
-type Media struct {
+// Mpeg ...
+type Mpeg struct {
 	OutPath         string
 	MessageCallback func(map[string]interface{}) error
 }
 
-// MediaType ...
-type MediaType string
+// MpegType ...
+type MpegType string
 
 // OutPath ...
 const (
-	OutPath MediaType = "outpath"
+	OutPath MpegType = "outpath"
 )
 
-// NewFFMpeg ...
-func NewFFMpeg(args map[MediaType]string) *Media {
-	return &Media{
+// New ...
+func New(args map[MpegType]string) *Mpeg {
+	return &Mpeg{
 		OutPath: args[OutPath],
 	}
 }
 
 // Run ...
-func (m *Media) Run() {
+func (m *Mpeg) Run() {
 
 }
 
@@ -42,8 +42,8 @@ func Run(args ...string) ([]byte, error) {
 
 	stdout, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Println(err)
-		return nil, err
+		//log.Println(string(stdout), err)
+		return stdout, err
 	}
 
 	if err := cmd.Start(); err != nil {
