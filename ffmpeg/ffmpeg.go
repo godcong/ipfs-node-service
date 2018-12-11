@@ -43,51 +43,35 @@ func Run(args ...string) (string, error) {
 
 	stdout, err := cmd.CombinedOutput()
 	if err != nil {
-		//log.Println(string(stdout), err)
 		return string(stdout), err
 	}
-
-	//if err := cmd.Start(); err != nil {
-	//	log.Println(err)
-	//	return nil, err
-	//}
-
-	//b, err := ioutil.ReadAll()
-	//if err != nil {
-	//	log.Println(string(b))
-	//}
-
-	//if err := cmd.Wait(); err != nil {
-	//	log.Println(err)
-	//	return nil, err
-	//}
 
 	return string(stdout), nil
 }
 
 // TranToMp4 ...
-func TranToMp4(path string, out string) (string, error) {
+func TranToMp4(src string, out string) (string, error) {
 	//ffmpeg -i input.mkv -acodec libfaac -vcodec libx264 out.mp4
-	return Run("-i", path, "-y", "-vcodec", "libx264", "-acodec", "aac", out)
+	return Run("-i", src, "-y", "-vcodec", "libx264", "-acodec", "aac", out)
 
 }
 
 // CopyToMp4 ...
-func CopyToMp4(path string, out string) (string, error) {
+func CopyToMp4(src string, out string) (string, error) {
 	//cmd:ffmpeg -i input.mkv -acodec copy -vcodec copy out.mp4
-	return Run("-i", path, "-y", "-acodec", "copy", "-vcodec", "copy", out)
+	return Run("-i", src, "-y", "-acodec", "copy", "-vcodec", "copy", out)
 }
 
 // TransToTS ...
-func TransToTS(path string, out string) (string, error) {
+func TransToTS(src string, out string) (string, error) {
 	//cmd:ffmpeg -i INPUT.mp4 -codec copy -bsf:v h264_mp4toannexb OUTPUT.ts
-	return Run("-i", path, "-y", "-codec", "copy", "-bsf:v", "h264_mp4toannexb", out)
+	return Run("-i", src, "-y", "-codec", "copy", "-bsf:v", "h264_mp4toannexb", out)
 }
 
 // SplitToTS ...
-func SplitToTS(path string, out string) (string, error) {
+func SplitToTS(src string, out string) (string, error) {
 	//cmd:ffmpeg -i ./tmp/ELTbmjn2IZY6EtLFCibQPL4pIyfMvN8jQS67ntPlFaFo3NUkM3PpCFBgMivKk67W_out.mp4 -f segment -segment_time 10 -segment_format mpegts -segment_list ./split/list_file.m3u8 -c copy -bsf:v h264_mp4toannexb ./split/output_file-%d.ts
-	return Run("-i", path,
+	return Run("-i", src,
 		"-c", "copy", "-bsf:v", "h264_mp4toannexb",
 		"-f", "segment", "-segment_time", "10",
 		"-segment_format", "mpegts", "-segment_list", out+".m3u8",
@@ -95,10 +79,10 @@ func SplitToTS(path string, out string) (string, error) {
 
 }
 
-// SpliteWithKey ...
-func SpliteWithKey(path string, out string, key string) (string, error) {
+// SplitWithKey ...
+func SplitWithKey(src string, out string, key string) (string, error) {
 	//ffmpeg -i input.mp4 -c copy -bsf:v h264_mp4toannexb -hls_time 10 -hls_key_info_file key_info playlist.m3u8
-	return Run("-i", path,
+	return Run("-i", src,
 		"-c", "copy", "-bsf:v", "h264_mp4toannexb",
 		"-hls_time", "10", "-hls_key_info_file", key,
 		out+".m3u8")

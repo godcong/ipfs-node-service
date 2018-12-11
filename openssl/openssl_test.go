@@ -3,7 +3,7 @@ package openssl
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/godcong/go-ffmpeg/util"
+
 	"os"
 	"strconv"
 	"sync"
@@ -80,6 +80,6 @@ func TestRun2(t *testing.T) {
 
 // TestKeyFile ...
 func TestKeyFile(t *testing.T) {
-	err := KeyFile("./tmp/", "text", "http://localhost:8080/stream/", util.GenerateRandomString(16, util.RandomLowerNum))
+	err := KeyFile("./tmp/", "text", "http://localhost:8080/stream/")
 	t.Log(err)
 }

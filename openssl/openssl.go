@@ -3,6 +3,7 @@ package openssl
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/godcong/go-ffmpeg/util"
 	"io/ioutil"
 	"log"
 	"os"
@@ -118,7 +119,7 @@ func Number32(i int) string {
 }
 
 // KeyFile ...
-func KeyFile(path, fname string, uri string, iv string) error {
+func KeyFile(path, fname string, uri string, iv bool) error {
 	key, err := Run("rand", "16")
 	if err != nil {
 		return err
@@ -128,15 +129,19 @@ func KeyFile(path, fname string, uri string, iv string) error {
 	if err != nil {
 		return err
 	}
+
 	file, err := os.OpenFile(path+fname+"_keyfile.key", os.O_RDWR|os.O_CREATE, os.ModePerm)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
-	file.WriteString(uri + fname + ".key")
-	file.WriteString("\n")
-	file.WriteString(fname + ".key")
-	file.WriteString("\n")
-	file.WriteString(iv)
+	_, _ = file.WriteString(uri + fname + ".key")
+	_, _ = file.WriteString("\n")
+	_, _ = file.WriteString(path + fname + ".key")
+	_, _ = file.WriteString("\n")
+	if iv {
+		_, _ = file.WriteString(util.GenerateRandomString(8, util.RandomNum))
+	}
+
 	return nil
 }
