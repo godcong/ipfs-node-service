@@ -118,6 +118,25 @@ func Number32(i int) string {
 }
 
 // KeyFile ...
-func KeyFile(uri string, keyPath string, iv string) error {
-
+func KeyFile(path, fname string, uri string, iv string) error {
+	key, err := Run("rand", "16")
+	if err != nil {
+		return err
+	}
+	newKey := KeyToHex(key)
+	err = SaveTo(path+fname+".key", newKey)
+	if err != nil {
+		return err
+	}
+	file, err := os.OpenFile(path+fname+"_keyfile.key", os.O_RDWR|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	file.WriteString(uri + fname + ".key")
+	file.WriteString("\n")
+	file.WriteString(fname + ".key")
+	file.WriteString("\n")
+	file.WriteString(iv)
+	return nil
 }

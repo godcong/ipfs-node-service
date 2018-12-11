@@ -94,3 +94,12 @@ func SplitToTS(path string, out string) (string, error) {
 		out+"-%03d.ts")
 
 }
+
+// SpliteWithKey ...
+func SpliteWithKey(path string, out string, key string) (string, error) {
+	//ffmpeg -i input.mp4 -c copy -bsf:v h264_mp4toannexb -hls_time 10 -hls_key_info_file key_info playlist.m3u8
+	return Run("-i", path,
+		"-c", "copy", "-bsf:v", "h264_mp4toannexb",
+		"-hls_time", "10", "-hls_key_info_file", key,
+		out+".m3u8")
+}
