@@ -27,7 +27,7 @@ func Router(engine *gin.Engine) error {
 			context.JSON(http.StatusOK, JSON(-1, err.Error()))
 			return
 		}
-		go ToM3U8("./tmp/", fileName)
+
 		context.JSON(http.StatusOK, JSON(0, "ok", gin.H{"name": fileName}))
 		return
 	})

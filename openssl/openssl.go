@@ -55,6 +55,14 @@ func KeyToFile(path string) error {
 	return EncodeToFile(key, path)
 }
 
+func Base64Key() ([]byte, error) {
+	return Run("rand", "-base64", "20")
+}
+
+func HexIV() ([]byte, error) {
+	return Run("rand", "-hex", "16")
+}
+
 // KeyToHex ...
 func KeyToHex(key []byte) string {
 	return fmt.Sprintf("%02x", key)
