@@ -83,3 +83,10 @@ func TransToTS(path string, out string) (string, error) {
 	//cmd:ffmpeg -i INPUT.mp4 -codec copy -bsf:v h264_mp4toannexb OUTPUT.ts
 	return Run("-i", path, "-y", "-codec", "copy", "-bsf:v", "h264_mp4toannexb", out)
 }
+
+// SplitMp4 ...
+func SplitMp4(path string, out string) (string, error) {
+	//ffmpeg -ss 01:00:00 -i input_file_h264.mp4 -vcodec copy -acodec copy -t 00:06:00 output_file.mp4
+	return Run("-ss", "00:00:00", "-i", path, "-codec", "copy", "-bsf:v", "h264_mp4toannexb", "-t", "00:01:00", out)
+
+}

@@ -116,3 +116,8 @@ func FileCount(path, name string) int {
 func Number32(i int) string {
 	return fmt.Sprintf("%032x", i)
 }
+
+// KeyFile ...
+func KeyFile(uri string, keyPath string, iv string) error {
+
+}
