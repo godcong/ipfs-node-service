@@ -10,7 +10,7 @@ var db *badger.DB
 var queue sync.Pool
 
 // Processor ...
-func Processor() {
+func Processor(thread int) {
 	for {
 		if v := queue.Get(); v != nil {
 
@@ -19,6 +19,7 @@ func Processor() {
 	}
 }
 
+//InitDB ...
 func InitDB() {
 	var err error
 	options := badger.DefaultOptions
@@ -28,4 +29,8 @@ func InitDB() {
 	if err != nil {
 
 	}
+}
+
+func DB() *badger.DB {
+	return db
 }
