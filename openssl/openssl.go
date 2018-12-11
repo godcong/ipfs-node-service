@@ -119,12 +119,12 @@ func Number32(i int) string {
 
 // KeyFile ...
 func KeyFile(path, fname string, uri string, iv bool) error {
-	key, err := Run("rand", "-base64", "20")
+	key, err := Run("rand", "-hex", "16")
 	if err != nil {
 		return err
 	}
-	newKey := KeyToHex(key)
-	err = SaveTo(path+fname+".key", newKey)
+	//newKey := KeyToHex(key)
+	err = SaveTo(path+fname+".key", string(key))
 	if err != nil {
 		return err
 	}
