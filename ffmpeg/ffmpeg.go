@@ -84,9 +84,13 @@ func TransToTS(path string, out string) (string, error) {
 	return Run("-i", path, "-y", "-codec", "copy", "-bsf:v", "h264_mp4toannexb", out)
 }
 
-// SplitMp4 ...
-func SplitMp4(path string, out string) (string, error) {
-	//ffmpeg -ss 01:00:00 -i input_file_h264.mp4 -vcodec copy -acodec copy -t 00:06:00 output_file.mp4
-	return Run("-ss", "00:00:00", "-i", path, "-codec", "copy", "-bsf:v", "h264_mp4toannexb", "-t", "00:01:00", out)
+// SplitToTS ...
+func SplitToTS(path string, out string) (string, error) {
+	//cmd:ffmpeg -i ./tmp/ELTbmjn2IZY6EtLFCibQPL4pIyfMvN8jQS67ntPlFaFo3NUkM3PpCFBgMivKk67W_out.mp4 -f segment -segment_time 10 -segment_format mpegts -segment_list ./split/list_file.m3u8 -c copy -bsf:v h264_mp4toannexb ./split/output_file-%d.ts
+	return Run("-i", path,
+		"-c", "copy", "-bsf:v", "h264_mp4toannexb",
+		"-f", "segment", "-segment_time", "10",
+		"-segment_format", "mpegts", "-segment_list", out+".m3u8",
+		out+"-%03d.ts")
 
 }

@@ -16,6 +16,8 @@ func Router(engine *gin.Engine) error {
 
 	group.Use()
 
+	group.Static("/stream", "./split")
+
 	//上传转换，并返回id
 	group.POST("/uploadTransform", func(context *gin.Context) {
 		defer context.Request.Body.Close()
@@ -25,7 +27,7 @@ func Router(engine *gin.Engine) error {
 			context.JSON(http.StatusOK, JSON(-1, err.Error()))
 			return
 		}
-		go ToM3U8("./tmp/" + fileName)
+		go ToM3U8("./tmp/", fileName)
 		context.JSON(http.StatusOK, JSON(0, "ok", gin.H{"name": fileName}))
 		return
 	})
