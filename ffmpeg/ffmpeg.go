@@ -79,6 +79,23 @@ func SplitToTS(src string, out string) (string, error) {
 
 }
 
+// SplitWithKey2 ...
+func SplitWithKey2(src string, out string, key string) (string, error) {
+	//ffmpeg -i input.mp4 -c copy -bsf:v h264_mp4toannexb -hls_time 10 -hls_key_info_file key_info playlist.m3u8
+	return Run("-i", src,
+		"-y", "-c:v", "libx264", "-c:a", "aac",
+		//"-c:v", "copy",
+		"-bsf:v", "h264_mp4toannexb",
+		//"-f", "segment", "-segment_time", "10",
+		"-hls_flags", "delete_segments",
+		"-f", "hls", "-hls_time", "10",
+		"-hls_playlist_type", "vod",
+		//"-segment_format", "mpegts",
+		"-hls_segment_filename", out+"-%03d.ts",
+		"-hls_key_info_file", key,
+		out+".m3u8")
+}
+
 // SplitWithKey ...
 func SplitWithKey(src string, out string, key string) (string, error) {
 	//ffmpeg -i input.mp4 -c copy -bsf:v h264_mp4toannexb -hls_time 10 -hls_key_info_file key_info playlist.m3u8

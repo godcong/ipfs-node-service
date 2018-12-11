@@ -16,6 +16,6 @@ func TestSplitMp4(t *testing.T) {
 
 // TestSplitWithKey ...
 func TestSplitWithKey(t *testing.T) {
-	b, e := SplitWithKey("./tmp/ELTbmjn2IZY6EtLFCibQPL4pIyfMvN8jQS67ntPlFaFo3NUkM3PpCFBgMivKk67W_out.mp4", "ELTbmjn2IZY6EtLFCibQPL4pIyfMvN8jQS67ntPlFaFo3NUkM3PpCFBgMivKk67W", "./tmp/text_keyfile.key")
+	b, e := SplitWithKey2("./tmp/ELTbmjn2IZY6EtLFCibQPL4pIyfMvN8jQS67ntPlFaFo3NUkM3PpCFBgMivKk67W", "./split/ELTbmjn2IZY6EtLFCibQPL4pIyfMvN8jQS67ntPlFaFo3NUkM3PpCFBgMivKk67W", "./split/text_keyfile.key")
 	t.Log(string(b), e)
 }
