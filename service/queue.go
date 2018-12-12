@@ -68,12 +68,9 @@ func initDB() *badger.DB {
 	return db
 }
 
-func init() {
-	queue = NewQueue(initDB())
-}
-
 // InitQueue ...
 func InitQueue() *Queue {
+	queue = NewQueue(initDB())
 	return queue
 }
 
@@ -159,5 +156,8 @@ func (q *Queue) Stop() {
 }
 
 func transfer(chanints chan<- int, info *StreamInfo) {
+	info.FileName()
+	info.Key()
 
+	chanints <- 1
 }
