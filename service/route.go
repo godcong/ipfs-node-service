@@ -3,6 +3,7 @@ package service
 import (
 	"bufio"
 	"github.com/gin-gonic/gin"
+	"github.com/godcong/go-ffmpeg/openssl"
 	"github.com/godcong/go-ffmpeg/util"
 	"io"
 	"log"
@@ -18,43 +19,51 @@ func Router(engine *gin.Engine) error {
 
 	group.Static("/stream", "./split")
 
-	group.Any("/", func(context *gin.Context) {
-		context.String(http.StatusOK, "%s", "hello world")
+	group.Any("/", func(ctx *gin.Context) {
+		ctx.String(http.StatusOK, "%s", "hello world")
 	})
 
 	//上传转换，并返回id
-	group.POST("/uploadTransform", func(context *gin.Context) {
-		defer context.Request.Body.Close()
+	group.POST("/uploadTransform", func(ctx *gin.Context) {
+		defer ctx.Request.Body.Close()
 
-		fileName, err := writeTo("./upload", context.Request.Body)
+		fileName, err := writeTo("./upload", ctx.Request.Body)
 		if err != nil {
-			context.JSON(http.StatusOK, JSON(-1, err.Error()))
+			ctx.JSON(http.StatusOK, JSON(-1, err.Error()))
 			return
 		}
-
-		context.JSON(http.StatusOK, JSON(0, "ok", gin.H{"name": fileName}))
+		b, err := openssl.Base64Key()
+		if err != nil {
+			ctx.JSON(http.StatusOK, JSON(-1, err.Error()))
+			return
+		}
+		queue.Push(&StreamInfo{
+			key:      string(b),
+			fileName: fileName,
+		})
+		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"name": fileName}))
 		return
 	})
 
 	//从url下载视频
-	group.POST("/download", func(context *gin.Context) {
-		//filePath := context.Query("URL")
+	group.POST("/download", func(ctx *gin.Context) {
+		//filePath := ctx.Query("URL")
 	})
 
 	//下载并转换
-	group.POST("/downloadTransform", func(context *gin.Context) {
+	group.POST("/downloadTransform", func(ctx *gin.Context) {
 
 	})
 
 	//从服务器下载视频
-	group.GET("/get/:id", func(context *gin.Context) {
+	group.GET("/get/:id", func(ctx *gin.Context) {
 
 	})
 
 	//查看状态
-	group.GET("/status/:id", func(context *gin.Context) {
-		id := context.Param("id")
-		context.String(http.StatusOK, "id: %s", id)
+	group.GET("/status/:id", func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		ctx.String(http.StatusOK, "id: %s", id)
 	})
 
 	return nil
