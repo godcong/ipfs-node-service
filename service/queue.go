@@ -71,11 +71,11 @@ func (s *StreamInfo) SetUri(uri string) {
 
 // KeyFile ...
 func (s *StreamInfo) KeyFile() string {
-	err := openssl.KeyFile("./transfer/", s.fileName, s.key, "localhost:8080/stream", true)
+	err := openssl.KeyFile(s.dst, s.fileName, s.key, s.uri, true)
 	if err != nil {
 		return ""
 	}
-	return "./transfer/" + s.fileName + "_keyfile"
+	return s.dst + s.fileName + "_keyfile"
 }
 
 // Queue ...

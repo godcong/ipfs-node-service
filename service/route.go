@@ -26,7 +26,7 @@ func Router(engine *gin.Engine) error {
 	//上传转换，并返回id
 	group.POST("/uploadTransform", func(ctx *gin.Context) {
 		defer ctx.Request.Body.Close()
-
+		src := "./upload/"
 		fileName, err := writeTo("./upload", ctx.Request.Body)
 		if err != nil {
 			ctx.JSON(http.StatusOK, JSON(-1, err.Error()))
@@ -41,7 +41,7 @@ func Router(engine *gin.Engine) error {
 		stream := NewStreamer(string(b), fileName)
 		stream.SetUri("localhost:8080/stream")
 		stream.SetDst("./transfer/")
-		stream.SetSrc("./upload/")
+		stream.SetSrc(src)
 
 		queue.Push(stream)
 		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"name": fileName}))
@@ -74,7 +74,7 @@ func Router(engine *gin.Engine) error {
 
 func writeTo(path string, reader io.Reader) (string, error) {
 	fileName := util.GenerateRandomString(64)
-	file, err := os.OpenFile(path+"/"+fileName, os.O_CREATE|os.O_RDWR, os.ModePerm)
+	file, err := os.OpenFile(path+fileName, os.O_CREATE|os.O_RDWR, os.ModePerm)
 	if err != nil {
 		return "", err
 	}
