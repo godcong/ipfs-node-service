@@ -8,5 +8,4 @@ RUN go build -v -o ipfs_node
 
 EXPOSE 8080
 
-
 CMD ["/home/ipfs_node/ipfs_node"]
