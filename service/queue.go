@@ -1,7 +1,8 @@
 package service
 
 import (
-	"github.com/dgraph-io/badger"
+	"github.com/go-redis/redis"
+	"log"
 	"sync"
 	"time"
 )
@@ -43,43 +44,44 @@ func (s *StreamInfo) SetKey(key string) {
 // Queue ...
 type Queue struct {
 	flag   bool
-	db     *badger.DB
+	client *redis.Client
 	queue  sync.Pool
 	handle HandleFunc
 }
 
 // NewQueue ...
-func NewQueue(db *badger.DB) *Queue {
-	return &Queue{db: db}
+func NewQueue(client *redis.Client) *Queue {
+	return &Queue{client: client}
 }
 
 var queue *Queue
 
-//InitDB ...
-func initDB() *badger.DB {
-	var err error
-	options := badger.DefaultOptions
-	options.Dir = "/home/badger"
-	options.ValueDir = "/home/badger"
-	db, err := badger.Open(options)
+func initClient() *redis.Client {
+	client := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+
+	_, err := client.Ping().Result()
 	if err != nil {
 		panic(err)
 	}
-	return db
+	return client
 }
 
 // InitQueue ...
 func InitQueue() *Queue {
-	queue = NewQueue(initDB())
+	queue = NewQueue(initClient())
 	return queue
 }
 
-// DB ...
-func (q *Queue) DB() *badger.DB {
-	if q.db == nil {
-		q.db = initDB()
+// Client ...
+func (q *Queue) Client() *redis.Client {
+	if q.client == nil {
+		q.client = initClient()
 	}
-	return q.db
+	return q.client
 }
 
 // Push ...
@@ -105,7 +107,7 @@ func (q *Queue) SetHandle(handle HandleFunc) {
 	q.handle = handle
 }
 
-// Run ...
+// Start ...
 func (q *Queue) Start(process int) {
 	q.flag = false
 	//run with a new go channel
@@ -119,6 +121,7 @@ func (q *Queue) Start(process int) {
 					return
 				}
 				if s := q.Pop(); s != nil {
+					log.Println("start", i)
 					go transfer(threads, s)
 					break
 				}
@@ -135,6 +138,7 @@ func (q *Queue) Start(process int) {
 						return
 					}
 					if s := q.Pop(); s != nil {
+						log.Println("thread run")
 						go transfer(threads, s)
 						break
 					}
@@ -152,12 +156,12 @@ func (q *Queue) Start(process int) {
 
 // Stop ...
 func (q *Queue) Stop() {
+	//_ = q.db.Close()
 	q.flag = true
 }
 
 func transfer(chanints chan<- int, info *StreamInfo) {
-	info.FileName()
-	info.Key()
-
+	_ = ToM3U8("./transfer", info.fileName)
+	log.Println("transfer:", *info)
 	chanints <- 1
 }

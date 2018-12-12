@@ -35,3 +35,23 @@ func ToM3U8(path string, file string) error {
 
 	return nil
 }
+
+// ToM3U8WithKey ...
+func ToM3U8WithKey(path string, file string, key string) error {
+	output := path + file
+	probe := ffprobe.New(path)
+	if probe.Run().IsH264AndAAC() {
+		b, err := ffmpeg.QuickSplitWithKey(output, output+"_out.mp4", key)
+		if err != nil {
+			log.Println(string(b))
+			return err
+		}
+	} else {
+		b, err := ffmpeg.SplitWithKey(output, output+"_out.mp4", key)
+		if err != nil {
+			log.Println(string(b), err)
+			return err
+		}
+	}
+	return nil
+}
