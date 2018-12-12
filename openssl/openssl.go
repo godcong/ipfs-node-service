@@ -55,10 +55,12 @@ func KeyToFile(path string) error {
 	return EncodeToFile(key, path)
 }
 
+// Base64Key ...
 func Base64Key() ([]byte, error) {
 	return Run("rand", "-base64", "20")
 }
 
+// HexIV ...
 func HexIV() ([]byte, error) {
 	return Run("rand", "-hex", "16")
 }

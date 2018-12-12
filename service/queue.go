@@ -3,21 +3,15 @@ package service
 import (
 	"github.com/dgraph-io/badger"
 	"sync"
-	"time"
 )
 
-var db *badger.DB
-var queue sync.Pool
-
-// Processor ...
-func Processor(thread int) {
-	for {
-		if v := queue.Get(); v != nil {
-
-		}
-		time.Sleep(5 * time.Second)
-	}
+// Queue ...
+type Queue struct {
+	*badger.DB
+	queue sync.Pool
 }
+
+var queue Queue
 
 //InitDB ...
 func InitDB() {
@@ -25,12 +19,19 @@ func InitDB() {
 	options := badger.DefaultOptions
 	options.Dir = "/tmp/badger"
 	options.ValueDir = "/tmp/badger"
-	db, err = badger.Open(options)
+	queue.DB, err = badger.Open(options)
 	if err != nil {
-
+		panic(err)
 	}
 }
 
+// DB ...
 func DB() *badger.DB {
-	return db
+	return queue.DB
+}
+
+// Add ...
+func Add(v interface{}) {
+	queue.queue.Put(v)
+	return
 }
