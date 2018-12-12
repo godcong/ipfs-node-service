@@ -37,10 +37,13 @@ func Router(engine *gin.Engine) error {
 			ctx.JSON(http.StatusOK, JSON(-1, err.Error()))
 			return
 		}
-		queue.Push(&StreamInfo{
-			key:      string(b),
-			fileName: fileName,
-		})
+
+		stream := NewStreamer(string(b), fileName)
+		stream.SetUri("localhost:8080/stream")
+		stream.SetDst("./transfer/")
+		stream.SetSrc("./upload/")
+
+		queue.Push(stream)
 		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"name": fileName}))
 		return
 	})

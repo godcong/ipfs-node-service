@@ -130,7 +130,6 @@ func (q *Queue) Push(v *StreamInfo) {
 
 // Pop ...
 func (q *Queue) Pop() *StreamInfo {
-
 	if v := q.queue.Get(); v != nil {
 		log.Println("poping", v)
 		return v.(*StreamInfo)
