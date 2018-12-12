@@ -32,6 +32,7 @@ func (s *RestServer) Start() {
 		Handler: s.Engine,
 	}
 	go func() {
+		log.Printf("[GIN-debug] Listening and serving HTTP on %s\n", srv.Addr)
 		if err := srv.ListenAndServe(); err != nil {
 			log.Printf("Httpserver: ListenAndServe() error: %s", err)
 		}
