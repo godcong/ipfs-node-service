@@ -18,11 +18,15 @@ func Router(engine *gin.Engine) error {
 
 	group.Static("/stream", "./split")
 
+	group.Any("/", func(context *gin.Context) {
+		context.String(http.StatusOK, "%s", "hello world")
+	})
+
 	//上传转换，并返回id
 	group.POST("/uploadTransform", func(context *gin.Context) {
 		defer context.Request.Body.Close()
 
-		fileName, err := writeTo("./tmp", context.Request.Body)
+		fileName, err := writeTo("./upload", context.Request.Body)
 		if err != nil {
 			context.JSON(http.StatusOK, JSON(-1, err.Error()))
 			return
