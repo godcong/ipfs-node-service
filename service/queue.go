@@ -75,8 +75,8 @@ var queue *Queue
 func initDB() *badger.DB {
 	var err error
 	options := badger.DefaultOptions
-	options.Dir = "/tmp/badger"
-	options.ValueDir = "/tmp/badger"
+	options.Dir = "/home/badger"
+	options.ValueDir = "/home/badger"
 	db, err := badger.Open(options)
 	if err != nil {
 		panic(err)
@@ -88,8 +88,8 @@ func init() {
 	queue = NewQueue(initDB())
 }
 
-// GetQueue ...
-func GetQueue() *Queue {
+// InitQueue ...
+func InitQueue() *Queue {
 	return queue
 }
 

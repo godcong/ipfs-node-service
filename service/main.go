@@ -11,6 +11,7 @@ import (
 // RunMain 主线程
 func RunMain() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	InitQueue()
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
