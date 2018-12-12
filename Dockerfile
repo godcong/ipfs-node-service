@@ -1,9 +1,12 @@
 FROM golang:1.11.2
 
-WORKDIR /home
+WORKDIR /home/ipfs_node
 
 COPY . .
 
-RUN go install -o ipfs_node
+RUN go build -v -o ipfs_node
 
-CMD ["ipfs_node"]
+EXPOSE 8080
+
+
+CMD ["/home/ipfs_node/ipfs_node"]
