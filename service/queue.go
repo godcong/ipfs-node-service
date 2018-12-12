@@ -15,6 +15,25 @@ type HandleFunc func(name, key string) error
 type StreamInfo struct {
 	key      string
 	fileName string
+	uri      string
+	src      string
+	dst      string
+}
+
+func (s *StreamInfo) Dst() string {
+	return s.dst
+}
+
+func (s *StreamInfo) SetDst(dst string) {
+	s.dst = dst
+}
+
+func (s *StreamInfo) Src() string {
+	return s.src
+}
+
+func (s *StreamInfo) SetSrc(src string) {
+	s.src = src
 }
 
 // NewStreamer ...
@@ -40,6 +59,14 @@ func (s *StreamInfo) Key() string {
 // SetKey ...
 func (s *StreamInfo) SetKey(key string) {
 	s.key = key
+}
+
+func (s *StreamInfo) Uri() string {
+	return s.uri
+}
+
+func (s *StreamInfo) SetUri(uri string) {
+	s.uri = uri
 }
 
 // KeyFile ...
