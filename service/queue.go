@@ -60,31 +60,56 @@ func (s *Streamer) SetKey(key string) {
 
 // Queue ...
 type Queue struct {
-	*badger.DB
+	db    *badger.DB
 	queue sync.Pool
 }
 
-var queue Queue
+// NewQueue ...
+func NewQueue(db *badger.DB) *Queue {
+	return &Queue{db: db}
+}
+
+var queue *Queue
 
 //InitDB ...
-func InitDB() {
+func initDB() *badger.DB {
 	var err error
 	options := badger.DefaultOptions
 	options.Dir = "/tmp/badger"
 	options.ValueDir = "/tmp/badger"
-	queue.DB, err = badger.Open(options)
+	db, err := badger.Open(options)
 	if err != nil {
 		panic(err)
 	}
+	return db
+}
+
+func init() {
+	queue = NewQueue(initDB())
+}
+
+// GetQueue ...
+func GetQueue() *Queue {
+	return queue
 }
 
 // DB ...
-func DB() *badger.DB {
-	return queue.DB
+func (q *Queue) DB() *badger.DB {
+	if q.db == nil {
+		q.db = initDB()
+	}
+	return q.db
 }
 
-// Add ...
-func Add(v *Streamer) {
-	queue.queue.Put(v)
-	return
+// Push ...
+func (q *Queue) Push(v *Streamer) {
+	q.queue.Put(v)
+}
+
+// Pop ...
+func (q *Queue) Pop() *Streamer {
+	if v := q.queue.Get(); v != nil {
+		return v.(*Streamer)
+	}
+	return nil
 }
