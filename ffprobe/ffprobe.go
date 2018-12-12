@@ -52,7 +52,7 @@ func Run(args ...string) (string, error) {
 	}
 	cmd := exec.Command("ffprobe", args...)
 	cmd.Env = os.Environ()
-
+	log.Println(cmd.Args)
 	stdout, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println(err)

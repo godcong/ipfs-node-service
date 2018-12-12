@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/go-redis/redis"
+	"github.com/godcong/go-ffmpeg/openssl"
 	"log"
 	"sync"
 	"time"
@@ -41,6 +42,15 @@ func (s *StreamInfo) SetKey(key string) {
 	s.key = key
 }
 
+// KeyFile ...
+func (s *StreamInfo) KeyFile() string {
+	err := openssl.KeyFile("./transfer/", s.fileName, s.key, "localhost:8080/stream", true)
+	if err != nil {
+		return ""
+	}
+	return "./transfer/" + s.fileName + "_keyfile"
+}
+
 // Queue ...
 type Queue struct {
 	flag   bool
@@ -60,10 +70,11 @@ func initClient() *redis.Client {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
-		DB:       0,  // use default DB
+		DB:       1,  // use default DB
 	})
 
-	_, err := client.Ping().Result()
+	pong, err := client.Ping().Result()
+	log.Println(pong)
 	if err != nil {
 		panic(err)
 	}
@@ -78,22 +89,26 @@ func InitQueue() *Queue {
 
 // Client ...
 func (q *Queue) Client() *redis.Client {
-	if q.client == nil {
-		q.client = initClient()
-	}
+	//if q.client == nil {
+	//	q.client = initClient()
+	//}
 	return q.client
 }
 
 // Push ...
 func (q *Queue) Push(v *StreamInfo) {
+	log.Println("pushing", v)
 	q.queue.Put(v)
 }
 
 // Pop ...
 func (q *Queue) Pop() *StreamInfo {
+
 	if v := q.queue.Get(); v != nil {
+		log.Println("poping", v)
 		return v.(*StreamInfo)
 	}
+	log.Println("poping", "nil")
 	return nil
 }
 
@@ -145,6 +160,8 @@ func (q *Queue) Start(process int) {
 					time.Sleep(5 * time.Second)
 				}
 			default:
+				log.Println("default")
+				time.Sleep(5 * time.Second)
 				if q.flag {
 					close(threads)
 					return
@@ -161,7 +178,15 @@ func (q *Queue) Stop() {
 }
 
 func transfer(chanints chan<- int, info *StreamInfo) {
-	_ = ToM3U8("./transfer", info.fileName)
+	//key := info.KeyFile()
+	//_ = ToM3U8WithKey("./upload/", "./transfer/", info.fileName, key)
+	time.Sleep(10 * time.Second)
 	log.Println("transfer:", *info)
+	//d, _ := json.Marshal(info)
+	err := queue.Client().Set(info.fileName, info.key, 0).Err()
+	if err != nil {
+		log.Println(err)
+	}
+
 	chanints <- 1
 }

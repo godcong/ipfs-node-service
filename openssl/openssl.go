@@ -128,18 +128,16 @@ func Number32(i int) string {
 }
 
 // KeyFile ...
-func KeyFile(path, fname string, uri string, iv bool) error {
-	key, err := Run("rand", "-hex", "16")
-	if err != nil {
-		return err
-	}
+func KeyFile(path, fname string, key, uri string, iv bool) error {
+	var err error
+
 	//newKey := KeyToHex(key)
-	err = SaveTo(path+fname+".key", string(key))
+	err = SaveTo(path+fname+".key", key)
 	if err != nil {
 		return err
 	}
 
-	file, err := os.OpenFile(path+fname+"_keyfile.key", os.O_RDWR|os.O_CREATE, os.ModePerm)
+	file, err := os.OpenFile(path+fname+"_keyfile", os.O_RDWR|os.O_CREATE, os.ModePerm)
 	if err != nil {
 		return err
 	}

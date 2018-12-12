@@ -80,7 +80,7 @@ func SplitToTS(src string, out string) (string, error) {
 }
 
 // SplitWithKey2 ...
-func SplitWithKey2(src string, out string, key string) (string, error) {
+func SplitWithKey(src string, out string, key string) (string, error) {
 	//ffmpeg -i input.mp4 -c copy -bsf:v h264_mp4toannexb -hls_time 10 -hls_key_info_file key_info playlist.m3u8
 	return Run("-i", src,
 		"-y", "-c:v", "libx264", "-c:a", "aac",
@@ -97,7 +97,7 @@ func SplitWithKey2(src string, out string, key string) (string, error) {
 }
 
 // QuickSplitWithKey ...
-func QuickSplitWithKey(src string, out string, key string) (string, error) {
+func QuickSplitWithKey(src string, out string, keyPath string) (string, error) {
 	//ffmpeg -i input.mp4 -c copy -bsf:v h264_mp4toannexb -hls_time 10 -hls_key_info_file key_info playlist.m3u8
 	return Run("-i", src,
 		"-y", "-c:v", "copy", "-c:a", "copy",
@@ -108,15 +108,15 @@ func QuickSplitWithKey(src string, out string, key string) (string, error) {
 		"-hls_playlist_type", "vod",
 		//"-segment_format", "mpegts",
 		"-hls_segment_filename", out+"-%03d.ts",
-		"-hls_key_info_file", key,
+		"-hls_key_info_file", keyPath,
 		out+".m3u8")
 }
 
 // SplitWithKey ...
-func SplitWithKey(src string, out string, key string) (string, error) {
+func SplitWithKey1(src string, out string, keyPath string) (string, error) {
 	//ffmpeg -i input.mp4 -c copy -bsf:v h264_mp4toannexb -hls_time 10 -hls_key_info_file key_info playlist.m3u8
 	return Run("-i", src,
 		"-c", "copy", "-bsf:v", "h264_mp4toannexb",
-		"-hls_time", "10", "-hls_key_info_file", key,
+		"-hls_time", "10", "-hls_key_info_file", keyPath,
 		out+".m3u8")
 }
