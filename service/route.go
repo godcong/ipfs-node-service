@@ -27,7 +27,7 @@ func Router(engine *gin.Engine) error {
 	group.POST("/uploadTransform", func(ctx *gin.Context) {
 		defer ctx.Request.Body.Close()
 		src := "./upload/"
-		fileName, err := writeTo("./upload", ctx.Request.Body)
+		fileName, err := writeTo(src, ctx.Request.Body)
 		if err != nil {
 			ctx.JSON(http.StatusOK, JSON(-1, err.Error()))
 			return
@@ -44,6 +44,7 @@ func Router(engine *gin.Engine) error {
 		stream.SetSrc(src)
 
 		queue.Push(stream)
+		log.Println(fileName)
 		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"name": fileName}))
 		return
 	})
