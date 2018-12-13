@@ -95,9 +95,8 @@ func StopQueue() {
 }
 
 func transfer(chanints chan<- string, info *StreamInfo) {
-	_ = info.KeyFile()
-	//_ = ToM3U8WithKey("./upload/", "./transfer/", info.fileName, key)
-	time.Sleep(15 * time.Second)
+	key := info.KeyFile()
+	_ = ToM3U8WithKey("./upload/", "./transfer/", info.fileName, key)
 	log.Println("transfer:", *info)
 	//d, _ := json.Marshal(info)
 	err := client.Set(info.fileName, info.key, 0).Err()
