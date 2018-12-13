@@ -2,6 +2,8 @@ package service
 
 import (
 	"github.com/godcong/go-ffmpeg/openssl"
+	"log"
+	"os"
 	"sync"
 )
 
@@ -71,11 +73,20 @@ func (s *StreamInfo) SetURI(uri string) {
 
 // KeyFile ...
 func (s *StreamInfo) KeyFile() string {
-	err := openssl.KeyFile(s.dst, s.fileName, s.key, s.uri, true)
+	var err error
+	err = os.Mkdir(s.dst+s.fileName, os.ModePerm)
 	if err != nil {
+		log.Println(err)
 		return ""
 	}
-	return s.dst + s.fileName + "_keyfile"
+
+	err = openssl.KeyFile(s.dst, s.fileName, s.key, s.uri, true)
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+
+	return s.dst + s.fileName + "/KeyInfo"
 }
 
 // StreamQueue ...
@@ -94,24 +105,26 @@ func NewStreamQueue() *StreamQueue {
 // Push ...
 func (s *StreamQueue) Push(info *StreamInfo) {
 	s.lock.Lock()
+	defer s.lock.Unlock()
 	s.infos = append(s.infos, info)
-	s.lock.Unlock()
 }
 
 // Pop ...
 func (s *StreamQueue) Pop() *StreamInfo {
 	s.lock.Lock()
+	defer s.lock.Unlock()
 	info := s.infos[0]
 	s.infos = s.infos[1:len(s.infos)]
-	s.lock.Unlock()
+
 	return info
 }
 
 // Front ...
 func (s *StreamQueue) Front() *StreamInfo {
 	s.lock.RLock()
+	defer s.lock.RUnlock()
 	info := s.infos[0]
-	s.lock.RUnlock()
+
 	return info
 }
 

@@ -91,13 +91,12 @@ func StartQueue(process int) {
 
 // StopQueue ...
 func StopQueue() {
-	//_ = q.db.Close()
 	flag = true
 }
 
 func transfer(chanints chan<- string, info *StreamInfo) {
-	key := info.KeyFile()
-	_ = ToM3U8WithKey("./upload/", "./transfer/", info.fileName, key)
+	_ = info.KeyFile()
+	//_ = ToM3U8WithKey("./upload/", "./transfer/", info.fileName, key)
 	time.Sleep(15 * time.Second)
 	log.Println("transfer:", *info)
 	//d, _ := json.Marshal(info)
