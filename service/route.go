@@ -73,14 +73,19 @@ func writeTo(path string, reader io.Reader) (string, error) {
 	return fileName, nil
 }
 
+/**
+ * @api {post} /upload/url/:url Upload Stream File
+ * @apiName Upload
+ * @apiGroup upload
+ *
+ * @apiParam {string} url base64 encoded url.
+ *
+ * @apiSuccess {int} code return code of the status.
+ * @apiSuccess {string} msg  return message of the status.
+ */
 // UploadPost ...
 func UploadPost() gin.HandlerFunc {
-	// swagger:route GET /upload/{base64(url)} upload a stream
-	//
-	//     Responses:
-	//       200: UserResponse
 	return func(ctx *gin.Context) {
-
 		defer ctx.Request.Body.Close()
 		src := "./upload/"
 		fileName, err := writeTo(src, ctx.Request.Body)

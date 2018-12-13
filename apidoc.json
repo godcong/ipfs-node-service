@@ -1,0 +1,7 @@
+{
+  "name": "ipfs_node",
+  "version": "0.0.1",
+  "description": "create api interface document use apidoc",
+  "title": "ipfs node",
+  "url" : "http://host/v1"
+}
