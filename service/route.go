@@ -17,7 +17,7 @@ func Router(engine *gin.Engine) error {
 
 	group.Use()
 
-	group.Static("/stream", "./split")
+	group.Static("/infos", "./split")
 
 	group.Any("/", func(ctx *gin.Context) {
 		ctx.String(http.StatusOK, "%s", "hello world")
@@ -39,7 +39,7 @@ func Router(engine *gin.Engine) error {
 		}
 
 		stream := NewStreamer(string(b), fileName)
-		stream.SetURI("localhost:8080/stream")
+		stream.SetURI("localhost:8080/infos")
 		stream.SetDst("./transfer/")
 		stream.SetSrc(src)
 

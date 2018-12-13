@@ -2,102 +2,16 @@ package service
 
 import (
 	"github.com/go-redis/redis"
-	"github.com/godcong/go-ffmpeg/openssl"
 	"log"
-	"sync"
 	"time"
 )
 
 // HandleFunc ...
 type HandleFunc func(name, key string) error
 
-// StreamInfo ...
-type StreamInfo struct {
-	key      string
-	fileName string
-	uri      string
-	src      string
-	dst      string
-}
-
-// Dst ...
-func (s *StreamInfo) Dst() string {
-	return s.dst
-}
-
-// SetDst ...
-func (s *StreamInfo) SetDst(dst string) {
-	s.dst = dst
-}
-
-// Src ...
-func (s *StreamInfo) Src() string {
-	return s.src
-}
-
-// SetSrc ...
-func (s *StreamInfo) SetSrc(src string) {
-	s.src = src
-}
-
-// NewStreamer ...
-func NewStreamer(key string, fileName string) *StreamInfo {
-	return &StreamInfo{key: key, fileName: fileName}
-}
-
-// FileName ...
-func (s *StreamInfo) FileName() string {
-	return s.fileName
-}
-
-// SetFileName ...
-func (s *StreamInfo) SetFileName(fileName string) {
-	s.fileName = fileName
-}
-
-// Key ...
-func (s *StreamInfo) Key() string {
-	return s.key
-}
-
-// SetKey ...
-func (s *StreamInfo) SetKey(key string) {
-	s.key = key
-}
-
-// URI ...
-func (s *StreamInfo) URI() string {
-	return s.uri
-}
-
-// SetURI ...
-func (s *StreamInfo) SetURI(uri string) {
-	s.uri = uri
-}
-
-// KeyFile ...
-func (s *StreamInfo) KeyFile() string {
-	err := openssl.KeyFile(s.dst, s.fileName, s.key, s.uri, true)
-	if err != nil {
-		return ""
-	}
-	return s.dst + s.fileName + "_keyfile"
-}
-
-// Queue ...
-type Queue struct {
-	flag   bool
-	client *redis.Client
-	queue  sync.Pool
-	handle HandleFunc
-}
-
-// NewQueue ...
-func NewQueue(client *redis.Client) *Queue {
-	return &Queue{client: client}
-}
-
-var queue *Queue
+var queue = NewStreamQueue()
+var flag = false
+var client = initClient()
 
 func initClient() *redis.Client {
 	client := redis.NewClient(&redis.Options{
@@ -114,78 +28,50 @@ func initClient() *redis.Client {
 	return client
 }
 
-// InitQueue ...
-func InitQueue() *Queue {
-	queue = NewQueue(initClient())
-	return queue
-}
-
-// Client ...
-func (q *Queue) Client() *redis.Client {
-	//if q.client == nil {
-	//	q.client = initClient()
-	//}
-	return q.client
-}
-
 // Push ...
-func (q *Queue) Push(v *StreamInfo) {
-	log.Println("pushing", v)
-	q.queue.Put(v)
+func Push(v *StreamInfo) {
+	queue.Push(v)
 }
 
 // Pop ...
-func (q *Queue) Pop() *StreamInfo {
-	if v := q.queue.Get(); v != nil {
-		log.Println("poping", v)
-		return v.(*StreamInfo)
+func Pop() *StreamInfo {
+	if !queue.IsEmpty() {
+		return queue.Pop()
 	}
-	log.Println("poping", "nil")
+	log.Println("nothing pop")
 	return nil
 }
 
-// Handle ...
-func (q *Queue) Handle() HandleFunc {
-	return q.handle
-}
-
-// SetHandle ...
-func (q *Queue) SetHandle(handle HandleFunc) {
-	q.handle = handle
-}
-
-// Start ...
-func (q *Queue) Start(process int) {
-	q.flag = false
+// StartQueue ...
+func StartQueue(process int) {
+	flag = false
 	//run with a new go channel
 	go func() {
-		threads := make(chan int, process)
+		threads := make(chan string, process)
 
 		for i := 0; i < process; i++ {
-			for {
-				if q.flag {
-					close(threads)
-					return
-				}
-				if s := q.Pop(); s != nil {
-					log.Println("start", i)
-					go transfer(threads, s)
-					break
-				}
-				time.Sleep(5 * time.Second)
+			if flag {
+				close(threads)
+				return
+			}
+			log.Println("start", i)
+			if s := Pop(); s != nil {
+				go transfer(threads, s)
+			} else {
+				go transferNothing(threads)
 			}
 		}
 
 		for {
 			select {
-			case _ = <-threads:
+			case v := <-threads:
+				log.Println("success:", v)
 				for {
-					if q.flag {
+					if flag {
 						close(threads)
 						return
 					}
-					if s := q.Pop(); s != nil {
-						log.Println("thread run")
+					if s := Pop(); s != nil {
 						go transfer(threads, s)
 						break
 					}
@@ -193,8 +79,8 @@ func (q *Queue) Start(process int) {
 				}
 			default:
 				log.Println("default")
-				time.Sleep(5 * time.Second)
-				if q.flag {
+				time.Sleep(3 * time.Second)
+				if flag {
 					close(threads)
 					return
 				}
@@ -203,22 +89,27 @@ func (q *Queue) Start(process int) {
 	}()
 }
 
-// Stop ...
-func (q *Queue) Stop() {
+// StopQueue ...
+func StopQueue() {
 	//_ = q.db.Close()
-	q.flag = true
+	flag = true
 }
 
-func transfer(chanints chan<- int, info *StreamInfo) {
-	//key := info.KeyFile()
-	//_ = ToM3U8WithKey("./upload/", "./transfer/", info.fileName, key)
-	time.Sleep(10 * time.Second)
+func transfer(chanints chan<- string, info *StreamInfo) {
+	key := info.KeyFile()
+	_ = ToM3U8WithKey("./upload/", "./transfer/", info.fileName, key)
+	time.Sleep(15 * time.Second)
 	log.Println("transfer:", *info)
 	//d, _ := json.Marshal(info)
-	err := queue.Client().Set(info.fileName, info.key, 0).Err()
+	err := client.Set(info.fileName, info.key, 0).Err()
 	if err != nil {
 		log.Println(err)
 	}
 
-	chanints <- 1
+	chanints <- info.fileName
+}
+
+func transferNothing(chanints chan<- string) {
+	log.Println("transferNothing")
+	chanints <- "nothing"
 }

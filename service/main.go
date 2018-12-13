@@ -11,7 +11,7 @@ import (
 // RunMain 主线程
 func RunMain() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	queue := InitQueue()
+
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
@@ -22,12 +22,12 @@ func RunMain() {
 
 	//start
 	serv.Start()
-	queue.Start(5)
+	StartQueue(5)
 	go func() {
 		sig := <-sigs
 		//bm.Stop()
 		fmt.Println(sig, "exiting")
-		queue.Stop()
+		StopQueue()
 		done <- true
 	}()
 	<-done
