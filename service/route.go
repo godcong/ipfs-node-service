@@ -111,6 +111,31 @@ func UploadPost() gin.HandlerFunc {
 	}
 }
 
+/**
+ *
+ * @api {get} /status/:id 获取视频转换状态
+ * @apiName apiName
+ * @apiGroup group
+ * @apiVersion  major.minor.patch
+ *
+ *
+ * @apiParam  {String} paramName description
+ *
+ * @apiSuccess (200) {type} name description
+ *
+ * @apiParamExample  {type} Request-Example:
+ * {
+ *     property : value
+ * }
+ *
+ *
+ * @apiSuccessExample {type} Success-Response:
+ * {
+ *     property : value
+ * }
+ *
+ *
+ */
 // StatusGet 获取视频转换状态
 func StatusGet() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
