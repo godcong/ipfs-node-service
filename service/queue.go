@@ -99,7 +99,7 @@ func transfer(chanints chan<- string, info *StreamInfo) {
 	_ = ToM3U8WithKey("./upload/", "./transfer/", info.fileName, key)
 	log.Println("transfer:", *info)
 	//d, _ := json.Marshal(info)
-	err := client.Set(info.fileName, info.key, 0).Err()
+	err := client.Set(info.fileName, "", 0).Err()
 	if err != nil {
 		log.Println(err)
 	}

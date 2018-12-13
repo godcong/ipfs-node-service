@@ -22,7 +22,7 @@ func RunMain() {
 
 	//start
 	serv.Start()
-	StartQueue(5)
+	StartQueue(2)
 	go func() {
 		sig := <-sigs
 		//bm.Stop()

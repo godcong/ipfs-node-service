@@ -65,6 +65,11 @@ func HexIV() ([]byte, error) {
 	return Run("rand", "-hex", "16")
 }
 
+// HexKey ...
+func HexKey() ([]byte, error) {
+	return Run("rand", "-hex", "32")
+}
+
 // KeyToHex ...
 func KeyToHex(key []byte) string {
 	return fmt.Sprintf("%02x", key)
@@ -142,7 +147,7 @@ func KeyFile(path, fname string, key, uri string, iv bool) error {
 		return err
 	}
 	defer file.Close()
-	_, _ = file.WriteString(uri + "/" + fname + "/key")
+	_, _ = file.WriteString(uri)
 	_, _ = file.WriteString("\n")
 	_, _ = file.WriteString(path + fname + "/key")
 	_, _ = file.WriteString("\n")
