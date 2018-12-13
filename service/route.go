@@ -39,7 +39,7 @@ func Router(engine *gin.Engine) error {
 		}
 
 		stream := NewStreamer(string(b), fileName)
-		stream.SetUri("localhost:8080/stream")
+		stream.SetURI("localhost:8080/stream")
 		stream.SetDst("./transfer/")
 		stream.SetSrc(src)
 

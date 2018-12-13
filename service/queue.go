@@ -20,18 +20,22 @@ type StreamInfo struct {
 	dst      string
 }
 
+// Dst ...
 func (s *StreamInfo) Dst() string {
 	return s.dst
 }
 
+// SetDst ...
 func (s *StreamInfo) SetDst(dst string) {
 	s.dst = dst
 }
 
+// Src ...
 func (s *StreamInfo) Src() string {
 	return s.src
 }
 
+// SetSrc ...
 func (s *StreamInfo) SetSrc(src string) {
 	s.src = src
 }
@@ -61,11 +65,13 @@ func (s *StreamInfo) SetKey(key string) {
 	s.key = key
 }
 
-func (s *StreamInfo) Uri() string {
+// URI ...
+func (s *StreamInfo) URI() string {
 	return s.uri
 }
 
-func (s *StreamInfo) SetUri(uri string) {
+// SetURI ...
+func (s *StreamInfo) SetURI(uri string) {
 	s.uri = uri
 }
 
