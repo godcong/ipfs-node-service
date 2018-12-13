@@ -144,7 +144,7 @@ func KeyFile(path, fname string, key, uri string, iv bool) error {
 	defer file.Close()
 	_, _ = file.WriteString(uri + "/" + fname + "/key")
 	_, _ = file.WriteString("\n")
-	_, _ = file.WriteString(path + fname)
+	_, _ = file.WriteString(path + fname + "/key")
 	_, _ = file.WriteString("\n")
 	if iv {
 		key, err := Run("rand", "-hex", "16")

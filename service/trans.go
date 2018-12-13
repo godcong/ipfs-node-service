@@ -42,13 +42,13 @@ func ToM3U8WithKey(srcPath, outPath string, file string, keyPath string) error {
 	source := srcPath + file
 	probe := ffprobe.New(source)
 	if probe.Run().IsH264AndAAC() {
-		b, err := ffmpeg.QuickSplitWithKey(source, output, keyPath)
+		b, err := ffmpeg.QuickSplitWithKey(source, output+"/media", keyPath)
 		if err != nil {
 			log.Println(string(b))
 			return err
 		}
 	} else {
-		b, err := ffmpeg.SplitWithKey(source, output, keyPath)
+		b, err := ffmpeg.SplitWithKey(source, output+"/media", keyPath)
 		if err != nil {
 			log.Println(string(b), err)
 			return err
