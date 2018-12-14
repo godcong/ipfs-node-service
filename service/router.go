@@ -40,10 +40,8 @@ func Router(engine *gin.Engine) error {
 
 	})
 
-	//从服务器下载视频
-	group.GET("/list/:id", func(ctx *gin.Context) {
-
-	})
+	//服务器视频列表
+	group.GET("/list/:id", ListGet(ver))
 
 	//查看状态
 	group.GET("/info/:id", InfoGet(ver))

@@ -149,3 +149,34 @@ func InfoGet(version string) gin.HandlerFunc {
 		return
 	}
 }
+
+// StatusGet 获取视频转换状态
+/**
+*
+* @api {get} /v1/list 获取所有视频列表
+* @apiName info
+* @apiGroup Info
+* @apiVersion  0.0.1
+*
+* @apiUse Success
+* @apiSuccess  {string} code 返回状态码：【正常：0】，【处理中：1】，【ID不存在：2】
+*
+* @apiSampleRequest /v1/status/:id
+* @apiParamExample  {string} Request-Example:
+* 	http://localhost:8080/v1/list
+*
+* @apiSuccessExample {json} Success-Response OK:
+* {
+*       "code":0,
+*       "msg":"ok",
+* }
+* @apiSuccessExample {json} Success-Response Processing:
+* {
+*       "code":1,
+*       "msg":"processing",
+* }
+* @apiUse Failed
+ */
+func ListGet(ver string) gin.HandlerFunc {
+
+}
