@@ -161,10 +161,17 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Binary",
+            "type": "string",
             "optional": false,
-            "field": "binary",
-            "description": "<p>媒体文件二进制文件</p>"
+            "field": "id",
+            "description": "<p>文件名ID</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "url",
+            "description": "<p>KeyFile存放URL</p>"
           }
         ]
       },
