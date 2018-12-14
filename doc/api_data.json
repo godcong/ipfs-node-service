@@ -86,8 +86,8 @@
     "type": "get",
     "url": "/v1/list",
     "title": "获取所有视频列表",
-    "name": "info",
-    "group": "Info",
+    "name": "list",
+    "group": "List",
     "version": "0.0.1",
     "success": {
       "fields": {
@@ -97,7 +97,7 @@
             "type": "string",
             "optional": false,
             "field": "code",
-            "description": "<p>返回状态码：【正常：0】，【处理中：1】，【ID不存在：2】</p>"
+            "description": "<p>返回状态码：【正常：0】，【处理中：1】</p>"
           },
           {
             "group": "Success 200",
@@ -120,17 +120,12 @@
           "title": "Success-Response OK:",
           "content": "{\n      \"code\":0,\n      \"msg\":\"ok\",\n}",
           "type": "json"
-        },
-        {
-          "title": "Success-Response Processing:",
-          "content": "{\n      \"code\":1,\n      \"msg\":\"processing\",\n}",
-          "type": "json"
         }
       ]
     },
     "sampleRequest": [
       {
-        "url": "/v1/status/:id"
+        "url": "/v1/list"
       }
     ],
     "parameter": {
@@ -143,7 +138,7 @@
       ]
     },
     "filename": "service/controller.go",
-    "groupTitle": "Info",
+    "groupTitle": "List",
     "error": {
       "examples": [
         {

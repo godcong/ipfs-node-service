@@ -55,17 +55,7 @@ func UploadPost(vertion string) gin.HandlerFunc {
 			ctx.JSON(http.StatusOK, JSON(-1, err.Error()))
 			return
 		}
-		b, err := openssl.HexKey()
-		if err != nil {
-			ctx.JSON(http.StatusOK, JSON(-1, err.Error()))
-			return
-		}
 
-		stream := NewStreamer(string(b), fileName)
-		stream.SetURI("http://localhost:8080/infos" + "/" + fileName + "/key")
-		stream.SetDst("./transfer/")
-		stream.SetSrc(src)
-		queue.Push(stream)
 		client.Set(fileName, string(b), 0)
 		log.Println(fileName)
 		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"id": fileName}))
@@ -81,7 +71,8 @@ func UploadPost(vertion string) gin.HandlerFunc {
 * @apiVersion  0.0.1
 *
 * @apiUse Success
-* @apiParam  {Binary} binary 媒体文件二进制文件
+* @apiParam  {string} id 文件名ID
+* @apiParam  {string} url KeyFile存放URL
 * @apiParamExample  {string} Request-Example:
 * {
 *     "id":"9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm"
@@ -99,7 +90,20 @@ func UploadPost(vertion string) gin.HandlerFunc {
 * @apiUse Failed
  */
 func TransferPost(version string) gin.HandlerFunc {
-	return nil
+	return func(ctx *gin.Context) {
+		b, err := openssl.HexKey()
+		if err != nil {
+			ctx.JSON(http.StatusOK, JSON(-1, err.Error()))
+			return
+		}
+		id := ctx.PostForm("id")
+		stream := NewStreamer(string(b), id)
+		stream.SetURI("http://localhost:8080/infos" + "/" + id + "/key")
+		stream.SetDst("./transfer/")
+		stream.SetSrc(src)
+		queue.Push(stream)
+		ResultOK(ctx)
+	}
 }
 
 // StatusGet 获取视频转换状态
@@ -145,7 +149,7 @@ func InfoGet(version string) gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{}))
+		ResultOK(ctx, gin.H{})
 		return
 	}
 }
@@ -154,14 +158,14 @@ func InfoGet(version string) gin.HandlerFunc {
 /**
 *
 * @api {get} /v1/list 获取所有视频列表
-* @apiName info
-* @apiGroup Info
+* @apiName list
+* @apiGroup List
 * @apiVersion  0.0.1
 *
 * @apiUse Success
-* @apiSuccess  {string} code 返回状态码：【正常：0】，【处理中：1】，【ID不存在：2】
+* @apiSuccess  {string} code 返回状态码：【正常：0】，【处理中：1】
 *
-* @apiSampleRequest /v1/status/:id
+* @apiSampleRequest /v1/list
 * @apiParamExample  {string} Request-Example:
 * 	http://localhost:8080/v1/list
 *
@@ -170,13 +174,22 @@ func InfoGet(version string) gin.HandlerFunc {
 *       "code":0,
 *       "msg":"ok",
 * }
-* @apiSuccessExample {json} Success-Response Processing:
-* {
-*       "code":1,
-*       "msg":"processing",
-* }
 * @apiUse Failed
  */
 func ListGet(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ResultOK(ctx)
+	}
+}
 
+func ResultOK(ctx *gin.Context, h ...gin.H) {
+	if h != nil {
+		ctx.JSON(http.StatusOK, JSON(0, "ok", h...))
+		return
+	}
+	ctx.JSON(http.StatusOK, JSON(0, "ok"))
+}
+
+func ResultFail(ctx *gin.Context, msg string) {
+	ctx.JSON(http.StatusOK, JSON(-1, "fail"))
 }
