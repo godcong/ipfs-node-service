@@ -31,9 +31,9 @@ const _ = "apiDefine"
 * @apiVersion  0.0.1
 *
 * @apiUse Success
-* @apiParamExample  {raw} Request-Example:
-*	 binary //直接上传媒体文件二进制文件
-*
+* @apiParam  {Binary} binary 媒体文件二进制文件
+* @apiParamExample  {Binary} Request-Example:
+*    upload a binary file from local
 * @apiSuccessExample {json} Success-Response:
 *     {
 *       "code":0,
@@ -44,6 +44,7 @@ const _ = "apiDefine"
 *     }
 * @apiSuccess (detail) {string} id 文件名ID
 * @apiUse Failed
+* @apiSampleRequest /v1/upload
  */
 func UploadPost(vertion string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -112,15 +113,11 @@ func TransferPost(version string) gin.HandlerFunc {
 * @apiParam  {String} id 文件名ID
 *
 * @apiUse Success
-* @apiSuccess  {string} code 返回状态码：【正常：0】，【处理中：1】，【失败：-1】
+* @apiSuccess  {string} code 返回状态码：【正常：0】，【处理中：1】，【ID不存在：2】
 *
 * @apiSampleRequest /v1/status/:id
 * @apiParamExample  {string} Request-Example:
-* {
-* 	http://localhost:8080/v1/status
-*     "id":"9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm"
-* }
-*
+* 	http://localhost:8080/v1/status/9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm
 *
 * @apiSuccessExample {json} Success-Response OK:
 * {
@@ -139,7 +136,7 @@ func StatusGet(version string) gin.HandlerFunc {
 		id := ctx.Param("id")
 		key, err := client.Get(id).Result()
 		if err != nil {
-			ctx.JSON(http.StatusOK, JSON(-1, err.Error()))
+			ctx.JSON(http.StatusOK, JSON(2, "data not found"))
 			return
 		}
 

@@ -1,7 +1,6 @@
 package service
 
 import (
-	"github.com/go-redis/redis"
 	"log"
 	"time"
 )
@@ -11,22 +10,6 @@ type HandleFunc func(name, key string) error
 
 var queue = NewStreamQueue()
 var flag = false
-var client = initClient()
-
-func initClient() *redis.Client {
-	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       1,  // use default DB
-	})
-
-	pong, err := client.Ping().Result()
-	log.Println(pong)
-	if err != nil {
-		panic(err)
-	}
-	return client
-}
 
 // Push ...
 func Push(v *StreamInfo) {

@@ -21,7 +21,7 @@
       "examples": [
         {
           "title": "Request-Example:",
-          "content": "{\n\thttp://localhost:8080/v1/status\n    \"id\":\"9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm\"\n}",
+          "content": "http://localhost:8080/v1/status/9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm",
           "type": "string"
         }
       ]
@@ -34,7 +34,7 @@
             "type": "string",
             "optional": false,
             "field": "code",
-            "description": "<p>返回状态码：【正常：0】，【处理中：1】，【失败：-1】</p>"
+            "description": "<p>返回状态码：【正常：0】，【处理中：1】，【ID不存在：2】</p>"
           },
           {
             "group": "Success 200",
@@ -161,11 +161,22 @@
     "group": "Upload",
     "version": "0.0.1",
     "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Binary",
+            "optional": false,
+            "field": "binary",
+            "description": "<p>媒体文件二进制文件</p>"
+          }
+        ]
+      },
       "examples": [
         {
           "title": "Request-Example:",
-          "content": "binary //直接上传媒体文件二进制文件",
-          "type": "raw"
+          "content": "upload a binary file from local",
+          "type": "Binary"
         }
       ]
     },
@@ -212,6 +223,11 @@
         ]
       }
     },
+    "sampleRequest": [
+      {
+        "url": "/v1/upload"
+      }
+    ],
     "filename": "service/controller.go",
     "groupTitle": "Upload",
     "error": {
