@@ -27,13 +27,11 @@ func Router(engine *gin.Engine) error {
 		ctx.String(http.StatusOK, "%s", "hello world")
 	})
 
-	//上传转换，并返回id
+	//上传文件
 	group.POST("/upload", UploadPost(ver))
 
-	//从url下载视频
-	group.POST("/download", func(ctx *gin.Context) {
-		//filePath := ctx.Query("URL")
-	})
+	//视频转换
+	group.POST("/transfer", TransferPost(ver))
 
 	//下载并转换
 	group.POST("/downloadTransform", func(ctx *gin.Context) {
