@@ -46,7 +46,7 @@ func Router(engine *gin.Engine) error {
 	})
 
 	//查看状态
-	group.GET("/status/:id", StatusGet(ver))
+	group.GET("/info/:id", InfoGet(ver))
 
 	return nil
 }

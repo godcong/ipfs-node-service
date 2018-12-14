@@ -81,6 +81,7 @@ func UploadPost(vertion string) gin.HandlerFunc {
 * @apiVersion  0.0.1
 *
 * @apiUse Success
+* @apiParam  {Binary} binary 媒体文件二进制文件
 * @apiParamExample  {string} Request-Example:
 * {
 *     "id":"9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm"
@@ -104,11 +105,10 @@ func TransferPost(version string) gin.HandlerFunc {
 // StatusGet 获取视频转换状态
 /**
 *
-* @api {get} /v1/status/:id 获取视频转换状态
-* @apiName status
-* @apiGroup Status
+* @api {get} /v1/info/:id 获取视频转换状态
+* @apiName info
+* @apiGroup Info
 * @apiVersion  0.0.1
-*
 *
 * @apiParam  {String} id 文件名ID
 *
@@ -131,7 +131,7 @@ func TransferPost(version string) gin.HandlerFunc {
 * }
 * @apiUse Failed
  */
-func StatusGet(version string) gin.HandlerFunc {
+func InfoGet(version string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
 		key, err := client.Get(id).Result()
