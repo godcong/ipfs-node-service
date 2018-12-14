@@ -7,6 +7,12 @@ import (
 	"net/http"
 )
 
+const (
+	StatusUpload      = "upload"
+	StatusTransfering = "transferring"
+	StatusFinished    = "finished"
+)
+
 /**
  * @apiDefine Success
  * @apiSuccess {string} msg 返回具体消息
@@ -25,7 +31,7 @@ const _ = "apiDefine"
 
 //UploadPost 文件上传接口
 /**
-* @api {post} /v1/upload 文件上传接口
+* @api {post} /v1/upload 上传文件接口
 * @apiName upload
 * @apiGroup Upload
 * @apiVersion  0.0.1
@@ -56,7 +62,7 @@ func UploadPost(vertion string) gin.HandlerFunc {
 			return
 		}
 
-		client.Set(fileName, string(b), 0)
+		client.Set(fileName, StatusUpload, 0)
 		log.Println(fileName)
 		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"id": fileName}))
 		return
@@ -82,14 +88,12 @@ func UploadPost(vertion string) gin.HandlerFunc {
 *     {
 *       "code":0,
 *       "msg":"ok",
-*       "detail":{
-*			"id":"9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm"
-*		 }
 *     }
 * @apiSuccess (detail) {string} id 文件名ID
 * @apiUse Failed
  */
 func TransferPost(version string) gin.HandlerFunc {
+	src := "./upload/"
 	return func(ctx *gin.Context) {
 		b, err := openssl.HexKey()
 		if err != nil {
@@ -154,7 +158,7 @@ func InfoGet(version string) gin.HandlerFunc {
 	}
 }
 
-// StatusGet 获取视频转换状态
+// list 获取所有视频列表
 /**
 *
 * @api {get} /v1/list 获取所有视频列表
