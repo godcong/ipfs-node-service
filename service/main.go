@@ -10,7 +10,13 @@ import (
 
 // RunMain 主线程
 func RunMain() {
+
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	err := Initialize(config)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)

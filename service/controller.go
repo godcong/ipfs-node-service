@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	StatusUpload      = "upload"
+	StatusUploaded    = "uploaded"
 	StatusTransfering = "transferring"
+	StatusFileWrong   = "wrong file"
 	StatusFinished    = "finished"
 )
 
@@ -62,7 +63,7 @@ func UploadPost(vertion string) gin.HandlerFunc {
 			return
 		}
 
-		client.Set(fileName, StatusUpload, 0)
+		client.Set(fileName, StatusUploaded, 0)
 		log.Println(fileName)
 		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"id": fileName}))
 		return
@@ -101,6 +102,9 @@ func TransferPost(version string) gin.HandlerFunc {
 			ResultFail(ctx, err.Error())
 			return
 		}
+		//probe := ffprobe.New(src + id)
+		//probe.IsH264AndAAC()
+		//TODO:file is not a media file
 		id := ctx.PostForm("id")
 		stream := NewStreamer(string(b), id)
 		stream.SetURI("http://localhost:8080/infos" + "/" + id + "/key")
@@ -122,7 +126,7 @@ func TransferPost(version string) gin.HandlerFunc {
 * @apiParam  {String} id 文件名ID
 *
 * @apiUse Success
-* @apiSuccess  {string} code 返回状态码：【正常：0】，【处理中：1】，【ID不存在：2】
+* @apiSuccess  {string} code 返回状态码：【正常：0】，【ID不存在：1】,【处理中：2】，【文件异常：3】，
 *
 * @apiSampleRequest /v1/info/:id
 * @apiParamExample  {string} Request-Example:
@@ -132,33 +136,50 @@ func TransferPost(version string) gin.HandlerFunc {
 * {
 *       "code":0,
 *       "msg":"ok",
+*		"detail":{
+*		"URI":"transfer/xxx",
+*		"M3U8File":"media.m3u8",
+*		"KeyFile":"key"
+*		"KeyInfoFile":"KeyInfo",
+*
 * }
-* @apiSuccessExample {json} Success-Response Processing:
+* @apiSuccessExample {json} Success-Response NoData:
 * {
 *       "code":1,
-*       "msg":"processing",
+*       "msg":"data not found",
+* }
+* @apiSuccessExample {json} Success-Response Transferring:
+* {
+*       "code":2,
+*       "msg":"transferring",
+* }
+* @apiSuccessExample {json} Success-Response FileWrong:
+* {
+*       "code":3,
+*       "msg":"wrong file",
 * }
 * @apiUse Failed
  */
 func InfoGet(version string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
-		key, err := client.Get(id).Result()
+		val, err := client.Get(id).Result()
 		if err != nil {
-			ctx.JSON(http.StatusOK, JSON(2, "data not found"))
+			ctx.JSON(http.StatusOK, JSON(1, "data not found"))
 			return
 		}
-
-		if key != "" {
-			ctx.JSON(http.StatusOK, JSON(1, "processing"))
+		if val != StatusTransfering {
+			ctx.JSON(http.StatusOK, JSON(2, val))
+			return
+		} else if val == StatusFileWrong {
+			ctx.JSON(http.StatusOK, JSON(3, val))
 			return
 		}
-
 		ResultOK(ctx, gin.H{
-			"uri":         "/transfer/" + id,
-			"M3U8File":    "media.m3u8",
-			"KeyFile":     "key",
-			"KeyInfoFile": "KeyInfo",
+			"URI":         config.Transfer + "/" + id,
+			"M3U8File":    config.M3U8,
+			"KeyFile":     config.KeyFile,
+			"KeyInfoFile": config.KeyInfoFile,
 		})
 		return
 	}
@@ -187,7 +208,6 @@ func InfoGet(version string) gin.HandlerFunc {
 * @apiUse Failed
  */
 func ListGet(ver string) gin.HandlerFunc {
-
 	return func(ctx *gin.Context) {
 		//client.Append()
 		//client.
@@ -206,5 +226,5 @@ func ResultOK(ctx *gin.Context, h ...gin.H) {
 }
 
 func ResultFail(ctx *gin.Context, msg string) {
-	ctx.JSON(http.StatusOK, JSON(-1, "fail"))
+	ctx.JSON(http.StatusOK, JSON(-1, msg))
 }

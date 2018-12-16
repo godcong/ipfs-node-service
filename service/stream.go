@@ -51,7 +51,7 @@ func (s *StreamInfo) SetFileName(fileName string) {
 	s.fileName = fileName
 }
 
-// Key ...
+// KeyFile ...
 func (s *StreamInfo) Key() string {
 	return s.key
 }
@@ -71,7 +71,7 @@ func (s *StreamInfo) SetURI(uri string) {
 	s.uri = uri
 }
 
-// KeyFile ...
+// KeyInfoFile ...
 func (s *StreamInfo) KeyFile() string {
 	var err error
 	err = os.Mkdir(s.dst+s.fileName, os.ModePerm)
@@ -86,7 +86,7 @@ func (s *StreamInfo) KeyFile() string {
 		return ""
 	}
 
-	return s.dst + s.fileName + "/KeyInfo"
+	return s.dst + s.fileName + "/KeyInfoFile"
 }
 
 // StreamQueue ...
