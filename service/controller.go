@@ -1,10 +1,16 @@
 package service
 
 import (
+	"bufio"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/go-ffmpeg/openssl"
+	"github.com/godcong/go-ffmpeg/util"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 const (
@@ -42,6 +48,7 @@ const _ = "apiDefine"
 * @apiParam  {Binary} binary 媒体文件二进制文件
 * @apiParamExample  {Binary} Request-Example:
 *    upload a binary file from local
+* @apiSuccess (detail) {string} id 文件名ID
 * @apiSuccessExample {json} Success-Response:
 *     {
 *       "code":0,
@@ -50,7 +57,6 @@ const _ = "apiDefine"
 *			"id":"9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm"
 *		 }
 *     }
-* @apiSuccess (detail) {string} id 文件名ID
 * @apiUse Failed
 * @apiSampleRequest /v1/upload
  */
@@ -60,7 +66,7 @@ func UploadPost(vertion string) gin.HandlerFunc {
 		src := "./upload/"
 		fileName, err := writeTo(src, ctx.Request.Body)
 		if err != nil {
-			ResultFail(ctx, err.Error())
+			resultFail(ctx, err.Error())
 			return
 		}
 
@@ -90,12 +96,15 @@ func UploadPost(vertion string) gin.HandlerFunc {
 *     "url":"http://localhost:8080/transfer/xxx/key"
 * }
 *
+* @apiSuccess (detail) {string} id 文件名ID
 * @apiSuccessExample {json} Success-Response:
 *     {
 *       "code":0,
 *       "msg":"ok",
+*       "detail":{
+*			"id":"9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm"
+*		 }
 *     }
-* @apiSuccess (detail) {string} id 文件名ID
 * @apiUse Failed
 * @apiSampleRequest /v1/transfer
  */
@@ -105,7 +114,7 @@ func TransferPost(version string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		b, err := openssl.HexKey()
 		if err != nil {
-			ResultFail(ctx, err.Error())
+			resultFail(ctx, err.Error())
 			return
 		}
 		//probe := ffprobe.New(src + id)
@@ -113,7 +122,7 @@ func TransferPost(version string) gin.HandlerFunc {
 		//TODO:file is not a media file
 		id := ctx.PostForm("id")
 		if id == "" {
-			ResultFail(ctx, "wrong id request")
+			resultFail(ctx, "wrong id request")
 			return
 		}
 		url := ctx.PostForm("url")
@@ -127,7 +136,7 @@ func TransferPost(version string) gin.HandlerFunc {
 		stream.SetSrc(src)
 		client.Set(id, StatusQueuing, 0)
 		queue.Push(stream)
-		ResultOK(ctx)
+		resultOK(ctx, gin.H{"id": id})
 	}
 }
 
@@ -157,7 +166,7 @@ func TransferPost(version string) gin.HandlerFunc {
 * {
 *       "code":0,
 *       "msg":"ok",
-*		"detail":{
+*       "detail":{
 *			"uri":"transfer/xxx",
 *			"m3u8":"media.m3u8",
 *			"key":"key"
@@ -197,7 +206,7 @@ func InfoGet(version string) gin.HandlerFunc {
 			ctx.JSON(http.StatusOK, JSON(3, val))
 			return
 		}
-		ResultOK(ctx, gin.H{
+		resultOK(ctx, gin.H{
 			"uri":     config.Transfer + "/" + id,
 			"m3u8":    config.M3U8,
 			"key":     config.KeyFile,
@@ -214,6 +223,9 @@ func InfoGet(version string) gin.HandlerFunc {
 * @apiName list
 * @apiGroup List
 * @apiVersion  0.0.1
+*
+* @apiParam  {string} start 列表开始Index,从0开始计数
+* @apiParam  {string} end 列表结束Index,默认取100
 *
 * @apiUse Success
 * @apiSuccess  {string} code 返回状态码：【正常：0】，【处理中：1】
@@ -233,13 +245,99 @@ func ListGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		//client.Append()
 		//client.
-		//start, _ := strconv.Atoi(ctx.Query("start"))
-		//end, _ := strconv.Atoi(ctx.Query("end"))
-		ResultOK(ctx)
+		list, err := findDir(ctx.Query("start"), ctx.Query("end"))
+		if err != nil {
+			resultFail(ctx, err.Error())
+			return
+		}
+		resultOK(ctx, gin.H{
+			"start": list.Start,
+			"end":   list.End,
+			"max":   list.Max,
+			"list":  list.List,
+		})
 	}
 }
 
-func ResultOK(ctx *gin.Context, h ...gin.H) {
+type DirList struct {
+	Start int
+	End   int
+	Max   int
+	List  []string
+}
+
+const limit = 100
+
+func findDir(start, end string) (*DirList, error) {
+	//var err error
+	st, err := strconv.Atoi(start)
+	if err != nil {
+		st = 0
+	}
+	ed, err := strconv.Atoi(end)
+	if err != nil {
+		ed = st + limit
+	}
+	d, err := os.Open(config.Transfer)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	defer d.Close()
+	fi, err := d.Readdir(-1)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	var dirs []string
+	max := len(fi)
+	if st >= max {
+		st = max
+	}
+	if ed >= max {
+		ed = max
+	}
+
+	for i := st; i < ed; i++ {
+		log.Println(fi[i].Name(), fi[i].IsDir())
+		if fi[i].IsDir() {
+			dirs = append(dirs, fi[i].Name())
+		}
+	}
+	return &DirList{
+		Start: st,
+		End:   ed,
+		Max:   max,
+		List:  dirs,
+	}, nil
+}
+
+func writeTo(path string, reader io.Reader) (string, error) {
+	fileName := util.GenerateRandomString(64)
+	file, err := os.OpenFile(path+fileName, os.O_CREATE|os.O_RDWR, os.ModePerm)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	writer := bufio.NewWriter(file)
+	i, err := io.Copy(writer, reader)
+	if err != nil {
+		return "", err
+	}
+	err = writer.Flush()
+	if err != nil {
+		return "", err
+	}
+
+	if i == 0 {
+		return "", fmt.Errorf("upload with %d", i)
+	}
+	log.Println("success:", i)
+	return fileName, nil
+}
+
+func resultOK(ctx *gin.Context, h ...gin.H) {
 	if h != nil {
 		ctx.JSON(http.StatusOK, JSON(0, "ok", h...))
 		return
@@ -247,6 +345,6 @@ func ResultOK(ctx *gin.Context, h ...gin.H) {
 	ctx.JSON(http.StatusOK, JSON(0, "ok"))
 }
 
-func ResultFail(ctx *gin.Context, msg string) {
+func resultFail(ctx *gin.Context, msg string) {
 	ctx.JSON(http.StatusOK, JSON(-1, msg))
 }
