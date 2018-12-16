@@ -44,7 +44,7 @@ func Router(engine *gin.Engine) error {
 	})
 
 	//服务器视频列表
-	group.GET("/list/:id", ListGet(ver))
+	group.GET("/list", ListGet(ver))
 
 	//查看状态
 	group.GET("/info/:id", InfoGet(ver))

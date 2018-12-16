@@ -1,3 +1,4 @@
+//go:generate apidoc -i ./service
 //go:generate statik -f -src=./doc
 package main
 

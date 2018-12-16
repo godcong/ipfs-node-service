@@ -58,7 +58,7 @@ func UploadPost(vertion string) gin.HandlerFunc {
 		src := "./upload/"
 		fileName, err := writeTo(src, ctx.Request.Body)
 		if err != nil {
-			ctx.JSON(http.StatusOK, JSON(-1, err.Error()))
+			ResultFail(ctx, err.Error())
 			return
 		}
 
@@ -81,7 +81,8 @@ func UploadPost(vertion string) gin.HandlerFunc {
 * @apiParam  {string} url KeyFile存放URL
 * @apiParamExample  {string} Request-Example:
 * {
-*     "id":"9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm"
+*     "id":"9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm",
+*     "url":"http://localhost:8080/transfer/xxx/key"
 * }
 *
 * @apiSuccessExample {json} Success-Response:
@@ -97,7 +98,7 @@ func TransferPost(version string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		b, err := openssl.HexKey()
 		if err != nil {
-			ctx.JSON(http.StatusOK, JSON(-1, err.Error()))
+			ResultFail(ctx, err.Error())
 			return
 		}
 		id := ctx.PostForm("id")
@@ -123,9 +124,9 @@ func TransferPost(version string) gin.HandlerFunc {
 * @apiUse Success
 * @apiSuccess  {string} code 返回状态码：【正常：0】，【处理中：1】，【ID不存在：2】
 *
-* @apiSampleRequest /v1/status/:id
+* @apiSampleRequest /v1/info/:id
 * @apiParamExample  {string} Request-Example:
-* 	http://localhost:8080/v1/status/9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm
+* 	http://localhost:8080/v1/info/9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm
 *
 * @apiSuccessExample {json} Success-Response OK:
 * {
@@ -153,7 +154,12 @@ func InfoGet(version string) gin.HandlerFunc {
 			return
 		}
 
-		ResultOK(ctx, gin.H{})
+		ResultOK(ctx, gin.H{
+			"uri":         "/transfer/" + id,
+			"M3U8File":    "media.m3u8",
+			"KeyFile":     "key",
+			"KeyInfoFile": "KeyInfo",
+		})
 		return
 	}
 }
@@ -181,7 +187,12 @@ func InfoGet(version string) gin.HandlerFunc {
 * @apiUse Failed
  */
 func ListGet(ver string) gin.HandlerFunc {
+
 	return func(ctx *gin.Context) {
+		//client.Append()
+		//client.
+		//start, _ := strconv.Atoi(ctx.Query("start"))
+		//end, _ := strconv.Atoi(ctx.Query("end"))
 		ResultOK(ctx)
 	}
 }

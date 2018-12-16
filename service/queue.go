@@ -83,6 +83,7 @@ func transfer(chanints chan<- string, info *StreamInfo) {
 	log.Println("transfer:", *info)
 	//d, _ := json.Marshal(info)
 	err := client.Set(info.fileName, "", 0).Err()
+
 	if err != nil {
 		log.Println(err)
 	}

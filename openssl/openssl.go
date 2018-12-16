@@ -136,7 +136,6 @@ func Number32(i int) string {
 func KeyFile(path, fname string, key, uri string, iv bool) error {
 	var err error
 
-	//newKey := KeyToHex(key)
 	err = SaveTo(path+fname+"/key", key)
 	if err != nil {
 		return err
