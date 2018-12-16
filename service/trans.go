@@ -37,22 +37,20 @@ func ToM3U8(path string, file string) error {
 }
 
 // ToM3U8WithKey ...
-func ToM3U8WithKey(srcPath, outPath string, file string, keyPath string) error {
-	output := outPath + file
-	source := srcPath + file
+func ToM3U8WithKey(id string) error {
+
+	output := config.Transfer + "/" + id
+	source := config.Upload + "/" + id
 	probe := ffprobe.New(source)
+	procFunc := ffmpeg.SplitWithKey
 	if probe.Run().IsH264AndAAC() {
-		b, err := ffmpeg.QuickSplitWithKey(source, output+"/media", keyPath)
-		if err != nil {
-			log.Println(string(b))
-			return err
-		}
-	} else {
-		b, err := ffmpeg.SplitWithKey(source, output+"/media", keyPath)
-		if err != nil {
-			log.Println(string(b), err)
-			return err
-		}
+		procFunc = ffmpeg.QuickSplitWithKey
+	}
+
+	b, err := procFunc(source, output, config.KeyInfoFile, "media", config.M3U8)
+	if err != nil {
+		log.Println(string(b), err)
+		return err
 	}
 	return nil
 }
