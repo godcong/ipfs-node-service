@@ -80,7 +80,10 @@ func UploadPost(vertion string) gin.HandlerFunc {
 *
 * @apiUse Success
 * @apiParam  {string} id 文件名ID
-* @apiParam  {string} url KeyFile存放URL
+* @apiParam  (string) url key存放url地址
+* @apiParam  (string) m3u8 m3u8文件名（暂不支持）
+* @apiParam  (string) key key文件名（暂不支持）
+* @apiParam  (string) keyInfo keyInfo文件名（暂不支持）
 * @apiParamExample  {string} Request-Example:
 * {
 *     "id":"9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm",
@@ -96,7 +99,8 @@ func UploadPost(vertion string) gin.HandlerFunc {
 * @apiUse Failed
  */
 func TransferPost(version string) gin.HandlerFunc {
-	src := "./upload/"
+
+	src := config.Upload + "/"
 	return func(ctx *gin.Context) {
 		b, err := openssl.HexKey()
 		if err != nil {
@@ -107,9 +111,18 @@ func TransferPost(version string) gin.HandlerFunc {
 		//probe.IsH264AndAAC()
 		//TODO:file is not a media file
 		id := ctx.PostForm("id")
+		if id == "" {
+			ResultFail(ctx, "wrong id request")
+			return
+		}
+		url := ctx.PostForm("url")
+		if url == "" {
+			url = config.URL + "/" + config.Transfer + "/" + id + "/key"
+		}
+
 		stream := NewStreamer(string(b), id)
-		stream.SetURI("http://localhost:8080/infos" + "/" + id + "/key")
-		stream.SetDst("./transfer/")
+		stream.SetURI(url)
+		stream.SetDst(config.Transfer + "/")
 		stream.SetSrc(src)
 		client.Set(id, StatusQueuing, 0)
 		queue.Push(stream)
