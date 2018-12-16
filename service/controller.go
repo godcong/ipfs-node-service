@@ -8,10 +8,11 @@ import (
 )
 
 const (
-	StatusUploaded    = "uploaded"
-	StatusTransfering = "transferring"
-	StatusFileWrong   = "wrong file"
-	StatusFinished    = "finished"
+	StatusUploaded     = "uploaded"
+	StatusQueuing      = "queuing"
+	StatusTransferring = "transferring"
+	StatusFileWrong    = "wrong file"
+	StatusFinished     = "finished"
 )
 
 /**
@@ -110,6 +111,7 @@ func TransferPost(version string) gin.HandlerFunc {
 		stream.SetURI("http://localhost:8080/infos" + "/" + id + "/key")
 		stream.SetDst("./transfer/")
 		stream.SetSrc(src)
+		client.Set(id, StatusQueuing, 0)
 		queue.Push(stream)
 		ResultOK(ctx)
 	}
@@ -168,7 +170,7 @@ func InfoGet(version string) gin.HandlerFunc {
 			ctx.JSON(http.StatusOK, JSON(1, "data not found"))
 			return
 		}
-		if val != StatusTransfering {
+		if val != StatusTransferring {
 			ctx.JSON(http.StatusOK, JSON(2, val))
 			return
 		} else if val == StatusFileWrong {
