@@ -97,6 +97,7 @@ func UploadPost(vertion string) gin.HandlerFunc {
 *     }
 * @apiSuccess (detail) {string} id 文件名ID
 * @apiUse Failed
+* @apiSampleRequest /v1/transfer
  */
 func TransferPost(version string) gin.HandlerFunc {
 
@@ -142,6 +143,11 @@ func TransferPost(version string) gin.HandlerFunc {
 *
 * @apiUse Success
 * @apiSuccess  {string} code 返回状态码：【正常：0】，【ID不存在：1】,【处理中：2】，【文件异常：3】，
+* @apiSuccess  {json} [detail] 正常则返回detail
+* @apiSuccess (detail) {string} uri 视频存放的相对地址
+* @apiSuccess (detail) {string} m3u8 m3u8存放的文件名
+* @apiSuccess (detail) {string} key key存放的文件名
+* @apiSuccess (detail) {string} keyInfo keyInfo存放的文件名
 *
 * @apiSampleRequest /v1/info/:id
 * @apiParamExample  {string} Request-Example:
@@ -152,10 +158,11 @@ func TransferPost(version string) gin.HandlerFunc {
 *       "code":0,
 *       "msg":"ok",
 *		"detail":{
-*		"URI":"transfer/xxx",
-*		"M3U8File":"media.m3u8",
-*		"KeyFile":"key"
-*		"KeyInfoFile":"KeyInfo",
+*			"uri":"transfer/xxx",
+*			"m3u8":"media.m3u8",
+*			"key":"key"
+*			"keyInfo":"KeyInfo",
+*		}
 *
 * }
 * @apiSuccessExample {json} Success-Response NoData:
@@ -191,10 +198,10 @@ func InfoGet(version string) gin.HandlerFunc {
 			return
 		}
 		ResultOK(ctx, gin.H{
-			"URI":         config.Transfer + "/" + id,
-			"M3U8File":    config.M3U8,
-			"KeyFile":     config.KeyFile,
-			"KeyInfoFile": config.KeyInfoFile,
+			"uri":     config.Transfer + "/" + id,
+			"m3u8":    config.M3U8,
+			"key":     config.KeyFile,
+			"keyInfo": config.KeyInfoFile,
 		})
 		return
 	}

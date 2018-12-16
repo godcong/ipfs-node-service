@@ -3,8 +3,6 @@ package openssl
 import (
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -22,27 +20,14 @@ func Run(args ...string) ([]byte, error) {
 	}
 	cmd := exec.Command("openssl", args...)
 	cmd.Env = os.Environ()
+	cmd.Env = os.Environ()
 
-	stdout, err := cmd.StdoutPipe()
+	stdout, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Fatal(err)
+		return stdout, err
 	}
 
-	if err := cmd.Start(); err != nil {
-		log.Fatal(err)
-	}
-
-	b, err := ioutil.ReadAll(stdout)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err := cmd.Wait(); err != nil {
-		fmt.Println(err.Error())
-		log.Fatal(err)
-	}
-
-	return b, nil
+	return stdout, nil
 }
 
 // KeyToFile ...
