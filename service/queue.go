@@ -79,8 +79,8 @@ func StopQueue() {
 
 func transfer(chanints chan<- string, info *StreamInfo) {
 	var err error
-	key := info.KeyFile()
-	err = ToM3U8WithKey("./upload/", "./transfer/", info.fileName, key)
+	_ = info.KeyFile()
+	err = ToM3U8WithKey(info.fileName)
 	if err != nil {
 		err = client.Set(info.fileName, StatusFileWrong, 0).Err()
 		if err != nil {

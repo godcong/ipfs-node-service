@@ -118,22 +118,22 @@ func Number32(i int) string {
 }
 
 // KeyInfoFile ...
-func KeyFile(path, fname string, key, uri string, iv bool) error {
+func KeyFile(path, keyName, key, keyInfo, uri string, iv bool) error {
 	var err error
 
-	err = SaveTo(path+fname+"/key", key)
+	err = SaveTo(path+"/"+keyName, key)
 	if err != nil {
 		return err
 	}
 
-	file, err := os.OpenFile(path+fname+"/KeyInfoFile", os.O_RDWR|os.O_CREATE, os.ModePerm)
+	file, err := os.OpenFile(path+keyInfo, os.O_RDWR|os.O_CREATE, os.ModePerm)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 	_, _ = file.WriteString(uri)
 	_, _ = file.WriteString("\n")
-	_, _ = file.WriteString(path + fname + "/key")
+	_, _ = file.WriteString(path + "/" + keyName)
 	_, _ = file.WriteString("\n")
 	if iv {
 		key, err := Run("rand", "-hex", "16")

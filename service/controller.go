@@ -111,6 +111,7 @@ func UploadPost(vertion string) gin.HandlerFunc {
 func TransferPost(version string) gin.HandlerFunc {
 
 	src := config.Upload + "/"
+	dst := config.Transfer + "/"
 	return func(ctx *gin.Context) {
 		b, err := openssl.HexKey()
 		if err != nil {
@@ -132,7 +133,7 @@ func TransferPost(version string) gin.HandlerFunc {
 
 		stream := NewStreamer(string(b), id)
 		stream.SetURI(url)
-		stream.SetDst(config.Transfer + "/")
+		stream.SetDst(dst)
 		stream.SetSrc(src)
 		client.Set(id, StatusQueuing, 0)
 		queue.Push(stream)

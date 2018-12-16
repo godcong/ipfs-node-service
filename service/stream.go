@@ -74,19 +74,20 @@ func (s *StreamInfo) SetURI(uri string) {
 // KeyInfoFile ...
 func (s *StreamInfo) KeyFile() string {
 	var err error
-	err = os.Mkdir(s.dst+s.fileName, os.ModePerm)
+	dst := s.dst + s.fileName
+	err = os.Mkdir(dst, os.ModePerm)
 	if err != nil {
 		log.Println(err)
 		return ""
 	}
 
-	err = openssl.KeyFile(s.dst, s.fileName, s.key, s.uri, true)
+	err = openssl.KeyFile(dst, config.KeyFile, s.key, config.KeyInfoFile, s.uri, true)
 	if err != nil {
 		log.Println(err)
 		return ""
 	}
 
-	return s.dst + s.fileName + "/KeyInfoFile"
+	return dst + "/" + config.KeyInfoFile
 }
 
 // StreamQueue ...
