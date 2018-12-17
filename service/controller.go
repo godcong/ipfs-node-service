@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/godcong/go-ffmpeg/ipns"
 	"github.com/godcong/go-ffmpeg/openssl"
 	"github.com/godcong/go-ffmpeg/util"
 	"io"
@@ -322,29 +323,45 @@ func InfoGet(version string) gin.HandlerFunc {
 * @apiUse Failed
  */
 func CommitPost(ver string) gin.HandlerFunc {
+
 	return func(ctx *gin.Context) {
+		var err error
+		dir := ""
 		id := ctx.PostForm("id")
-		ipns := ctx.PostForm("ipns")
-		if ipns == "" {
-			dir, e := ipfs.AddDir(config.Transfer + "/" + id + "/")
-			log.Println(dir, e)
-			file, err := os.OpenFile(config.Upload+"/"+id, os.O_RDONLY, os.ModePerm)
+		key := ctx.PostForm("ipns")
+
+		dir, err = ipfs.AddDir(config.Transfer + "/" + id + "/")
+
+		if err != nil {
+			resultFail(ctx, err.Error())
+			return
+		}
+		log.Println(dir, err)
+		if dir == "" {
+			resultFail(ctx, "no ipns id result")
+			return
+		}
+
+		if key == "" {
+			key, err = ipns.KeyGen(id)
+			log.Println(key, err)
 			if err != nil {
-				log.Println(err)
-				return
+				//resultFail(ctx, key)
+				//return
 			}
-			add, err := ipfs.Add(file)
-			if err != nil {
-				log.Println(err)
-			}
-			log.Println(add, err)
-			resultOK(ctx)
+		}
+		detail, err := ipfs.PublishWithDetails(dir, "z2JAD9Gi1czFoVP43kyfsxI5ZDVgwVMuJL3xxFRN8hxvUzjC3YYnCnfqzb7YnnHA", 0, 0, false)
+		log.Println(detail)
+		if err != nil {
+			resultFail(ctx, err.Error())
 			return
 		}
 
 		resultOK(ctx, gin.H{
 			"id":   id,
-			"ipns": ipns,
+			"key":  config.Transfer + "/" + id + "/" + config.KeyFile,
+			"ipfs": detail,
+			"ipns": dir,
 		})
 	}
 }
