@@ -62,13 +62,13 @@ func CopyToMp4(src string, out string) (string, error) {
 	return Run("-i", src, "-y", "-acodec", "copy", "-vcodec", "copy", out)
 }
 
-// TransToTS ...
+// TransToTS 废弃
 func TransToTS(src string, out string) (string, error) {
 	//cmd:ffmpeg -i INPUT.mp4 -codec copy -bsf:v h264_mp4toannexb OUTPUT.ts
 	return Run("-i", src, "-y", "-codec", "copy", "-bsf:v", "h264_mp4toannexb", out)
 }
 
-// SplitToTS ...
+// SplitToTS 废弃
 func SplitToTS(src string, out string) (string, error) {
 	//cmd:ffmpeg -i ./tmp/ELTbmjn2IZY6EtLFCibQPL4pIyfMvN8jQS67ntPlFaFo3NUkM3PpCFBgMivKk67W_out.mp4 -f segment -segment_time 10 -segment_format mpegts -segment_list ./split/list_file.m3u8 -c copy -bsf:v h264_mp4toannexb ./split/output_file-%d.ts
 	return Run("-i", src,
@@ -79,7 +79,7 @@ func SplitToTS(src string, out string) (string, error) {
 
 }
 
-// SplitWithKey2 ...
+// SplitWithKey ...
 func SplitWithKey(src string, out string, key string, media, m3u8 string) (string, error) {
 	//ffmpeg -i input.mp4 -c copy -bsf:v h264_mp4toannexb -hls_time 10 -hls_key_info_file key_info playlist.m3u8
 	return Run("-i", src,
@@ -112,7 +112,7 @@ func QuickSplitWithKey(src string, out string, key string, media, m3u8 string) (
 		out+"/"+m3u8)
 }
 
-// SplitWithKey ...
+// SplitWithKey1 废弃
 func SplitWithKey1(src string, out string, keyPath string) (string, error) {
 	//ffmpeg -i input.mp4 -c copy -bsf:v h264_mp4toannexb -hls_time 10 -hls_key_info_file key_info playlist.m3u8
 	return Run("-i", src,

@@ -29,13 +29,13 @@ func Router(engine *gin.Engine) error {
 
 	//上传文件
 	group.POST("/upload", UploadPost(ver))
+	//获取文件
 	group.POST("/rd", RemoteDownloadPost(ver))
 	//视频转换
 	group.POST("/transfer", TransferPost(ver))
-
 	//服务器视频列表
 	group.GET("/list", ListGet(ver))
-
+	group.POST("/commit", CommitPost(ver))
 	//查看状态
 	group.GET("/info/:id", InfoGet(ver))
 

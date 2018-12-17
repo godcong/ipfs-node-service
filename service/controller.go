@@ -284,6 +284,76 @@ func InfoGet(version string) gin.HandlerFunc {
 	}
 }
 
+// CommitPost 提交到ipfs
+/**
+*
+* @api {get} /v1/commit 提交到ipfs
+* @apiName info
+* @apiGroup Info
+* @apiVersion  0.0.1
+*
+* @apiParam  {String} id 文件名ID
+* @apiParam  {String} [ipnfs] ipns address
+*
+* @apiUse Success
+* @apiSuccess  {string} code 返回状态码：【异常错误：-1】，【正常：0】，【文件不存在：1】,【处理中：2】，【文件异常：3】，【队列中：4】，
+* @apiSuccess  {json} [detail] 正常则返回detail
+* @apiSuccess (detail) {string} uri 视频存放的相对地址
+* @apiSuccess (detail) {string} m3u8 m3u8存放的文件名
+* @apiSuccess (detail) {string} key key存放的文件名
+* @apiSuccess (detail) {string} keyInfo keyInfo存放的文件名
+*
+* @apiSampleRequest /v1/info/:id
+* @apiParamExample  {string} Request-Example:
+* 	http://localhost:8080/v1/info/9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm
+*
+* @apiSuccessExample {json} Success-Response OK:
+* {
+*       "code":0,
+*       "msg":"ok",
+*       "detail":{
+*			"uri":"transfer/xxx",
+*			"m3u8":"media.m3u8",
+*			"key":"key"
+*			"keyInfo":"KeyInfo",
+*		}
+*
+* }
+* @apiSuccessExample {json} Success-Response NoData:
+* {
+*       "code":1,
+*       "msg":"data not found",
+* }
+* @apiSuccessExample {json} Success-Response Transferring:
+* {
+*       "code":2,
+*       "msg":"transferring",
+* }
+* @apiSuccessExample {json} Success-Response FileWrong:
+* {
+*       "code":3,
+*       "msg":"wrong file",
+* }
+* @apiUse Failed
+ */
+func CommitPost(s string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.PostForm("id")
+		ipns := ctx.PostForm("ipns")
+		if ipns == "" {
+			dir, e := ipfs.AddDir(config.Transfer + "/" + id)
+			log.Println(dir, e)
+			resultOK(ctx)
+			return
+		}
+
+		resultOK(ctx, gin.H{
+			"id":   id,
+			"ipns": ipns,
+		})
+	}
+}
+
 // ListGet 获取所有视频列表
 /**
 *
