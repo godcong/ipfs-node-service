@@ -117,7 +117,7 @@ func Number32(i int) string {
 	return fmt.Sprintf("%032x", i)
 }
 
-// KeyInfoFile ...
+// KeyFile ...
 func KeyFile(path, keyName, key, keyInfo, uri string, iv bool) error {
 	var err error
 
@@ -126,7 +126,7 @@ func KeyFile(path, keyName, key, keyInfo, uri string, iv bool) error {
 		return err
 	}
 
-	file, err := os.OpenFile(path+keyInfo, os.O_RDWR|os.O_CREATE, os.ModePerm)
+	file, err := os.OpenFile(path+"/"+keyInfo, os.O_RDWR|os.O_CREATE, os.ModePerm)
 	if err != nil {
 		return err
 	}
