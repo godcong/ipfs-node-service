@@ -16,6 +16,9 @@ import (
 // StatusUploaded 已上传
 const StatusUploaded = "uploaded"
 
+// StatusDownloaded 已下载
+const StatusDownloaded = "downloaded"
+
 // StatusQueuing 队列中
 const StatusQueuing = "queuing"
 
@@ -42,7 +45,7 @@ const StatusFinished = "finished"
  *       "msg":"error message",
  *     }
  */
-const _ = "apiDefine"
+const _ = "apiDefineNoDeleteWithAutoFormat"
 
 //UploadPost 文件上传接口
 /**
@@ -80,6 +83,58 @@ func UploadPost(vertion string) gin.HandlerFunc {
 		}
 
 		client.Set(fileName, StatusUploaded, 0)
+		log.Println(fileName)
+		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"id": fileName}))
+		return
+	}
+}
+
+//RemoteDownloadPost 获取文件接口
+/**
+* @api {post} /v1/rd 获取文件接口
+* @apiName remoteDownload
+* @apiGroup RemoteDownload
+* @apiVersion  0.0.1
+*
+* @apiUse Success
+* @apiParam  {string} url 媒体文件URL地址
+* @apiParamExample  {Binary} Request-Example:
+*{
+*	"url":"https://localhost:8080/upload/xxx",
+*}
+* @apiSuccess (detail) {string} id 文件名ID
+* @apiSuccessExample {json} Success-Response:
+*     {
+*       "code":0,
+*       "msg":"ok",
+*       "detail":{
+*			"id":"9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm"
+*		 }
+*     }
+* @apiUse Failed
+* @apiSampleRequest /v1/rd
+ */
+func RemoteDownloadPost(vertion string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		url := ctx.PostForm("url")
+		if url == "" {
+			resultFail(ctx, "null url address")
+		}
+
+		resp, err := http.Get(url)
+		if err != nil {
+			resultFail(ctx, err.Error())
+			return
+		}
+
+		src := "./upload/"
+		fileName, err := writeTo(src, resp.Body)
+		if err != nil {
+			resultFail(ctx, err.Error())
+			return
+		}
+
+		client.Set(fileName, StatusDownloaded, 0)
 		log.Println(fileName)
 		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"id": fileName}))
 		return

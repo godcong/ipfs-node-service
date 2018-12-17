@@ -4,7 +4,7 @@
 >
         openssl
         ffmpeg
-二. 生成apiDoc二进制文件(不生成doc文档跳过次步骤)：
+二. 生成apiDoc二进制文件(不需要重新生成doc文档跳过次步骤)：
 >    
     工具二（所有执行文件必须添加到系统变量PATH下）：
         apidocjs:              
@@ -14,8 +14,9 @@
                 
     运行：
         go generate
-三. 运行（go version > 1.11）
+三. 运行（go version > 1.11，使用Redis db 1）
 > 
+    
     go run
 
 PS: 

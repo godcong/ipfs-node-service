@@ -17,8 +17,9 @@ func Router(engine *gin.Engine) error {
 	}
 	engine.StaticFS("/doc", st)
 	engine.Static("/transfer", "./transfer")
+	engine.Static("/upload", "./upload")
 
-	ver := "/v1"
+	ver := "v1"
 	group := engine.Group(ver)
 	group.Use()
 
@@ -28,7 +29,7 @@ func Router(engine *gin.Engine) error {
 
 	//上传文件
 	group.POST("/upload", UploadPost(ver))
-
+	group.POST("/rd", RemoteDownloadPost(ver))
 	//视频转换
 	group.POST("/transfer", TransferPost(ver))
 
