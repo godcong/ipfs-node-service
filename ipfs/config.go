@@ -1,11 +1,6 @@
-package ipns
+package ipfs
 
-import (
-	"github.com/json-iterator/go"
-	"net/http"
-	"net/url"
-	"strings"
-)
+import "strings"
 
 type Host interface {
 	Addr() string
@@ -78,25 +73,6 @@ func (a *api) Key() *Key {
 		api:  a,
 		self: "key",
 	}
-}
-
-func (k *Key) Gen(name, typ, size string) (map[string]string, error) {
-	v := url.Values{
-		"arg":  []string{name},
-		"type": []string{typ},
-		"size": []string{size},
-	}
-	resp, err := http.Get(URL(k, "gen") + "?" + v.Encode())
-	if err != nil {
-		return nil, err
-	}
-	m := make(map[string]string)
-	dec := jsoniter.NewDecoder(resp.Body)
-	err = dec.Decode(&m)
-	if err != nil {
-		return nil, err
-	}
-	return m, nil
 }
 
 func URL(h Host, act string) string {

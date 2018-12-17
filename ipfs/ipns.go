@@ -1,4 +1,4 @@
-package ipns
+package ipfs
 
 import (
 	"os"

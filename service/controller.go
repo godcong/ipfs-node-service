@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/godcong/go-ffmpeg/ipns"
+	"github.com/godcong/go-ffmpeg/ipfs"
 	"github.com/godcong/go-ffmpeg/openssl"
 	"github.com/godcong/go-ffmpeg/util"
 	"io"
@@ -294,7 +294,7 @@ func InfoGet(version string) gin.HandlerFunc {
 * @apiVersion  0.0.1
 *
 * @apiParam  {String} id 文件名ID
-* @apiParam  {String} [ipnfs] ipns address
+* @apiParam  {String} [ipnfs] ipfs address
 *
 * @apiUse Success
 * @apiSuccess  {string} code 返回状态码：【异常错误：-1】，【正常：0】，【文件不存在：1】,【处理中：2】，【文件异常：3】，【队列中：4】，
@@ -328,7 +328,7 @@ func CommitPost(ver string) gin.HandlerFunc {
 		var err error
 		dir := ""
 		id := ctx.PostForm("id")
-		key := ctx.PostForm("ipns")
+		key := ctx.PostForm("ipfs")
 
 		dir, err = ipfs.AddDir(config.Transfer + "/" + id + "/")
 
@@ -338,12 +338,12 @@ func CommitPost(ver string) gin.HandlerFunc {
 		}
 		log.Println(dir, err)
 		if dir == "" {
-			resultFail(ctx, "no ipns id result")
+			resultFail(ctx, "no ipfs id result")
 			return
 		}
 
 		if key == "" {
-			key, err = ipns.KeyGen(id)
+			key, err = ipfs.KeyGen(id)
 			log.Println(key, err)
 			if err != nil {
 				//resultFail(ctx, key)
@@ -361,7 +361,7 @@ func CommitPost(ver string) gin.HandlerFunc {
 			"id":   id,
 			"key":  config.Transfer + "/" + id + "/" + config.KeyFile,
 			"ipfs": detail,
-			"ipns": dir,
+			"ipfs": dir,
 		})
 	}
 }
