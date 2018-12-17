@@ -16,11 +16,11 @@ func Router(engine *gin.Engine) error {
 		log.Fatal(err)
 	}
 	engine.StaticFS("/doc", st)
+	engine.Static("/transfer", "./transfer")
 
 	ver := "/v1"
 	group := engine.Group(ver)
 	group.Use()
-	group.Static("/transfer", "./transfer")
 
 	group.Any("/", func(ctx *gin.Context) {
 		ctx.String(http.StatusOK, "%s", "hello world")
@@ -31,11 +31,6 @@ func Router(engine *gin.Engine) error {
 
 	//视频转换
 	group.POST("/transfer", TransferPost(ver))
-
-	//下载并转换
-	group.POST("/downloadTransform", func(ctx *gin.Context) {
-
-	})
 
 	//服务器视频列表
 	group.GET("/list", ListGet(ver))

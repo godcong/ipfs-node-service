@@ -54,7 +54,9 @@ const _ = "apiDefine"
 * @apiUse Success
 * @apiParam  {Binary} binary 媒体文件二进制文件
 * @apiParamExample  {Binary} Request-Example:
+*
 *    upload a binary file from local
+*
 * @apiSuccess (detail) {string} id 文件名ID
 * @apiSuccessExample {json} Success-Response:
 *     {
@@ -93,10 +95,10 @@ func UploadPost(vertion string) gin.HandlerFunc {
 *
 * @apiUse Success
 * @apiParam  {string} id 文件名ID
-* @apiParam  (string) url key存放url地址
-* @apiParam  (string) m3u8 m3u8文件名（暂不支持）
-* @apiParam  (string) key key文件名（暂不支持）
-* @apiParam  (string) keyInfo keyInfo文件名（暂不支持）
+* @apiParam  {string} [url] key存放url地址
+* @apiParam  {string} [m3u8] m3u8文件名（暂不支持）
+* @apiParam  {string} [key] key文件名（暂不支持）
+* @apiParam  {string} [keyInfo] keyInfo文件名（暂不支持）
 * @apiParamExample  {string} Request-Example:
 * {
 *     "id":"9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm",
@@ -207,13 +209,13 @@ func InfoGet(version string) gin.HandlerFunc {
 			ctx.JSON(http.StatusOK, JSON(1, "data not found"))
 			return
 		}
-		if val != StatusTransferring {
+		if val == StatusTransferring {
 			ctx.JSON(http.StatusOK, JSON(2, val))
 			return
 		} else if val == StatusFileWrong {
 			ctx.JSON(http.StatusOK, JSON(3, val))
 			return
-		} else if val != StatusQueuing {
+		} else if val == StatusQueuing {
 			ctx.JSON(http.StatusOK, JSON(4, val))
 			return
 		}

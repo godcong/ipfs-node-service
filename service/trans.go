@@ -42,6 +42,13 @@ func ToM3U8WithKey(id string) error {
 	output := config.Transfer + "/" + id
 	source := config.Upload + "/" + id
 	probe := ffprobe.New(source)
+
+	err := client.Set(id, StatusTransferring, 0).Err()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
 	procFunc := ffmpeg.SplitWithKey
 	if probe.Run().IsH264AndAAC() {
 		procFunc = ffmpeg.QuickSplitWithKey
@@ -52,10 +59,6 @@ func ToM3U8WithKey(id string) error {
 		log.Println(string(b), err)
 		return err
 	}
-	err = client.Set(id, StatusTransferring, 0).Err()
-	if err != nil {
-		log.Println(string(b), err)
-		return err
-	}
+
 	return nil
 }
