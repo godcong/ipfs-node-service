@@ -13,13 +13,20 @@ import (
 	"strconv"
 )
 
-const (
-	StatusUploaded     = "uploaded"
-	StatusQueuing      = "queuing"
-	StatusTransferring = "transferring"
-	StatusFileWrong    = "wrong file"
-	StatusFinished     = "finished"
-)
+// StatusUploaded 已上传
+const StatusUploaded = "uploaded"
+
+// StatusQueuing 队列中
+const StatusQueuing = "queuing"
+
+// StatusTransferring 转换中
+const StatusTransferring = "transferring"
+
+// StatusFileWrong 文件错误
+const StatusFileWrong = "wrong file"
+
+// StatusFinished 完成
+const StatusFinished = "finished"
 
 /**
  * @apiDefine Success
@@ -141,7 +148,7 @@ func TransferPost(version string) gin.HandlerFunc {
 	}
 }
 
-// StatusGet 获取视频转换状态
+// InfoGet 获取视频转换状态
 /**
 *
 * @api {get} /v1/info/:id 获取视频转换状态
@@ -152,7 +159,7 @@ func TransferPost(version string) gin.HandlerFunc {
 * @apiParam  {String} id 文件名ID
 *
 * @apiUse Success
-* @apiSuccess  {string} code 返回状态码：【正常：0】，【ID不存在：1】,【处理中：2】，【文件异常：3】，
+* @apiSuccess  {string} code 返回状态码：【异常错误：-1】，【正常：0】，【文件不存在：1】,【处理中：2】，【文件异常：3】，【队列中：4】，
 * @apiSuccess  {json} [detail] 正常则返回detail
 * @apiSuccess (detail) {string} uri 视频存放的相对地址
 * @apiSuccess (detail) {string} m3u8 m3u8存放的文件名
@@ -206,6 +213,9 @@ func InfoGet(version string) gin.HandlerFunc {
 		} else if val == StatusFileWrong {
 			ctx.JSON(http.StatusOK, JSON(3, val))
 			return
+		} else if val != StatusQueuing {
+			ctx.JSON(http.StatusOK, JSON(4, val))
+			return
 		}
 		resultOK(ctx, gin.H{
 			"uri":     config.Transfer + "/" + id,
@@ -217,7 +227,7 @@ func InfoGet(version string) gin.HandlerFunc {
 	}
 }
 
-// list 获取所有视频列表
+// ListGet 获取所有视频列表
 /**
 *
 * @api {get} /v1/list 获取所有视频列表
@@ -260,6 +270,7 @@ func ListGet(ver string) gin.HandlerFunc {
 	}
 }
 
+// DirList ...
 type DirList struct {
 	Start int
 	End   int

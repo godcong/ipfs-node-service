@@ -51,7 +51,7 @@ func (s *StreamInfo) SetFileName(fileName string) {
 	s.fileName = fileName
 }
 
-// KeyFile ...
+// Key ...
 func (s *StreamInfo) Key() string {
 	return s.key
 }
@@ -71,7 +71,7 @@ func (s *StreamInfo) SetURI(uri string) {
 	s.uri = uri
 }
 
-// KeyInfoFile ...
+// KeyFile ...
 func (s *StreamInfo) KeyFile() string {
 	var err error
 	dst := s.dst + s.fileName

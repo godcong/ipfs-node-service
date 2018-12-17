@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// Config ...
 type Config struct {
 	URL         string //default url
 	Upload      string //上传路径
@@ -16,6 +17,7 @@ type Config struct {
 
 var config = InitConfig()
 
+// InitConfig ...
 func InitConfig() *Config {
 	//	TODO:load
 	return &Config{
@@ -28,6 +30,7 @@ func InitConfig() *Config {
 	}
 }
 
+// Initialize ...
 func Initialize(cfg *Config) error {
 	if !IsExists(cfg.Upload) {
 		err := os.Mkdir(cfg.Upload, os.ModePerm)
@@ -45,6 +48,7 @@ func Initialize(cfg *Config) error {
 	return nil
 }
 
+// IsExists ...
 func IsExists(name string) bool {
 	if _, err := os.Stat(name); err != nil {
 		if os.IsNotExist(err) {
