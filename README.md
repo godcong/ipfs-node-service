@@ -1,11 +1,10 @@
 # go-ffmpeg
 
-1. 使用工具：
-
+一. 使用工具：
+>
         openssl
         ffmpeg
-
-2. 生成apiDoc二进制文件(不生成doc文档跳过次步骤)：
+二. 生成apiDoc二进制文件(不生成doc文档跳过次步骤)：
 >    
     配置：
         apidocjs:              
@@ -15,10 +14,13 @@
                 
     运行：
         go generate
-
-3. 运行
+三. 运行
+> 
     go run
 
 PS: 
-    api接口文档地址：http://localhost:8080/doc
-    转换后视频文件地址：http://localhost:8080/transfer/:id
+>
+    api接口文档地址：
+        http://localhost:8080/doc
+    转换后视频文件地址：
+        http://localhost:8080/transfer/:id
