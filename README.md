@@ -1,12 +1,12 @@
 # go-ffmpeg
 
-一. 使用工具：
+一. 工具一（所有执行文件必须添加到系统变量PATH下）：
 >
         openssl
         ffmpeg
 二. 生成apiDoc二进制文件(不生成doc文档跳过次步骤)：
 >    
-    配置：
+    工具二（所有执行文件必须添加到系统变量PATH下）：
         apidocjs:              
                 npm install apidoc -g    
         statik:
@@ -14,7 +14,7 @@
                 
     运行：
         go generate
-三. 运行
+三. 运行（go version > 1.11）
 > 
     go run
 
