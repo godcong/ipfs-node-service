@@ -287,9 +287,9 @@ func InfoGet(version string) gin.HandlerFunc {
 // CommitPost 提交到ipfs
 /**
 *
-* @api {get} /v1/commit 提交到ipfs
-* @apiName info
-* @apiGroup Info
+* @api {post} /v1/commit 提交到ipfs
+* @apiName commit
+* @apiGroup Commit
 * @apiVersion  0.0.1
 *
 * @apiParam  {String} id 文件名ID
@@ -303,9 +303,9 @@ func InfoGet(version string) gin.HandlerFunc {
 * @apiSuccess (detail) {string} key key存放的文件名
 * @apiSuccess (detail) {string} keyInfo keyInfo存放的文件名
 *
-* @apiSampleRequest /v1/info/:id
+* @apiSampleRequest /v1/commit
 * @apiParamExample  {string} Request-Example:
-* 	http://localhost:8080/v1/info/9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm
+* 	http://localhost:8080/v1/commit
 *
 * @apiSuccessExample {json} Success-Response OK:
 * {
@@ -319,30 +319,25 @@ func InfoGet(version string) gin.HandlerFunc {
 *		}
 *
 * }
-* @apiSuccessExample {json} Success-Response NoData:
-* {
-*       "code":1,
-*       "msg":"data not found",
-* }
-* @apiSuccessExample {json} Success-Response Transferring:
-* {
-*       "code":2,
-*       "msg":"transferring",
-* }
-* @apiSuccessExample {json} Success-Response FileWrong:
-* {
-*       "code":3,
-*       "msg":"wrong file",
-* }
 * @apiUse Failed
  */
-func CommitPost(s string) gin.HandlerFunc {
+func CommitPost(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.PostForm("id")
 		ipns := ctx.PostForm("ipns")
 		if ipns == "" {
-			dir, e := ipfs.AddDir(config.Transfer + "/" + id)
+			dir, e := ipfs.AddDir(config.Transfer + "/" + id + "/")
 			log.Println(dir, e)
+			file, err := os.OpenFile(config.Upload+"/"+id, os.O_RDONLY, os.ModePerm)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			add, err := ipfs.Add(file)
+			if err != nil {
+				log.Println(err)
+			}
+			log.Println(add, err)
 			resultOK(ctx)
 			return
 		}

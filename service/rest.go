@@ -27,13 +27,10 @@ func NewRestServer(addr string) *RestServer {
 
 // Start ...
 func (s *RestServer) Start() {
-	srv := &http.Server{
-		Addr:    ":8080",
-		Handler: s.Engine,
-	}
+
 	go func() {
-		log.Printf("[GIN-debug] Listening and serving HTTP on %s\n", srv.Addr)
-		if err := srv.ListenAndServe(); err != nil {
+		log.Printf("[GIN-debug] Listening and serving HTTP on %s\n", s.Server.Addr)
+		if err := s.Server.ListenAndServe(); err != nil {
 			log.Printf("Httpserver: ListenAndServe() error: %s", err)
 		}
 	}()
