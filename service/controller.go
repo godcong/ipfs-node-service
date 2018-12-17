@@ -57,7 +57,7 @@ const _ = "apiDefineNoDeleteWithAutoFormat"
 *
 * @apiUse Success
 * @apiParam  {Binary} binary 媒体文件二进制文件
-* @apiParamExample  {Binary} Request-Example:
+* @apiParamExample  {Binary} Get-Example:
 *
 *    upload a binary file from local
 *
@@ -99,7 +99,7 @@ func UploadPost(vertion string) gin.HandlerFunc {
 *
 * @apiUse Success
 * @apiParam  {string} url 媒体文件URL地址
-* @apiParamExample  {Binary} Request-Example:
+* @apiParamExample  {Binary} Get-Example:
 *{
 *	"url":"https://localhost:8080/upload/xxx",
 *}
@@ -155,7 +155,7 @@ func RemoteDownloadPost(vertion string) gin.HandlerFunc {
 * @apiParam  {string} [m3u8] m3u8文件名（暂不支持）
 * @apiParam  {string} [key] key文件名（暂不支持）
 * @apiParam  {string} [keyInfo] keyInfo文件名（暂不支持）
-* @apiParamExample  {string} Request-Example:
+* @apiParamExample  {string} Get-Example:
 * {
 *     "id":"9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm",
 *     "url":"http://localhost:8080/transfer/xxx/key"
@@ -225,7 +225,7 @@ func TransferPost(version string) gin.HandlerFunc {
 * @apiSuccess (detail) {string} keyInfo keyInfo存放的文件名
 *
 * @apiSampleRequest /v1/info/:id
-* @apiParamExample  {string} Request-Example:
+* @apiParamExample  {string} Get-Example:
 * 	http://localhost:8080/v1/info/9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm
 *
 * @apiSuccessExample {json} Success-Response OK:
@@ -305,7 +305,7 @@ func InfoGet(version string) gin.HandlerFunc {
 * @apiSuccess (detail) {string} keyInfo keyInfo存放的文件名
 *
 * @apiSampleRequest /v1/commit
-* @apiParamExample  {string} Request-Example:
+* @apiParamExample  {string} Get-Example:
 * 	http://localhost:8080/v1/commit
 *
 * @apiSuccessExample {json} Success-Response OK:
@@ -381,7 +381,7 @@ func CommitPost(ver string) gin.HandlerFunc {
 * @apiSuccess  {string} code 返回状态码：【正常：0】，【处理中：1】
 *
 * @apiSampleRequest /v1/list
-* @apiParamExample  {string} Request-Example:
+* @apiParamExample  {string} Get-Example:
 * 	http://localhost:8080/v1/list
 *
 * @apiSuccessExample {json} Success-Response OK:

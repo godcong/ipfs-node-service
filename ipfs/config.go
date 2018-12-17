@@ -1,6 +1,11 @@
 package ipfs
 
-import "strings"
+import (
+	"github.com/json-iterator/go"
+	"net/http"
+	"net/url"
+	"strings"
+)
 
 type Host interface {
 	Addr() string
@@ -43,21 +48,8 @@ func (a *api) SetPrefix(prefix string) {
 	a.prefix = prefix
 }
 
-type Key struct {
-	*api
-	self string
-}
-
-func (k *Key) Self() string {
-	return k.self
-}
-
-func (k *Key) SetSelf(self string) {
-	k.self = self
-}
-
 func newApi(config Config, prefix, version string) *api {
-	return &api{Config: config, prefix: prefix}
+	return &api{Config: config, prefix: prefix, version: version}
 }
 
 func NewConfig(addr string) *Config {
@@ -71,10 +63,31 @@ func (c Config) Version0() *api {
 func (a *api) Key() *Key {
 	return &Key{
 		api:  a,
-		self: "key",
+		Self: "key",
+	}
+}
+
+func (a *api) Name() *Name {
+	return &Name{
+		api:  a,
+		Self: "name",
 	}
 }
 
 func URL(h Host, act string) string {
 	return strings.Join([]string{h.Addr(), h.Prefix(), h.Version(), h.Self(), act}, "/")
+}
+
+func Get(host string, values url.Values) (map[string]string, error) {
+	resp, err := http.Get(host + "?" + values.Encode())
+	if err != nil {
+		return nil, err
+	}
+	m := make(map[string]string)
+	dec := jsoniter.NewDecoder(resp.Body)
+	err = dec.Decode(&m)
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
 }
