@@ -2,22 +2,33 @@ package ipfs
 
 import (
 	"net/url"
+	"strconv"
 )
 
+// Key ...
 type Key struct {
 	*api
 }
 
+// Self ...
 func (*Key) Self() string {
 	return "key"
 }
 
-func (k *Key) Gen(name, typ, size string) (map[string]string, error) {
+// Gen ...
+func (k *Key) Gen(name, typ string, size int) (map[string]string, error) {
 	v := url.Values{}
 	v.Set("arg", name)
+	if typ == "" {
+		typ = "rsa"
+	}
 	v.Set("type", typ)
-	v.Set("size", size)
+	inSize := "2048"
+	if size != 0 {
+		inSize = strconv.Itoa(size)
+	}
+	v.Set("size", inSize)
 
 	host := URL(k, "gen")
-	return Get(host, v)
+	return get(host, v)
 }
