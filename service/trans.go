@@ -43,7 +43,7 @@ func ToM3U8WithKey(id string) error {
 	source := config.Upload + "/" + id
 	probe := ffprobe.New(source)
 
-	err := client.Set(id, StatusTransferring, 0).Err()
+	err := rdsQueue.Set(id, StatusTransferring, 0).Err()
 	if err != nil {
 		log.Println(err)
 		return err

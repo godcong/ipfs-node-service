@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/godcong/go-ffmpeg/ipfs"
 	"github.com/godcong/go-ffmpeg/openssl"
 	"github.com/godcong/go-ffmpeg/util"
 	"io"
@@ -83,7 +82,7 @@ func UploadPost(vertion string) gin.HandlerFunc {
 			return
 		}
 
-		client.Set(fileName, StatusUploaded, 0)
+		rdsQueue.Set(fileName, StatusUploaded, 0)
 		log.Println(fileName)
 		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"id": fileName}))
 		return
@@ -135,7 +134,7 @@ func RemoteDownloadPost(vertion string) gin.HandlerFunc {
 			return
 		}
 
-		client.Set(fileName, StatusDownloaded, 0)
+		rdsQueue.Set(fileName, StatusDownloaded, 0)
 		log.Println(fileName)
 		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"id": fileName}))
 		return
@@ -200,7 +199,7 @@ func TransferPost(version string) gin.HandlerFunc {
 		stream.SetURI(url)
 		stream.SetDst(dst)
 		stream.SetSrc(src)
-		client.Set(id, StatusQueuing, 0)
+		rdsQueue.Set(id, StatusQueuing, 0)
 		queue.Push(stream)
 		resultOK(ctx, gin.H{"id": id})
 	}
@@ -260,7 +259,7 @@ func TransferPost(version string) gin.HandlerFunc {
 func InfoGet(version string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
-		val, err := client.Get(id).Result()
+		val, err := rdsQueue.Get(id).Result()
 		if err != nil {
 			ctx.JSON(http.StatusOK, JSON(1, "data not found"))
 			return
@@ -326,39 +325,52 @@ func CommitPost(ver string) gin.HandlerFunc {
 
 	return func(ctx *gin.Context) {
 		var err error
-		dir := map[string]string{}
+		ipfsInfo := map[string]string{}
 		id := ctx.PostForm("id")
-		key := ctx.PostForm("ipfs")
+		ipns := ctx.PostForm("ipns")
 
-		dir, err = api.AddDir(config.Transfer + "/" + id + "/")
+		//dir, err = api.AddDir(config.Transfer + "/" + id + "/")
+		ipfsInfo, err = api.AddDir(config.Transfer + "/" + id + "/")
 		if err != nil {
 			resultFail(ctx, err.Error())
 			return
 		}
-		log.Println(dir, err)
 
-		if key == "" {
-			key, err = ipfs.KeyGen(id)
-			log.Println(key, err)
+		keyID := ""
+
+		if ipns != "" {
+			keyID, err = rdsIPNS.Get(ipns).Result()
+		}
+		log.Println(keyID, err)
+		if ipns == "" || err != nil {
+			keyID = id + "_" + util.CurrentTimeStampString()
+			m, err := api.Key().Gen(keyID, "rsa", 2048)
 			if err != nil {
-				//resultFail(ctx, key)
-				//return
+				resultFail(ctx, err.Error())
+				return
+			}
+			ipns = m["Id"]
+			err = rdsIPNS.Set(ipns, keyID, 0).Err()
+			if err != nil {
+				resultFail(ctx, err.Error())
+				return
 			}
 		}
-		//api.Name().PublishWithKey()
 
-		//detail, err := ipfs.PublishWithDetails(dir, "z2JAD9Gi1czFoVP43kyfsxI5ZDVgwVMuJL3xxFRN8hxvUzjC3YYnCnfqzb7YnnHA", 0, 0, false)
-		//log.Println(detail)
-		//if err != nil {
-		//	resultFail(ctx, err.Error())
-		//	return
-		//}
+		ipnsInfo, err := api.Name().PublishWithKey("/ipfs/"+ipfsInfo["Hash"], keyID)
+
+		if err != nil {
+			resultFail(ctx, err.Error())
+			return
+		}
 
 		resultOK(ctx, gin.H{
-			"id":  id,
-			"key": config.Transfer + "/" + id + "/" + config.KeyFile,
-			//"ipfs": detail,
-			"ipfs": dir,
+			"fileID":   id,
+			"key":      config.Transfer + "/" + id + "/" + config.KeyFile,
+			"ipns":     ipns,
+			"ipnsKey":  keyID,
+			"ipfsInfo": ipfsInfo,
+			"ipnsInfo": ipnsInfo,
 		})
 	}
 }
@@ -390,8 +402,8 @@ func CommitPost(ver string) gin.HandlerFunc {
  */
 func ListGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		//client.Append()
-		//client.
+		//rdsQueue.Append()
+		//rdsQueue.
 		list, err := findDir(ctx.Query("start"), ctx.Query("end"))
 		if err != nil {
 			resultFail(ctx, err.Error())

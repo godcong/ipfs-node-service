@@ -82,7 +82,7 @@ func transfer(chanints chan<- string, info *StreamInfo) {
 	_ = info.KeyFile()
 	err = ToM3U8WithKey(info.fileName)
 	if err != nil {
-		err = client.Set(info.fileName, StatusFileWrong, 0).Err()
+		err = rdsQueue.Set(info.fileName, StatusFileWrong, 0).Err()
 		if err != nil {
 			log.Println(err)
 		}
@@ -90,7 +90,7 @@ func transfer(chanints chan<- string, info *StreamInfo) {
 	}
 	log.Println("transferred:", *info)
 
-	err = client.Set(info.fileName, StatusFinished, 0).Err()
+	err = rdsQueue.Set(info.fileName, StatusFinished, 0).Err()
 	if err != nil {
 		log.Println(err)
 	}

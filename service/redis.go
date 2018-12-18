@@ -5,13 +5,15 @@ import (
 	"log"
 )
 
-var client = initClient()
+var rdsQueue = newRedisWithDB(1)
+var rdsIPNS = newRedisWithDB(2)
 
-func initClient() *redis.Client {
+// newRedisWithDB ...
+func newRedisWithDB(idx int) *redis.Client {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       1,  // use default DB
+		Password: "",  // no password set
+		DB:       idx, // use default DB
 	})
 
 	pong, err := client.Ping().Result()

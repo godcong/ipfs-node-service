@@ -1,11 +1,16 @@
 package ipfs
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"github.com/ipfs/go-ipfs-cmdkit/files"
 	"github.com/json-iterator/go"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 )
 
@@ -148,6 +153,8 @@ func get(host string, values url.Values) (map[string]string, error) {
 }
 
 func post(host string, values url.Values, body io.Reader) (map[string]string, error) {
+	//json := jsoniter.ConfigCompatibleWithStandardLibrary
+
 	req, err := http.NewRequest("POST", host+"?"+values.Encode(), body)
 	if err != nil {
 		return nil, err
@@ -158,20 +165,58 @@ func post(host string, values url.Values, body io.Reader) (map[string]string, er
 		req.Header.Set("Content-Disposition", "form-data: name=\"files\"")
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := client().Do(req)
 	if err != nil {
 		return nil, err
 	}
 
-	//contentType := resp.Header.Get("Content-Type")
-	//parts := strings.Split(contentType, ";")
-	//contentType = parts[0]
-
+	contentType := resp.Header.Get("Content-Type")
+	parts := strings.Split(contentType, ";")
+	contentType = parts[0]
 	m := make(map[string]string)
-	dec := jsoniter.NewDecoder(resp.Body)
-	err = dec.Decode(&m)
-	if err != nil {
-		return nil, err
+
+	switch {
+	case resp.StatusCode == http.StatusNotFound:
+		m["Message"] = "command not found"
+	case contentType == "text/plain":
+		out, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "ipfs-shell: warning! response read error: %s\n", err)
+		}
+		m["Message"] = string(out)
+	case contentType == "application/json":
+		body, err := ioutil.ReadAll(resp.Body)
+		dec := json.NewDecoder(bytes.NewReader(body))
+		out := map[string]string{}
+		for {
+			err = dec.Decode(&out)
+			if err != nil {
+				if err == io.EOF {
+					break
+				}
+				return nil, err
+			}
+			m = out
+		}
+
+	default:
+		_, _ = fmt.Fprintf(os.Stderr, "ipfs-shell: warning! unhandled response encoding: %s", contentType)
+		out, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "ipfs-shell: response read error: %s\n", err)
+			return nil, err
+		}
+		m["Message"] = fmt.Sprintf("unknown ipfs-shell error encoding: %q - %q", contentType, out)
 	}
+
 	return m, nil
+}
+
+func client() *http.Client {
+	return &http.Client{
+		Transport: &http.Transport{
+			Proxy:             http.ProxyFromEnvironment,
+			DisableKeepAlives: true,
+		},
+	}
 }

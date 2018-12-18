@@ -23,7 +23,7 @@ func RunMain() {
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
 	//new rest
-	serv := NewRestServer(":8060")
+	serv := NewRestServer(":8080")
 	_ = Router(serv.Engine)
 
 	//start

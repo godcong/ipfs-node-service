@@ -19,6 +19,7 @@ func (a *api) AddDir(dir string) (map[string]string, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	slf := files.NewSliceFile("", dir, []files.File{sf})
 	reader := files.NewMultiFileReader(slf, true)
 	a.SetSelf("add")
