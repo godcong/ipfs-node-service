@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.github.godcong.proto";
+option java_outer_classname = "InterPlanetaryProto";
+
+package proto;
+
+service InterPlanetary {
+    rpc Upload (UploadRequest) returns (InterPlanetaryReply) {
+    }
+    rpc RemoteDownload (RemoteDownloadRequest) returns (InterPlanetaryReply) {
+    }
+    rpc Transfer (TransferRequest) returns (InterPlanetaryReply) {
+    }
+    rpc Info (InfoRequest) returns (InterPlanetaryReply) {
+    }
+    rpc Commit (CommitRequest) returns (InterPlanetaryReply) {
+    }
+    rpc List (ListRequest) returns (InterPlanetaryReply) {
+    }
+
+}
+
+message UploadRequest {
+}
+
+message RemoteDownloadRequest {
+}
+
+message TransferRequest {
+}
+
+message InfoRequest {
+}
+
+message CommitRequest {
+}
+
+message ListRequest {
+}
+
+message InterPlanetaryReply {
+    int32 code = 1;
+    string message = 2;
+    DetailReply detail =3;
+}
+
+message DetailReply {
+    string json = 1;
+}
