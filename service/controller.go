@@ -284,24 +284,25 @@ func InfoGet(version string) gin.HandlerFunc {
 	}
 }
 
-// CommitPost 提交到ipfs
+// CommitPost 提交上传到IPFS
 /**
 *
-* @api {post} /v1/commit 提交到ipfs
+* @api {post} /v1/commit 提交上传到IPFS
 * @apiName commit
 * @apiGroup Commit
 * @apiVersion  0.0.1
 *
 * @apiParam  {String} id 文件名ID
-* @apiParam  {String} [ipnfs] ipfs address
+* @apiParam  {String} [ipns] ipns address
 *
 * @apiUse Success
 * @apiSuccess  {string} code 返回状态码：【异常错误：-1】，【正常：0】，【文件不存在：1】,【处理中：2】，【文件异常：3】，【队列中：4】，
 * @apiSuccess  {json} [detail] 正常则返回detail
-* @apiSuccess (detail) {string} uri 视频存放的相对地址
-* @apiSuccess (detail) {string} m3u8 m3u8存放的文件名
-* @apiSuccess (detail) {string} key key存放的文件名
-* @apiSuccess (detail) {string} keyInfo keyInfo存放的文件名
+* @apiSuccess (detail) {string} fileID 文件名ID（同上传，用于确认）
+* @apiSuccess (detail) {string} ipfsInfo 创建ipfs后返回的信息
+* @apiSuccess (detail) {string} ipnsInfo 创建ipns后返回的信息
+* @apiSuccess (detail) {string} ipnsKey 用户生成ipns的keyID
+* @apiSuccess (detail) {string} ipns ipns的ID
 *
 * @apiSampleRequest /v1/commit
 * @apiParamExample  {string} get-Example:
@@ -309,16 +310,25 @@ func InfoGet(version string) gin.HandlerFunc {
 *
 * @apiSuccessExample {json} Success-Response OK:
 * {
-*       "code":0,
-*       "msg":"ok",
-*       "detail":{
-*			"uri":"transfer/xxx",
-*			"m3u8":"media.m3u8",
-*			"key":"key"
-*			"keyInfo":"KeyInfo",
-*		}
 *
-* }
+*    "code": 0,
+*    "msg": "ok",
+*    "detail": {
+*		"fileID": "BNUQMiV8MJ7h017RvqpzIuUq1UD8HKZf6LD46f8nfxB1fEozDkkkvFRXZsA5HXPz",
+*		"ipfsInfo": {
+*			"Hash": "QmQYyCZkv92nYcfwmYWJ5V9QcEM95UqPbxZL9sokJPxyPB",
+*			"Name": "BNUQMiV8MJ7h017RvqpzIuUq1UD8HKZf6LD46f8nfxB1fEozDkkkvFRXZsA5HXPz",
+*			"Size": "158634569"
+*		},
+*		"ipns": "QmSrqCecQ6dqRtW9z5Az79MT141kkQxBLJHZ9ro5eRoPyW",
+*		"ipnsInfo": {
+*			"Name": "QmSrqCecQ6dqRtW9z5Az79MT141kkQxBLJHZ9ro5eRoPyW",
+*			"Value": "/ipfs/QmQYyCZkv92nYcfwmYWJ5V9QcEM95UqPbxZL9sokJPxyPB"
+*		},
+*		"ipnsKey": "BNUQMiV8MJ7h017RvqpzIuUq1UD8HKZf6LD46f8nfxB1fEozDkkkvFRXZsA5HXPz_1545124671",
+*	},
+*
+*
 * @apiUse Failed
  */
 func CommitPost(ver string) gin.HandlerFunc {
@@ -366,7 +376,6 @@ func CommitPost(ver string) gin.HandlerFunc {
 
 		resultOK(ctx, gin.H{
 			"fileID":   id,
-			"key":      config.Transfer + "/" + id + "/" + config.KeyFile,
 			"ipns":     ipns,
 			"ipnsKey":  keyID,
 			"ipfsInfo": ipfsInfo,

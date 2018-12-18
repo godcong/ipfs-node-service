@@ -187,6 +187,7 @@ func post(host string, values url.Values, body io.Reader) (map[string]string, er
 	case contentType == "application/json":
 		body, err := ioutil.ReadAll(resp.Body)
 		dec := json.NewDecoder(bytes.NewReader(body))
+		//var fileInfo []map[string]string
 		out := map[string]string{}
 		for {
 			err = dec.Decode(&out)
@@ -197,6 +198,7 @@ func post(host string, values url.Values, body io.Reader) (map[string]string, er
 				return nil, err
 			}
 			m = out
+			//fileInfo = append(fileInfo, out)
 		}
 
 	default:
