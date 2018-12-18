@@ -1,9 +1,3 @@
-# github.com/agl/ed25519 v0.0.0-20170116200512-5312a6153412
-github.com/agl/ed25519
-github.com/agl/ed25519/extra25519
-github.com/agl/ed25519/edwards25519
-# github.com/btcsuite/btcd v0.0.0-20181130015935-7d2daa5bfef2
-github.com/btcsuite/btcd/btcec
 # github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7
 github.com/gin-contrib/sse
 # github.com/gin-gonic/gin v1.3.0
@@ -20,66 +14,25 @@ github.com/go-redis/redis/internal/pool
 github.com/go-redis/redis/internal/proto
 github.com/go-redis/redis/internal/singleflight
 github.com/go-redis/redis/internal/util
-# github.com/gogo/protobuf v1.2.0
-github.com/gogo/protobuf/proto
 # github.com/golang/protobuf v1.2.0
 github.com/golang/protobuf/proto
-# github.com/gxed/hashland v0.0.0-20180221191214-d9f6b97f8db2
-github.com/gxed/hashland/keccakpg
-# github.com/ipfs/go-ipfs-api v1.3.5
-github.com/ipfs/go-ipfs-api
 # github.com/ipfs/go-ipfs-cmdkit v1.1.3
 github.com/ipfs/go-ipfs-cmdkit/files
 # github.com/json-iterator/go v1.1.5
 github.com/json-iterator/go
-# github.com/libp2p/go-flow-metrics v0.2.0
-github.com/libp2p/go-flow-metrics
-# github.com/libp2p/go-libp2p-crypto v2.0.1+incompatible
-github.com/libp2p/go-libp2p-crypto
-github.com/libp2p/go-libp2p-crypto/pb
-# github.com/libp2p/go-libp2p-metrics v2.1.7+incompatible
-github.com/libp2p/go-libp2p-metrics
-# github.com/libp2p/go-libp2p-peer v2.4.0+incompatible
-github.com/libp2p/go-libp2p-peer
-# github.com/libp2p/go-libp2p-protocol v1.0.0
-github.com/libp2p/go-libp2p-protocol
-# github.com/libp2p/go-libp2p-pubsub v0.10.2
-github.com/libp2p/go-libp2p-pubsub/pb
 # github.com/mattn/go-isatty v0.0.4
 github.com/mattn/go-isatty
-# github.com/minio/blake2b-simd v0.0.0-20160723061019-3f5f724cb5b1
-github.com/minio/blake2b-simd
-# github.com/minio/sha256-simd v0.0.0-20181005183134-51976451ce19
-github.com/minio/sha256-simd
-# github.com/mitchellh/go-homedir v1.0.0
-github.com/mitchellh/go-homedir
 # github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
 github.com/modern-go/concurrent
 # github.com/modern-go/reflect2 v1.0.1
 github.com/modern-go/reflect2
-# github.com/mr-tron/base58 v1.1.0
-github.com/mr-tron/base58/base58
-# github.com/multiformats/go-multiaddr v1.3.0
-github.com/multiformats/go-multiaddr
-# github.com/multiformats/go-multiaddr-net v1.6.3
-github.com/multiformats/go-multiaddr-net
-# github.com/multiformats/go-multihash v1.0.8
-github.com/multiformats/go-multihash
 # github.com/rakyll/statik v0.1.5
 github.com/rakyll/statik/fs
-# github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72
-github.com/spaolacci/murmur3
 # github.com/ugorji/go/codec v0.0.0-20181209151446-772ced7fd4c2
 github.com/ugorji/go/codec
-# github.com/whyrusleeping/tar-utils v0.0.0-20180509141711-8c6c8ba81d5c
-github.com/whyrusleeping/tar-utils
-# golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9
-golang.org/x/crypto/blake2s
-golang.org/x/crypto/sha3
 # golang.org/x/sys v0.0.0-20181213200352-4d1cda033e06
-golang.org/x/sys/unix
 golang.org/x/sys/windows
-golang.org/x/sys/cpu
+golang.org/x/sys/unix
 # gopkg.in/go-playground/validator.v8 v8.18.2
 gopkg.in/go-playground/validator.v8
 # gopkg.in/yaml.v2 v2.2.2
