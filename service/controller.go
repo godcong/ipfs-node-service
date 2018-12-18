@@ -57,7 +57,7 @@ const _ = "apiDefineNoDeleteWithAutoFormat"
 *
 * @apiUse Success
 * @apiParam  {Binary} binary 媒体文件二进制文件
-* @apiParamExample  {Binary} Get-Example:
+* @apiParamExample  {Binary} get-Example:
 *
 *    upload a binary file from local
 *
@@ -99,7 +99,7 @@ func UploadPost(vertion string) gin.HandlerFunc {
 *
 * @apiUse Success
 * @apiParam  {string} url 媒体文件URL地址
-* @apiParamExample  {Binary} Get-Example:
+* @apiParamExample  {Binary} get-Example:
 *{
 *	"url":"https://localhost:8080/upload/xxx",
 *}
@@ -155,7 +155,7 @@ func RemoteDownloadPost(vertion string) gin.HandlerFunc {
 * @apiParam  {string} [m3u8] m3u8文件名（暂不支持）
 * @apiParam  {string} [key] key文件名（暂不支持）
 * @apiParam  {string} [keyInfo] keyInfo文件名（暂不支持）
-* @apiParamExample  {string} Get-Example:
+* @apiParamExample  {string} get-Example:
 * {
 *     "id":"9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm",
 *     "url":"http://localhost:8080/transfer/xxx/key"
@@ -225,7 +225,7 @@ func TransferPost(version string) gin.HandlerFunc {
 * @apiSuccess (detail) {string} keyInfo keyInfo存放的文件名
 *
 * @apiSampleRequest /v1/info/:id
-* @apiParamExample  {string} Get-Example:
+* @apiParamExample  {string} get-Example:
 * 	http://localhost:8080/v1/info/9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm
 *
 * @apiSuccessExample {json} Success-Response OK:
@@ -305,7 +305,7 @@ func InfoGet(version string) gin.HandlerFunc {
 * @apiSuccess (detail) {string} keyInfo keyInfo存放的文件名
 *
 * @apiSampleRequest /v1/commit
-* @apiParamExample  {string} Get-Example:
+* @apiParamExample  {string} get-Example:
 * 	http://localhost:8080/v1/commit
 *
 * @apiSuccessExample {json} Success-Response OK:
@@ -326,21 +326,16 @@ func CommitPost(ver string) gin.HandlerFunc {
 
 	return func(ctx *gin.Context) {
 		var err error
-		dir := ""
+		dir := map[string]string{}
 		id := ctx.PostForm("id")
 		key := ctx.PostForm("ipfs")
 
-		dir, err = ipfs.AddDir(config.Transfer + "/" + id + "/")
-
+		dir, err = api.AddDir(config.Transfer + "/" + id + "/")
 		if err != nil {
 			resultFail(ctx, err.Error())
 			return
 		}
 		log.Println(dir, err)
-		if dir == "" {
-			resultFail(ctx, "no ipfs id result")
-			return
-		}
 
 		if key == "" {
 			key, err = ipfs.KeyGen(id)
@@ -350,17 +345,19 @@ func CommitPost(ver string) gin.HandlerFunc {
 				//return
 			}
 		}
-		detail, err := ipfs.PublishWithDetails(dir, "z2JAD9Gi1czFoVP43kyfsxI5ZDVgwVMuJL3xxFRN8hxvUzjC3YYnCnfqzb7YnnHA", 0, 0, false)
-		log.Println(detail)
-		if err != nil {
-			resultFail(ctx, err.Error())
-			return
-		}
+		//api.Name().PublishWithKey()
+
+		//detail, err := ipfs.PublishWithDetails(dir, "z2JAD9Gi1czFoVP43kyfsxI5ZDVgwVMuJL3xxFRN8hxvUzjC3YYnCnfqzb7YnnHA", 0, 0, false)
+		//log.Println(detail)
+		//if err != nil {
+		//	resultFail(ctx, err.Error())
+		//	return
+		//}
 
 		resultOK(ctx, gin.H{
-			"id":   id,
-			"key":  config.Transfer + "/" + id + "/" + config.KeyFile,
-			"ipfs": detail,
+			"id":  id,
+			"key": config.Transfer + "/" + id + "/" + config.KeyFile,
+			//"ipfs": detail,
 			"ipfs": dir,
 		})
 	}
@@ -381,7 +378,7 @@ func CommitPost(ver string) gin.HandlerFunc {
 * @apiSuccess  {string} code 返回状态码：【正常：0】，【处理中：1】
 *
 * @apiSampleRequest /v1/list
-* @apiParamExample  {string} Get-Example:
+* @apiParamExample  {string} get-Example:
 * 	http://localhost:8080/v1/list
 *
 * @apiSuccessExample {json} Success-Response OK:

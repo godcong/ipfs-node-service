@@ -1,7 +1,9 @@
 package ipfs
 
 import (
+	"github.com/ipfs/go-ipfs-cmdkit/files"
 	"github.com/json-iterator/go"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -20,6 +22,7 @@ type Host interface {
 type API interface {
 	Key() *Key
 	Name() *Name
+	AddDir(dir string) (map[string]string, error)
 }
 
 // Config ...
@@ -52,6 +55,17 @@ type api struct {
 	Config
 	prefix  string
 	version string
+	self    string
+}
+
+// Self ...
+func (a *api) Self() string {
+	return a.self
+}
+
+// SetSelf ...
+func (a *api) SetSelf(self string) {
+	a.self = self
 }
 
 // Version ...
@@ -111,7 +125,12 @@ func URL(h Host, act string) string {
 	if h.TLS() {
 		url = "https://"
 	}
-	return url + strings.Join([]string{h.Addr(), h.Prefix(), h.Version(), h.Self(), act}, "/")
+
+	link := []string{h.Addr(), h.Prefix(), h.Version(), h.Self()}
+	if act != "" {
+		link = append(link, act)
+	}
+	return url + strings.Join(link, "/")
 }
 
 func get(host string, values url.Values) (map[string]string, error) {
@@ -119,6 +138,35 @@ func get(host string, values url.Values) (map[string]string, error) {
 	if err != nil {
 		return nil, err
 	}
+	m := make(map[string]string)
+	dec := jsoniter.NewDecoder(resp.Body)
+	err = dec.Decode(&m)
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func post(host string, values url.Values, body io.Reader) (map[string]string, error) {
+	req, err := http.NewRequest("POST", host+"?"+values.Encode(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	if fr, ok := body.(*files.MultiFileReader); ok {
+		req.Header.Set("Content-Type", "multipart/form-data; boundary="+fr.Boundary())
+		req.Header.Set("Content-Disposition", "form-data: name=\"files\"")
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	//contentType := resp.Header.Get("Content-Type")
+	//parts := strings.Split(contentType, ";")
+	//contentType = parts[0]
+
 	m := make(map[string]string)
 	dec := jsoniter.NewDecoder(resp.Body)
 	err = dec.Decode(&m)

@@ -1,14 +1,10 @@
 package service
 
-import (
-	"github.com/ipfs/go-ipfs-api"
-	"strings"
-)
+import "github.com/godcong/go-ffmpeg/ipfs"
 
-var ipfs = InitIPFS("localhost", "5001")
+var api = InitIPFS("localhost", "5001")
 
 // InitIPFS ...
-func InitIPFS(url, port string) *shell.Shell {
-	return shell.NewShell(strings.Join([]string{url, port}, ":"))
-
+func InitIPFS(url, port string) ipfs.API {
+	return ipfs.NewConfig(url + ":" + port).VersionAPI("v0")
 }
