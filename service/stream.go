@@ -9,6 +9,7 @@ import (
 
 // StreamInfo ...
 type StreamInfo struct {
+	encrypt  bool
 	key      string
 	fileName string
 	uri      string
@@ -19,6 +20,16 @@ type StreamInfo struct {
 // NewStreamer ...
 func NewStreamer(key string, fileName string) *StreamInfo {
 	return &StreamInfo{key: key, fileName: fileName}
+}
+
+// Encrypt ...
+func (s *StreamInfo) Encrypt() bool {
+	return s.encrypt
+}
+
+// SetEncrypt ...
+func (s *StreamInfo) SetEncrypt(encrypt bool) {
+	s.encrypt = encrypt
 }
 
 // Dst ...

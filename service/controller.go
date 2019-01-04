@@ -195,7 +195,17 @@ func TransferPost(version string) gin.HandlerFunc {
 			url = config.URL + "/" + config.Transfer + "/" + id + "/key"
 		}
 
+		en := ctx.PostForm("encrypt")
+		encrypt := false
+		if en != "" {
+			encrypt, err = strconv.ParseBool(en)
+			if err != nil {
+				encrypt = false
+			}
+		}
+
 		stream := NewStreamer(string(b), id)
+		stream.SetEncrypt(encrypt)
 		stream.SetURI(url)
 		stream.SetDst(dst)
 		stream.SetSrc(src)

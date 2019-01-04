@@ -79,8 +79,14 @@ func StopQueue() {
 
 func transfer(chanints chan<- string, info *StreamInfo) {
 	var err error
-	_ = info.KeyFile()
-	err = ToM3U8WithKey(info.fileName)
+	if info.Encrypt() {
+		_ = info.KeyFile()
+		err = ToM3U8WithKey(info.fileName)
+	} else {
+
+		err = ToM3U8(info.fileName)
+	}
+
 	if err != nil {
 		err = rdsQueue.Set(info.fileName, StatusFileWrong, 0).Err()
 		if err != nil {
