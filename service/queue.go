@@ -130,6 +130,7 @@ func transfer(chanints chan<- string, info *StreamInfo) {
 	chanints <- info.fileName
 }
 
+// CommitResult ...
 type CommitResult struct {
 	Code   int    `json:"code"`
 	Msg    string `json:"msg"`

@@ -9,17 +9,28 @@ import (
 
 // StreamInfo ...
 type StreamInfo struct {
-	encrypt  bool
-	key      string
-	fileName string
-	uri      string
-	src      string
-	dst      string
+	encrypt   bool
+	key       string
+	objectKey string
+	fileName  string
+	uri       string
+	src       string
+	dst       string
 }
 
 // NewStreamer ...
 func NewStreamer(key string, fileName string) *StreamInfo {
 	return &StreamInfo{key: key, fileName: fileName}
+}
+
+// ObjectKey ...
+func (s *StreamInfo) ObjectKey() string {
+	return s.objectKey
+}
+
+// SetObjectKey ...
+func (s *StreamInfo) SetObjectKey(objectKey string) {
+	s.objectKey = objectKey
 }
 
 // Encrypt ...
