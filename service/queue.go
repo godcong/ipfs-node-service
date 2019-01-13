@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"log"
 	"time"
 )
@@ -9,7 +10,7 @@ import (
 type HandleFunc func(name, key string) error
 
 var queue = NewStreamQueue()
-var flag = false
+var globalCancel context.CancelFunc
 
 // Push ...
 func Push(v *StreamInfo) {
@@ -26,47 +27,35 @@ func Pop() *StreamInfo {
 }
 
 // StartQueue ...
-func StartQueue(process int) {
-	flag = false
+func StartQueue(ctx context.Context, process int) {
+	var c context.Context
+	c, globalCancel = context.WithCancel(ctx)
 	//run with a new go channel
 	go func() {
 		threads := make(chan string, process)
 
 		for i := 0; i < process; i++ {
-			if flag {
-				close(threads)
-				return
-			}
 			log.Println("start", i)
-			if s := Pop(); s != nil {
-				go transfer(threads, s)
-			} else {
-				go transferNothing(threads)
-			}
+			go transferNothing(threads)
+
 		}
 
 		for {
 			select {
 			case v := <-threads:
 				log.Println("success:", v)
-				for {
-					if flag {
-						close(threads)
-						return
-					}
-					if s := Pop(); s != nil {
-						go transfer(threads, s)
-						break
-					}
-					time.Sleep(5 * time.Second)
+				if s := Pop(); s != nil {
+					go transfer(threads, s)
+				} else {
+					time.Sleep(3 * time.Second)
+					go transferNothing(threads)
 				}
+				time.Sleep(5 * time.Second)
+			case <-c.Done():
+				break
 			default:
 				log.Println("default")
 				time.Sleep(3 * time.Second)
-				if flag {
-					close(threads)
-					return
-				}
 			}
 		}
 	}()
@@ -74,7 +63,10 @@ func StartQueue(process int) {
 
 // StopQueue ...
 func StopQueue() {
-	flag = true
+	if globalCancel == nil {
+		return
+	}
+	globalCancel()
 }
 
 func transfer(chanints chan<- string, info *StreamInfo) {

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -23,12 +24,12 @@ func RunMain() {
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
 	//new rest
-	serv := NewRestServer(":8888")
+	serv := NewRestServer(":7790")
 	_ = Router(serv.Engine)
 
 	//start
 	serv.Start()
-	StartQueue(2)
+	StartQueue(context.Background(), 2)
 	go func() {
 		sig := <-sigs
 		//bm.Stop()
