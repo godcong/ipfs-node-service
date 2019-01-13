@@ -132,6 +132,7 @@ func RemoteDownloadPost(vertion string) gin.HandlerFunc {
 		p := oss.NewProgress()
 		p.SetObjectKey(key)
 		fileName := util.GenerateRandomString(64)
+		//fileName := filepath.Split(key)
 		p.SetPath("./upload/")
 		err := server.Download(p, fileName)
 
