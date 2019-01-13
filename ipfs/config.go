@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ipfs/go-ipfs-cmdkit/files"
-	"github.com/json-iterator/go"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -144,8 +144,10 @@ func get(host string, values url.Values) (map[string]string, error) {
 		return nil, err
 	}
 	m := make(map[string]string)
-	dec := jsoniter.NewDecoder(resp.Body)
-	err = dec.Decode(&m)
+	bytes, err := ioutil.ReadAll(resp.Body)
+	log.Println(string(bytes), err)
+	err = json.Unmarshal(bytes, &m)
+	//err = dec.Decode(&m)
 	if err != nil {
 		return nil, err
 	}

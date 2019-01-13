@@ -4,6 +4,7 @@ import (
 	"github.com/godcong/go-ffmpeg/ffmpeg"
 	"github.com/godcong/go-ffmpeg/ffprobe"
 	"log"
+	"os"
 )
 
 // ToM3U8WithKey ...
@@ -37,6 +38,8 @@ func ToM3U8WithKey(id string) error {
 func ToM3U8(id string) error {
 
 	output := config.Transfer + "/" + id
+	_ = os.MkdirAll(output, os.ModePerm) //ignore err
+
 	source := config.Upload + "/" + id
 	probe := ffprobe.New(source)
 

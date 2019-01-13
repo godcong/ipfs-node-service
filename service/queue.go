@@ -2,7 +2,11 @@ package service
 
 import (
 	"context"
+	"github.com/json-iterator/go"
+	"io/ioutil"
 	"log"
+	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -22,7 +26,6 @@ func Pop() *StreamInfo {
 	if !queue.IsEmpty() {
 		return queue.Pop()
 	}
-	log.Println("nothing pop")
 	return nil
 }
 
@@ -75,7 +78,6 @@ func transfer(chanints chan<- string, info *StreamInfo) {
 		_ = info.KeyFile()
 		err = ToM3U8WithKey(info.fileName)
 	} else {
-
 		err = ToM3U8(info.fileName)
 	}
 
@@ -91,12 +93,62 @@ func transfer(chanints chan<- string, info *StreamInfo) {
 	err = rdsQueue.Set(info.fileName, StatusFinished, 0).Err()
 	if err != nil {
 		log.Println(err)
+		return
+	}
+
+	resp, err := http.PostForm("http://127.0.0.1:7790/v1/commit", url.Values{
+		"id": []string{info.fileName},
+		//"ipns": []string{uuid.NewV1().String()},
+	})
+	bytes, err := ioutil.ReadAll(resp.Body)
+	log.Println(string(bytes), err)
+	if err == nil {
+		var cr CommitResult
+		err := jsoniter.Unmarshal(bytes, &cr)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		response, err := http.PostForm("http://127.0.0.1:7788/v0/ipfs/callback", url.Values{
+			"id":       []string{info.fileName},
+			"ipfs":     []string{cr.Detail.IpfsInfo.Hash},
+			"ipns":     []string{cr.Detail.Ipns},
+			"ipns_key": []string{cr.Detail.IpnsKey},
+		})
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		by, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println(string(by))
 	}
 
 	chanints <- info.fileName
 }
 
-func transferNothing(chanints chan<- string) {
-	log.Println("transferNothing")
-	chanints <- "nothing"
+type CommitResult struct {
+	Code   int    `json:"code"`
+	Msg    string `json:"msg"`
+	Detail struct {
+		FileID   string `json:"fileID"`
+		IpfsInfo struct {
+			Hash string `json:"Hash"`
+			Name string `json:"Name"`
+			Size string `json:"Size"`
+		} `json:"ipfsInfo"`
+		Ipns     string `json:"ipns"`
+		IpnsInfo struct {
+			Name  string `json:"Name"`
+			Value string `json:"Value"`
+		} `json:"ipnsInfo"`
+		IpnsKey string `json:"ipnsKey"`
+	} `json:"detail"`
+}
+
+func transferNothing(threads chan<- string) {
+	threads <- "nothing"
 }

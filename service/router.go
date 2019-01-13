@@ -21,7 +21,9 @@ func Router(engine *gin.Engine) error {
 
 	ver := "v1"
 	group := engine.Group(ver)
-	group.Use()
+	group.Use(func(ctx *gin.Context) {
+		log.Println("visited:", ctx.Request.URL.String())
+	})
 
 	group.Any("/", func(ctx *gin.Context) {
 		ctx.String(http.StatusOK, "%s", "hello world")

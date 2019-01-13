@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/go-ffmpeg/openssl"
+	"github.com/godcong/go-ffmpeg/oss"
 	"github.com/godcong/go-ffmpeg/util"
+	"github.com/satori/go.uuid"
 	"io"
 	"log"
 	"net/http"
@@ -115,26 +117,36 @@ func UploadPost(vertion string) gin.HandlerFunc {
 * @apiSampleRequest /v1/rd
  */
 func RemoteDownloadPost(vertion string) gin.HandlerFunc {
+	src := config.Upload + "/"
+	dst := config.Transfer + "/"
 	return func(ctx *gin.Context) {
-		url := ctx.PostForm("url")
-		if url == "" {
-			resultFail(ctx, "null url address")
+		key := ctx.PostForm("key")
+		if key == "" {
+			resultFail(ctx, "null object key")
+			return
 		}
 
-		resp, err := http.Get(url)
+		server := oss.Server2()
+
+		//src := "./upload/" + util.GenerateRandomString(64)
+		p := oss.NewProgress()
+		p.SetObjectKey(key)
+		fileName := util.GenerateRandomString(64)
+		p.SetPath("./upload/")
+		err := server.Download(p, fileName)
+
 		if err != nil {
 			resultFail(ctx, err.Error())
 			return
 		}
-
-		src := "./upload/"
-		fileName, err := writeTo(src, resp.Body)
-		if err != nil {
-			resultFail(ctx, err.Error())
-			return
-		}
-
 		rdsQueue.Set(fileName, StatusDownloaded, 0)
+		stream := NewStreamer("", fileName)
+		stream.SetEncrypt(false)
+		stream.SetURI("")
+		stream.SetDst(dst)
+		stream.SetSrc(src)
+		rdsQueue.Set(fileName, StatusQueuing, 0)
+		queue.Push(stream)
 		log.Println(fileName)
 		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"id": fileName}))
 		return
@@ -357,33 +369,35 @@ func CommitPost(ver string) gin.HandlerFunc {
 		}
 
 		keyID := ""
-
 		if ipns != "" {
 			keyID, err = rdsIPNS.Get(ipns).Result()
 		}
-		log.Println(keyID, err)
+		log.Println(ipns, keyID, "error:", err)
 		if ipns == "" || err != nil {
-			keyID = id + "_" + util.CurrentTimeStampString()
+			keyID = uuid.NewV1().String()
 			m, err := api.Key().Gen(keyID, "rsa", 2048)
 			if err != nil {
 				resultFail(ctx, err.Error())
 				return
 			}
 			ipns = m["Id"]
+			log.Println("ipns:", ipns, "key:", keyID)
 			err = rdsIPNS.Set(ipns, keyID, 0).Err()
 			if err != nil {
+				log.Println(err)
 				resultFail(ctx, err.Error())
 				return
 			}
 		}
-
+		log.Println(ipfsInfo)
 		ipnsInfo, err := api.Name().PublishWithKey("/ipfs/"+ipfsInfo["Hash"], keyID)
-
+		log.Println(ipnsInfo, err)
 		if err != nil {
+
 			resultFail(ctx, err.Error())
 			return
 		}
-
+		log.Println(id, ipnsInfo)
 		resultOK(ctx, gin.H{
 			"fileID":   id,
 			"ipns":     ipns,
