@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"github.com/godcong/go-ffmpeg/oss"
 	"github.com/json-iterator/go"
 	"io/ioutil"
 	"log"
@@ -74,6 +75,21 @@ func StopQueue() {
 
 func transfer(chanints chan<- string, info *StreamInfo) {
 	var err error
+	server := oss.Server2()
+
+	//src := "./upload/" + util.GenerateRandomString(64)
+	p := oss.NewProgress()
+	p.SetObjectKey(info.objectKey)
+
+	//fileName := filepath.Split(key)
+	p.SetPath("./upload/")
+	err = server.Download(p, info.fileName)
+
+	if err != nil {
+		log.Println()
+		return
+	}
+
 	if info.Encrypt() {
 		_ = info.KeyFile()
 		err = ToM3U8WithKey(info.fileName)

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/go-ffmpeg/openssl"
-	"github.com/godcong/go-ffmpeg/oss"
 	"github.com/godcong/go-ffmpeg/util"
 	"github.com/satori/go.uuid"
 	"io"
@@ -125,23 +124,11 @@ func RemoteDownloadPost(vertion string) gin.HandlerFunc {
 			resultFail(ctx, "null object key")
 			return
 		}
-
-		server := oss.Server2()
-
-		//src := "./upload/" + util.GenerateRandomString(64)
-		p := oss.NewProgress()
-		p.SetObjectKey(key)
 		fileName := util.GenerateRandomString(64)
-		//fileName := filepath.Split(key)
-		p.SetPath("./upload/")
-		err := server.Download(p, fileName)
 
-		if err != nil {
-			resultFail(ctx, err.Error())
-			return
-		}
-		rdsQueue.Set(fileName, StatusDownloaded, 0)
+		//rdsQueue.Set(fileName, StatusDownloaded, 0)
 		stream := NewStreamer("", fileName)
+		stream.SetObjectKey(key)
 		stream.SetEncrypt(false)
 		stream.SetURI("")
 		stream.SetDst(dst)

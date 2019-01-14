@@ -90,6 +90,7 @@ func Split(src string, out string, media, m3u8 string) (string, error) {
 		//"-hls_flags", "delete_segments",
 		"-f", "hls", "-hls_time", "10",
 		//"-hls_playlist_type", "vod",
+		"-hls_list_size", "0",
 		//"-segment_format", "mpegts",
 		"-hls_segment_filename", out+"/"+media+"-%03d.ts",
 		out+"/"+m3u8)
@@ -105,6 +106,7 @@ func QuickSplit(src string, out string, media, m3u8 string) (string, error) {
 		//"-hls_flags", "delete_segments",
 		"-f", "hls", "-hls_time", "10",
 		//"-hls_playlist_type", "vod",
+		"-hls_list_size", "0",
 		//"-segment_format", "mpegts",
 		"-hls_segment_filename", out+"/"+media+"-%03d.ts",
 		out+"/"+m3u8)
