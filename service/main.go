@@ -26,12 +26,15 @@ func RunMain() {
 	done := make(chan bool, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
-	//new rest
-	serv := NewRestServer(":7790")
-	_ = Router(serv.Engine)
+	//rest start
+	rest := NewRestServer()
+	_ = Router(rest.Engine)
+	rest.Start()
 
-	//start
-	serv.Start()
+	//grpc start
+	grpc := NewGRPCServer()
+	grpc.Start()
+
 	StartQueue(context.Background(), 2)
 	go func() {
 		sig := <-sigs

@@ -19,11 +19,8 @@ func Router(engine *gin.Engine) error {
 	engine.Static("/transfer", "./transfer")
 	engine.Static("/upload", "./upload")
 
-	ver := "v1"
+	ver := "v0"
 	group := engine.Group(ver)
-	group.Use(func(ctx *gin.Context) {
-		log.Println("visited:", ctx.Request.URL.String())
-	})
 
 	group.Any("/", func(ctx *gin.Context) {
 		ctx.String(http.StatusOK, "%s", "hello world")

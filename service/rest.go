@@ -9,27 +9,36 @@ import (
 // RestServer ...
 type RestServer struct {
 	*gin.Engine
-	Server *http.Server
+	Port   string
+	server *http.Server
 }
 
 // NewRestServer ...
-func NewRestServer(addr string) *RestServer {
-	eng := gin.Default()
+func NewRestServer() *RestServer {
+	port := config.REST.Port
+	if port == "" {
+		port = ":7780"
+	}
 	s := &RestServer{
-		Engine: eng,
-		Server: &http.Server{
-			Addr:    addr,
-			Handler: eng,
-		},
+		Engine: gin.Default(),
+		Port:   port,
 	}
 	return s
 }
 
 // Start ...
 func (s *RestServer) Start() {
+	if !config.REST.Enable {
+		return
+	}
+	s.server = &http.Server{
+		Addr:    s.Port,
+		Handler: s.Engine,
+	}
+	log.Println("starting restful")
 	go func() {
-		log.Printf("[GIN-debug] Listening and serving HTTP on %s\n", s.Server.Addr)
-		if err := s.Server.ListenAndServe(); err != nil {
+		log.Printf("Listening and serving HTTP on %s\n", s.Port)
+		if err := s.server.ListenAndServe(); err != nil {
 			log.Printf("Httpserver: ListenAndServe() error: %s", err)
 		}
 	}()
@@ -38,10 +47,9 @@ func (s *RestServer) Start() {
 
 // Stop ...
 func (s *RestServer) Stop() {
-	if err := s.Server.Shutdown(nil); err != nil {
+	if err := s.server.Shutdown(nil); err != nil {
 		panic(err) // failure/timeout shutting down the server gracefully
 	}
-
 }
 
 // JSON ...

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/godcong/node-service/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -9,17 +10,20 @@ import (
 	"net"
 )
 
-// server is used to implement helloworld.GreeterServer.
-type server struct{}
+// RestServer ...
+type GRPCServer struct {
+	Port   string
+	server *grpc.Server
+}
 
 // RemoteDownload ...
-func (s *server) RemoteDownload(ctx context.Context, p *proto.RemoteDownloadRequest) (*proto.ServiceReply, error) {
+func (s *GRPCServer) RemoteDownload(ctx context.Context, p *proto.RemoteDownloadRequest) (*proto.ServiceReply, error) {
 	log.Printf("Received: %v", p.String())
 	return Result(nil), nil
 }
 
 // Status ...
-func (s *server) Status(ctx context.Context, p *proto.StatusRequest) (*proto.ServiceReply, error) {
+func (s *GRPCServer) Status(ctx context.Context, p *proto.StatusRequest) (*proto.ServiceReply, error) {
 	log.Printf("Received: %v", p.String())
 	return Result(nil), nil
 }
@@ -36,18 +40,42 @@ func Result(detail *proto.ReplyDetail) *proto.ServiceReply {
 	}
 }
 
-// GRPCServerStart ...
-func GRPCServerStart() {
-	lis, err := net.Listen("tcp", ":7784")
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+func NewGRPCServer() *GRPCServer {
+	port := config.GRPC.Port
+	if port == "" {
+		port = ":7781"
 	}
-	s := grpc.NewServer()
+	return &GRPCServer{
+		Port: port,
+	}
+}
 
-	proto.RegisterNodeServiceServer(s, &server{})
-	// Register reflection service on gRPC server.
-	reflection.Register(s)
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+// Start ...
+func (s *GRPCServer) Start() {
+	if !config.GRPC.Enable {
+		return
 	}
+	log.Println("starting grpc")
+	s.server = grpc.NewServer()
+
+	go func() {
+		lis, err := net.Listen("tcp", s.Port)
+		if err != nil {
+			panic(fmt.Sprintf("failed to listen: %v", err))
+		}
+
+		proto.RegisterNodeServiceServer(s.server, s)
+		// Register reflection service on gRPC server.
+		reflection.Register(s.server)
+		log.Printf("Listening and serving TCP on %s\n", s.Port)
+		if err := s.server.Serve(lis); err != nil {
+			log.Fatalf("failed to serve: %v", err)
+		}
+	}()
+
+}
+
+// Stop ...
+func (s *GRPCServer) Stop() {
+	s.server.Stop()
 }

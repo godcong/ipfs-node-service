@@ -1,10 +1,9 @@
-[system]
-		host_port = ""
-
 [grpc]
         enable = true
+        port = ":7780"
 [rest]
         enable = true
+        port = ":7781"
 [media]
 		upload=      "upload"
 		transfer=    "transfer"
