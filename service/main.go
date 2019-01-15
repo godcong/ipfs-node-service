@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -9,10 +10,12 @@ import (
 	"syscall"
 )
 
+var configPath = flag.String("path", "config.toml", "load config file from path")
+
 // RunMain 主线程
 func RunMain() {
-
-	err := Initialize(config)
+	flag.Parse()
+	err := Initialize(*configPath)
 	if err != nil {
 		log.Fatal(err)
 		return

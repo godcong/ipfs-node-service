@@ -1,11 +1,12 @@
 [system]
-		url =         "http://localhost:8080"
+		host_port = ""
+
 		upload=      "upload"
 		transfer=    "transfer"
 		m3u8 =        "media.m3u8"
+		key_url =         "http://localhost:8080"
 		key_file =      "key"
 		key_info_file = "KeyInfoFile"
-[remote]
 
 [callback]
        address = ""

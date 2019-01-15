@@ -2,7 +2,6 @@ package service
 
 import (
 	"github.com/go-redis/redis"
-	"log"
 )
 
 var rdsQueue = newRedisWithDB(1)
@@ -16,8 +15,7 @@ func newRedisWithDB(idx int) *redis.Client {
 		DB:       idx, // use default DB
 	})
 
-	pong, err := client.Ping().Result()
-	log.Println("pong:", pong)
+	_, err := client.Ping().Result()
 	if err != nil {
 		panic(err)
 	}

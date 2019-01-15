@@ -41,13 +41,21 @@ func StartQueue(ctx context.Context, process int) {
 		for i := 0; i < process; i++ {
 			log.Println("start", i)
 			go transferNothing(threads)
-
 		}
 
+		isStop := false
+		count := 0
 		for {
 			select {
 			case v := <-threads:
 				log.Println("success:", v)
+				if isStop {
+					count++
+					if count == process {
+						return
+					}
+					continue
+				}
 				if s := Pop(); s != nil {
 					go transfer(threads, s)
 				} else {
@@ -56,7 +64,7 @@ func StartQueue(ctx context.Context, process int) {
 				}
 				time.Sleep(5 * time.Second)
 			case <-c.Done():
-				break
+				isStop = true
 			default:
 				log.Println("default")
 				time.Sleep(3 * time.Second)

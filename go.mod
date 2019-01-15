@@ -1,6 +1,7 @@
 module github.com/godcong/go-ffmpeg
 
 require (
+	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/aliyun/aliyun-oss-go-sdk v0.0.0-20190110114555-6a25665e652a
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -16,6 +17,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/onsi/ginkgo v1.7.0 // indirect
 	github.com/onsi/gomega v1.4.3 // indirect
+	github.com/pelletier/go-toml v1.2.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rakyll/statik v0.1.5
 	github.com/satori/go.uuid v1.2.0

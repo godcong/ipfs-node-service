@@ -35,8 +35,8 @@ enum BackType {
 
 message RemoteDownloadRequest {
     string objectKey = 1;
-    RemoteType remoteType = 2 [default=RemoteBasic];
-    BackType backType = 3 [default = BackHTTP];
+    RemoteType remoteType = 2 ;
+    BackType backType = 3 ;
     string backHost = 4;
 }
 

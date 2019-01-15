@@ -192,7 +192,7 @@ func TransferPost(version string) gin.HandlerFunc {
 		}
 		url := ctx.PostForm("url")
 		if url == "" {
-			url = config.URL + "/" + config.Transfer + "/" + id + "/key"
+			url = config.KeyURL + "/" + config.Transfer + "/" + id + "/key"
 		}
 
 		en := ctx.PostForm("encrypt")
