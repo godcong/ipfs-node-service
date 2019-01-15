@@ -120,19 +120,21 @@ func RemoteDownloadPost(vertion string) gin.HandlerFunc {
 			resultFail(ctx, "null object key")
 			return
 		}
-		fileName := util.GenerateRandomString(64)
+		//fileName := util.GenerateRandomString(64)
 
 		//rdsQueue.Set(fileName, StatusDownloaded, 0)
-		stream := NewStreamer(key)
+		//stream := NewStreamer(key)
+		stream := NewStreamerWithConfig(Config())
+		//stream.Dir, stream.FileName = filepath.Split(key)
+		stream.ObjectKey = key
 		stream.SetEncrypt(false)
 		//stream.SetURI("")
-		//stream.SetDst(config.Media.Upload)
+		//stream.FileDest = config.Media.Upload
 		//stream.SetSrc(config.Media.Transfer)
 		//rdsQueue.Set(fileName, StatusQueuing, 0)
-
-		//queue.Push(stream)
-		log.Println(fileName)
-		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"id": fileName}))
+		Push(stream)
+		//log.Println(fileName)
+		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"id": stream.ID}))
 		return
 	}
 }
@@ -210,10 +212,10 @@ func TransferPost(version string) gin.HandlerFunc {
 	}
 }
 
-// InfoGet 获取视频转换状态
+// StatusGet 获取视频转换状态
 /**
 *
-* @api {get} /v1/info/:id 获取视频转换状态
+* @api {get} /v1/status/:id 获取视频转换状态
 * @apiName info
 * @apiGroup Info
 * @apiVersion  0.0.1
@@ -228,7 +230,7 @@ func TransferPost(version string) gin.HandlerFunc {
 * @apiSuccess (detail) {string} key key存放的文件名
 * @apiSuccess (detail) {string} keyInfo keyInfo存放的文件名
 *
-* @apiSampleRequest /v1/info/:id
+* @apiSampleRequest /v1/status/:id
 * @apiParamExample  {string} get-Example:
 * 	http://localhost:8080/v1/info/9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm
 *
@@ -261,30 +263,30 @@ func TransferPost(version string) gin.HandlerFunc {
 * }
 * @apiUse Failed
  */
-func InfoGet(version string) gin.HandlerFunc {
+func StatusGet(version string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		//id := ctx.Param("id")
-		//val, err := rdsQueue.Get(id).Result()
-		//if err != nil {
-		//	ctx.JSON(http.StatusOK, JSON(1, "data not found"))
-		//	return
-		//}
-		//if val == StatusTransferring {
-		//	ctx.JSON(http.StatusOK, JSON(2, val))
-		//	return
-		//} else if val == StatusFileWrong {
-		//	ctx.JSON(http.StatusOK, JSON(3, val))
-		//	return
-		//} else if val == StatusQueuing {
-		//	ctx.JSON(http.StatusOK, JSON(4, val))
-		//	return
-		//}
-		//resultOK(ctx, gin.H{
-		//	"keyURL":  config.Transfer + "/" + id,
-		//	"m3u8":    config.M3U8,
-		//	"key":     config.KeyFile,
-		//	"keyInfo": config.KeyInfoFile,
-		//})
+		id := ctx.Param("id")
+		val, err := queue.Get(id).Result()
+		if err != nil {
+			ctx.JSON(http.StatusOK, JSON(1, "data not found"))
+			return
+		}
+		if val == StatusTransferring {
+			ctx.JSON(http.StatusOK, JSON(2, val))
+			return
+		} else if val == StatusFileWrong {
+			ctx.JSON(http.StatusOK, JSON(3, val))
+			return
+		} else if val == StatusQueuing {
+			ctx.JSON(http.StatusOK, JSON(4, val))
+			return
+		}
+		resultOK(ctx, gin.H{
+			//"keyURL":  config.Transfer + "/" + id,
+			//"m3u8":    config.M3U8,
+			//"key":     config.KeyFile,
+			//"keyInfo": config.KeyInfoFile,
+		})
 		return
 	}
 }

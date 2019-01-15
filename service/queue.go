@@ -63,9 +63,9 @@ func StartQueue(ctx context.Context, process int) {
 				time.Sleep(5 * time.Second)
 			case <-c.Done():
 				isStop = true
-			default:
-				log.Println("default")
-				time.Sleep(3 * time.Second)
+				//default:
+				//	log.Println("default")
+				//	time.Sleep(3 * time.Second)
 			}
 		}
 	}()

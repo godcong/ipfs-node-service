@@ -3,8 +3,8 @@ package service
 import (
 	"github.com/go-redis/redis"
 	"github.com/godcong/go-ffmpeg/openssl"
-	"github.com/godcong/go-ffmpeg/util"
 	"github.com/json-iterator/go"
+	"github.com/satori/go.uuid"
 	"log"
 	"os"
 	"path/filepath"
@@ -21,24 +21,37 @@ type Streamer struct {
 	KeyName     string
 	KeyInfoName string
 	KeyDest     string
-	FileName    string
 	FileSource  string
 	FileDest    string
 }
 
 // NewStreamer ...
-func NewStreamer(id string) *Streamer {
+func NewStreamer() *Streamer {
 	return &Streamer{
 		encrypt:     false,
-		ID:          id,
+		ID:          uuid.NewV1().String(),
 		Key:         "",
 		KeyURL:      "",
 		KeyName:     "",
 		KeyInfoName: "",
 		KeyDest:     "",
-		FileName:    util.GenerateRandomString(64),
-		FileSource:  "",
-		FileDest:    "",
+		//FileName:    util.GenerateRandomString(64),
+		FileSource: "",
+		FileDest:   "",
+	}
+}
+
+// NewStreamerWithConfig ...
+func NewStreamerWithConfig(cfg *Configure) *Streamer {
+	return &Streamer{
+		encrypt:     false,
+		ID:          uuid.NewV1().String(),
+		KeyURL:      cfg.Media.KeyURL,
+		KeyName:     cfg.Media.KeyFile,
+		KeyInfoName: cfg.Media.KeyInfoFile,
+		KeyDest:     cfg.Media.KeyDest,
+		FileSource:  cfg.Media.Upload,
+		FileDest:    cfg.Media.Transfer,
 	}
 }
 
@@ -73,6 +86,13 @@ func (s *Streamer) KeyFile() string {
 	}
 
 	return dst + "/" + s.KeyInfoName
+}
+
+// FromConfig ...
+func (s *Streamer) FromConfig(c *Configure) error {
+	s.FileDest = c.Media.Transfer
+	s.FileSource = c.Media.Upload
+
 }
 
 // JSON ...

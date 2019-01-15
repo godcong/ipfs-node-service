@@ -39,7 +39,7 @@ func Router(engine *gin.Engine) error {
 	group.GET("/list", ListGet(ver))
 	group.POST("/commit", CommitPost(ver))
 	//查看状态
-	group.GET("/info/:id", InfoGet(ver))
+	group.GET("/status/:id", StatusGet(ver))
 
 	return nil
 }

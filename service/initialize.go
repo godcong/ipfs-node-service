@@ -17,6 +17,12 @@ type Media struct {
 	KeyInfoFile string `toml:"key_info_file"` //keyFile文件名
 }
 
+// IPFS ...
+type IPFS struct {
+	Host string `toml:"host"`
+	Port string `toml:"port"`
+}
+
 // GRPC ...
 type GRPC struct {
 	Enable string `toml:"enable"`
@@ -32,6 +38,7 @@ type Configure struct {
 	Media Media `toml:"media"`
 	GRPC  GRPC  `toml:"grpc"`
 	REST  REST  `toml:"rest"`
+	IPFS  IPFS  `toml:"ipfs"`
 }
 
 var config *Configure
@@ -52,6 +59,13 @@ func Initialize(filePath ...string) error {
 	}
 	if !IsExists(cfg.Media.Transfer) {
 		err := os.Mkdir(cfg.Media.Transfer, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+
+	if !IsExists(cfg.Media.KeyDest) {
+		err := os.Mkdir(cfg.Media.KeyDest, os.ModePerm)
 		if err != nil {
 			return err
 		}
