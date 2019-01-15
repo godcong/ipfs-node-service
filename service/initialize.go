@@ -6,17 +6,34 @@ import (
 	"os"
 )
 
-// Config ...
-type Config struct {
-	Upload      string `json:"upload"`        //上传路径
-	Transfer    string `json:"transfer"`      //转换路径
-	M3U8        string `json:"m3u8"`          //m3u8文件名
-	KeyURL      string `json:"key_url"`       //default url
-	KeyFile     string `json:"key_file"`      //key文件名
-	KeyInfoFile string `json:"key_info_file"` //keyFile文件名
+// IPFS ...
+type IPFS struct {
+	Upload      string `toml:"upload"`        //上传路径
+	Transfer    string `toml:"transfer"`      //转换路径
+	M3U8        string `toml:"m3u8"`          //m3u8文件名
+	KeyURL      string `toml:"key_url"`       //default url
+	KeyFile     string `toml:"key_file"`      //key文件名
+	KeyInfoFile string `toml:"key_info_file"` //keyFile文件名
 }
 
-var config *Config
+// GRPC ...
+type GRPC struct {
+	Enable string `toml:"enable"`
+}
+
+// REST ...
+type REST struct {
+	Enable string `toml:"enable"`
+}
+
+// Configure ...
+type Configure struct {
+	IPFS IPFS `toml:"ipfs"`
+	GRPC GRPC `toml:"grpc"`
+	REST REST `toml:"rest"`
+}
+
+var config *Configure
 
 // Initialize ...
 func Initialize(filePath ...string) error {
@@ -26,14 +43,14 @@ func Initialize(filePath ...string) error {
 
 	cfg := LoadConfig(filePath[0])
 
-	if !IsExists(cfg.Upload) {
-		err := os.Mkdir(cfg.Upload, os.ModePerm)
+	if !IsExists(cfg.IPFS.Upload) {
+		err := os.Mkdir(cfg.IPFS.Upload, os.ModePerm)
 		if err != nil {
 			return err
 		}
 	}
-	if !IsExists(cfg.Transfer) {
-		err := os.Mkdir(cfg.Transfer, os.ModePerm)
+	if !IsExists(cfg.IPFS.Transfer) {
+		err := os.Mkdir(cfg.IPFS.Transfer, os.ModePerm)
 		if err != nil {
 			return err
 		}
@@ -56,8 +73,8 @@ func IsExists(name string) bool {
 }
 
 // LoadConfig ...
-func LoadConfig(filePath string) *Config {
-	var cfg Config
+func LoadConfig(filePath string) *Configure {
+	var cfg Configure
 	openFile, err := os.OpenFile(filePath, os.O_RDONLY|os.O_SYNC, os.ModePerm)
 	if err != nil {
 		panic(err.Error())
@@ -67,5 +84,14 @@ func LoadConfig(filePath string) *Config {
 	if err != nil {
 		panic(err.Error())
 	}
+	log.Printf("config: %+v", cfg)
 	return &cfg
+}
+
+// Config ...
+func Config() *Configure {
+	if config == nil {
+		panic("nil config")
+	}
+	return config
 }

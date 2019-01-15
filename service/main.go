@@ -10,7 +10,7 @@ import (
 	"syscall"
 )
 
-var configPath = flag.String("path", "config.toml.example", "load config file from path")
+var configPath = flag.String("path", "config.toml", "load config file from path")
 
 // RunMain 主线程
 func RunMain() {
