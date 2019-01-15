@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"github.com/godcong/go-ffmpeg/proto"
+	"github.com/godcong/node-service/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"

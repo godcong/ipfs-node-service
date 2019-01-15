@@ -27,7 +27,6 @@ func NewRestServer(addr string) *RestServer {
 
 // Start ...
 func (s *RestServer) Start() {
-
 	go func() {
 		log.Printf("[GIN-debug] Listening and serving HTTP on %s\n", s.Server.Addr)
 		if err := s.Server.ListenAndServe(); err != nil {

@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"github.com/go-redis/redis"
-	"github.com/godcong/go-ffmpeg/oss"
+	"github.com/godcong/node-service/oss"
 	"github.com/json-iterator/go"
 	"io/ioutil"
 	"log"
@@ -96,7 +96,7 @@ func transfer(chanints chan<- string, info *Streamer) {
 
 	//fileName := filepath.Split(key)
 	p.SetPath("./upload/")
-	err = server.Download(p, info.FileName)
+	err = server.Download(p, info.FileName())
 
 	if err != nil {
 		log.Println()
@@ -105,9 +105,9 @@ func transfer(chanints chan<- string, info *Streamer) {
 
 	if info.Encrypt() {
 		_ = info.KeyFile()
-		err = ToM3U8WithKey(info.FileName)
+		err = ToM3U8WithKey(info.FileName())
 	} else {
-		err = ToM3U8(info.FileName)
+		err = ToM3U8(info.FileName())
 	}
 
 	if err != nil {
@@ -126,7 +126,7 @@ func transfer(chanints chan<- string, info *Streamer) {
 	}
 
 	resp, err := http.PostForm("http://127.0.0.1:7790/v1/commit", url.Values{
-		"id": []string{info.FileName},
+		"id": []string{info.FileName()},
 		//"ipns": []string{uuid.NewV1().String()},
 	})
 	bytes, err := ioutil.ReadAll(resp.Body)
@@ -139,7 +139,7 @@ func transfer(chanints chan<- string, info *Streamer) {
 			return
 		}
 		response, err := http.PostForm("http://127.0.0.1:7788/v0/ipfs/callback", url.Values{
-			"id":       []string{info.FileName},
+			"id":       []string{info.FileName()},
 			"ipfs":     []string{cr.Detail.IpfsInfo.Hash},
 			"ipns":     []string{cr.Detail.Ipns},
 			"ipns_key": []string{cr.Detail.IpnsKey},
@@ -156,7 +156,7 @@ func transfer(chanints chan<- string, info *Streamer) {
 		log.Println(string(by))
 	}
 
-	chanints <- info.FileName
+	chanints <- info.FileName()
 }
 
 // CommitResult ...

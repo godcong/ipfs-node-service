@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/godcong/go-ffmpeg/util"
+	"github.com/godcong/node-service/util"
 	"io"
 	"log"
 	"net/http"

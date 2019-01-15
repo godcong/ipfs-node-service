@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/godcong/go-ffmpeg/ffmpeg"
-	"github.com/godcong/go-ffmpeg/ffprobe"
+	"github.com/godcong/node-service/ffmpeg"
+	"github.com/godcong/node-service/ffprobe"
 	"log"
 	"os"
 )

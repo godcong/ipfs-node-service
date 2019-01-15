@@ -1,8 +1,7 @@
 package service
 
 import (
-	"github.com/go-redis/redis"
-	"github.com/godcong/go-ffmpeg/openssl"
+	"github.com/godcong/node-service/openssl"
 	"github.com/json-iterator/go"
 	"github.com/satori/go.uuid"
 	"log"
@@ -55,6 +54,11 @@ func NewStreamerWithConfig(cfg *Configure) *Streamer {
 	}
 }
 
+func (s *Streamer) FileName() string {
+	_, file := filepath.Split(s.ObjectKey)
+	return file
+}
+
 // Encrypt ...
 func (s *Streamer) Encrypt() bool {
 	return s.encrypt
@@ -72,7 +76,7 @@ func (s *Streamer) SetEncrypt(encrypt bool) {
 // KeyFile ...
 func (s *Streamer) KeyFile() string {
 	var err error
-	dst := filepath.Join(s.FileDest, s.FileName)
+	dst := filepath.Join(s.FileDest, s.FileName())
 	err = os.Mkdir(dst, os.ModePerm)
 	if err != nil {
 		log.Println(err)
@@ -92,7 +96,7 @@ func (s *Streamer) KeyFile() string {
 func (s *Streamer) FromConfig(c *Configure) error {
 	s.FileDest = c.Media.Transfer
 	s.FileSource = c.Media.Upload
-
+	return nil
 }
 
 // JSON ...

@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/godcong/go-ffmpeg/ipfs"
+	"github.com/godcong/node-service/ipfs"
 )
 
 var api ipfs.API

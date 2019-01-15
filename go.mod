@@ -1,4 +1,4 @@
-module github.com/godcong/go-ffmpeg
+module github.com/godcong/node-service
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
@@ -23,7 +23,7 @@ require (
 	github.com/satori/go.uuid v1.2.0
 	github.com/stretchr/testify v1.2.2 // indirect
 	github.com/ugorji/go/codec v0.0.0-20181209151446-772ced7fd4c2 // indirect
-	golang.org/x/net v0.0.0-20181217023233-e147a9138326 // indirect
+	golang.org/x/net v0.0.0-20181217023233-e147a9138326
 	golang.org/x/sync v0.0.0-20181108010431-42b317875d0f // indirect
 	golang.org/x/sys v0.0.0-20181213200352-4d1cda033e06 // indirect
 	google.golang.org/grpc v1.17.0
