@@ -14,20 +14,18 @@ import (
 // HandleFunc ...
 type HandleFunc func(name, key string) error
 
-var queue = NewStreamQueue()
+var queue = NewRedisQueue()
 var globalCancel context.CancelFunc
 
 // Push ...
-func Push(v *StreamInfo) {
-	queue.Push(v)
+func Push(v *Streamer) {
+	queue.RPush("queue", v.JSON())
 }
 
 // Pop ...
-func Pop() *StreamInfo {
-	if !queue.IsEmpty() {
-		return queue.Pop()
-	}
-	return nil
+func Pop() *Streamer {
+	pop := queue.LPop("queue").Val()
+	return ParseStreamer(pop)
 }
 
 // StartQueue ...
@@ -81,17 +79,17 @@ func StopQueue() {
 	globalCancel()
 }
 
-func transfer(chanints chan<- string, info *StreamInfo) {
+func transfer(chanints chan<- string, info *Streamer) {
 	var err error
 	server := oss.Server2()
 
-	//src := "./upload/" + util.GenerateRandomString(64)
+	//fileSource := "./upload/" + util.GenerateRandomString(64)
 	p := oss.NewProgress()
-	p.SetObjectKey(info.objectKey)
+	p.SetObjectKey(info.ObjectKey)
 
 	//fileName := filepath.Split(key)
 	p.SetPath("./upload/")
-	err = server.Download(p, info.fileName)
+	err = server.Download(p, info.FileName)
 
 	if err != nil {
 		log.Println()
@@ -100,13 +98,13 @@ func transfer(chanints chan<- string, info *StreamInfo) {
 
 	if info.Encrypt() {
 		_ = info.KeyFile()
-		err = ToM3U8WithKey(info.fileName)
+		err = ToM3U8WithKey(info.FileName)
 	} else {
-		err = ToM3U8(info.fileName)
+		err = ToM3U8(info.FileName)
 	}
 
 	if err != nil {
-		err = rdsQueue.Set(info.fileName, StatusFileWrong, 0).Err()
+		//err = rdsQueue.Set(info.FileName, StatusFileWrong, 0).Err()
 		if err != nil {
 			log.Println(err)
 		}
@@ -114,14 +112,14 @@ func transfer(chanints chan<- string, info *StreamInfo) {
 	}
 	log.Println("transferred:", *info)
 
-	err = rdsQueue.Set(info.fileName, StatusFinished, 0).Err()
+	//err = rdsQueue.Set(info.FileName, StatusFinished, 0).Err()
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
 	resp, err := http.PostForm("http://127.0.0.1:7790/v1/commit", url.Values{
-		"id": []string{info.fileName},
+		"id": []string{info.FileName},
 		//"ipns": []string{uuid.NewV1().String()},
 	})
 	bytes, err := ioutil.ReadAll(resp.Body)
@@ -134,7 +132,7 @@ func transfer(chanints chan<- string, info *StreamInfo) {
 			return
 		}
 		response, err := http.PostForm("http://127.0.0.1:7788/v0/ipfs/callback", url.Values{
-			"id":       []string{info.fileName},
+			"id":       []string{info.FileName},
 			"ipfs":     []string{cr.Detail.IpfsInfo.Hash},
 			"ipns":     []string{cr.Detail.Ipns},
 			"ipns_key": []string{cr.Detail.IpnsKey},
@@ -151,7 +149,7 @@ func transfer(chanints chan<- string, info *StreamInfo) {
 		log.Println(string(by))
 	}
 
-	chanints <- info.fileName
+	chanints <- info.FileName
 }
 
 // CommitResult ...

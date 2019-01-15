@@ -1,139 +1,127 @@
 package service
 
 import (
+	"github.com/go-redis/redis"
 	"github.com/godcong/go-ffmpeg/openssl"
+	"github.com/godcong/go-ffmpeg/util"
+	"github.com/json-iterator/go"
 	"log"
 	"os"
+	"path/filepath"
 	"sync"
 )
 
-// StreamInfo ...
-type StreamInfo struct {
-	encrypt   bool
-	key       string
-	objectKey string
-	fileName  string
-	uri       string
-	src       string
-	dst       string
+// Streamer ...
+type Streamer struct {
+	encrypt     bool
+	ID          string
+	Key         string
+	ObjectKey   string
+	KeyURL      string
+	KeyName     string
+	KeyInfoName string
+	KeyDest     string
+	FileName    string
+	FileSource  string
+	FileDest    string
 }
 
 // NewStreamer ...
-func NewStreamer(key string, fileName string) *StreamInfo {
-	return &StreamInfo{key: key, fileName: fileName}
-}
-
-// ObjectKey ...
-func (s *StreamInfo) ObjectKey() string {
-	return s.objectKey
-}
-
-// SetObjectKey ...
-func (s *StreamInfo) SetObjectKey(objectKey string) {
-	s.objectKey = objectKey
+func NewStreamer(id string) *Streamer {
+	return &Streamer{
+		encrypt:     false,
+		ID:          id,
+		Key:         "",
+		KeyURL:      "",
+		KeyName:     "",
+		KeyInfoName: "",
+		KeyDest:     "",
+		FileName:    util.GenerateRandomString(64),
+		FileSource:  "",
+		FileDest:    "",
+	}
 }
 
 // Encrypt ...
-func (s *StreamInfo) Encrypt() bool {
+func (s *Streamer) Encrypt() bool {
 	return s.encrypt
 }
 
 // SetEncrypt ...
-func (s *StreamInfo) SetEncrypt(encrypt bool) {
-	s.encrypt = encrypt
-}
-
-// Dst ...
-func (s *StreamInfo) Dst() string {
-	return s.dst
-}
-
-// SetDst ...
-func (s *StreamInfo) SetDst(dst string) {
-	s.dst = dst
-}
-
-// Src ...
-func (s *StreamInfo) Src() string {
-	return s.src
-}
-
-// SetSrc ...
-func (s *StreamInfo) SetSrc(src string) {
-	s.src = src
-}
-
-// FileName ...
-func (s *StreamInfo) FileName() string {
-	return s.fileName
-}
-
-// SetFileName ...
-func (s *StreamInfo) SetFileName(fileName string) {
-	s.fileName = fileName
-}
-
-// Key ...
-func (s *StreamInfo) Key() string {
-	return s.key
-}
-
-// SetKey ...
-func (s *StreamInfo) SetKey(key string) {
-	s.key = key
-}
-
-// URI ...
-func (s *StreamInfo) URI() string {
-	return s.uri
-}
-
-// SetURI ...
-func (s *StreamInfo) SetURI(uri string) {
-	s.uri = uri
+func (s *Streamer) SetEncrypt(encrypt bool) {
+	s.encrypt = true
+	s.KeyURL = config.Media.KeyURL
+	s.KeyName = config.Media.KeyFile
+	s.KeyInfoName = config.Media.KeyInfoFile
+	s.KeyDest = config.Media.KeyDest
 }
 
 // KeyFile ...
-func (s *StreamInfo) KeyFile() string {
+func (s *Streamer) KeyFile() string {
 	var err error
-	dst := s.dst + s.fileName
+	dst := filepath.Join(s.FileDest, s.FileName)
 	err = os.Mkdir(dst, os.ModePerm)
 	if err != nil {
 		log.Println(err)
 		return ""
 	}
 
-	err = openssl.KeyFile(dst, config.KeyFile, s.key, config.KeyInfoFile, s.uri, true)
+	err = openssl.KeyFile(s.KeyDest, s.KeyName, s.Key, s.KeyInfoName, s.KeyURL, true)
 	if err != nil {
 		log.Println(err)
 		return ""
 	}
 
-	return dst + "/" + config.KeyInfoFile
+	return dst + "/" + s.KeyInfoName
+}
+
+// JSON ...
+func (s *Streamer) JSON() string {
+	st, err := jsoniter.MarshalToString(s)
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+	return st
+}
+
+// ParseStreamer ...
+func ParseStreamer(s string) *Streamer {
+	var st Streamer
+	err := jsoniter.UnmarshalFromString(s, &st)
+	if err != nil {
+		return nil
+	}
+	return &st
 }
 
 // StreamQueue ...
 type StreamQueue struct {
-	infos []*StreamInfo
+	infos []*Streamer
 	lock  sync.RWMutex
+}
+
+// NewRedisQueue ...
+func NewRedisQueue() *redis.Client {
+	return newRedisWithDB(RedisQueueIndex)
 }
 
 // NewStreamQueue ...
 func NewStreamQueue() *StreamQueue {
 	return &StreamQueue{
-		infos: []*StreamInfo{},
+		infos: []*Streamer{},
 	}
 }
 
 // Push ...
-func (s *StreamQueue) Push(info *StreamInfo) {
+func (s *StreamQueue) Push(info *Streamer) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 	s.infos = append(s.infos, info)
 }
 
 // Pop ...
-func (s *StreamQueue) Pop() *StreamInfo {
+func (s *StreamQueue) Pop() *Streamer {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 	info := s.infos[0]
@@ -143,7 +131,7 @@ func (s *StreamQueue) Pop() *StreamInfo {
 }
 
 // Front ...
-func (s *StreamQueue) Front() *StreamInfo {
+func (s *StreamQueue) Front() *Streamer {
 	s.lock.RLock()
 	defer s.lock.RUnlock()
 	info := s.infos[0]
@@ -163,5 +151,5 @@ func (s *StreamQueue) Size() int {
 
 // Clear ...
 func (s *StreamQueue) Clear() {
-	s.infos = []*StreamInfo{}
+	s.infos = []*Streamer{}
 }

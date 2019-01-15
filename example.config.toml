@@ -5,7 +5,7 @@
         enable = true
 [rest]
         enable = true
-[ipfs]
+[media]
 		upload=      "upload"
 		transfer=    "transfer"
 		m3u8 =        "media.m3u8"

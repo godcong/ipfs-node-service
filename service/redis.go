@@ -4,7 +4,10 @@ import (
 	"github.com/go-redis/redis"
 )
 
-var rdsQueue = newRedisWithDB(1)
+// RedisQueueIndex ...
+const RedisQueueIndex = 1
+
+//var rdsQueue = newRedisWithDB(1)
 var rdsIPNS = newRedisWithDB(2)
 
 // newRedisWithDB ...

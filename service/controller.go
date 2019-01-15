@@ -4,9 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/godcong/go-ffmpeg/openssl"
 	"github.com/godcong/go-ffmpeg/util"
-	"github.com/satori/go.uuid"
 	"io"
 	"log"
 	"net/http"
@@ -83,7 +81,7 @@ func UploadPost(vertion string) gin.HandlerFunc {
 			return
 		}
 
-		rdsQueue.Set(fileName, StatusUploaded, 0)
+		//rdsQueue.Set(fileName, StatusUploaded, 0)
 		log.Println(fileName)
 		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"id": fileName}))
 		return
@@ -116,8 +114,6 @@ func UploadPost(vertion string) gin.HandlerFunc {
 * @apiSampleRequest /v1/rd
  */
 func RemoteDownloadPost(vertion string) gin.HandlerFunc {
-	src := config.Upload + "/"
-	dst := config.Transfer + "/"
 	return func(ctx *gin.Context) {
 		key := ctx.PostForm("key")
 		if key == "" {
@@ -127,14 +123,14 @@ func RemoteDownloadPost(vertion string) gin.HandlerFunc {
 		fileName := util.GenerateRandomString(64)
 
 		//rdsQueue.Set(fileName, StatusDownloaded, 0)
-		stream := NewStreamer("", fileName)
-		stream.SetObjectKey(key)
+		stream := NewStreamer(key)
 		stream.SetEncrypt(false)
-		stream.SetURI("")
-		stream.SetDst(dst)
-		stream.SetSrc(src)
-		rdsQueue.Set(fileName, StatusQueuing, 0)
-		queue.Push(stream)
+		//stream.SetURI("")
+		//stream.SetDst(config.Media.Upload)
+		//stream.SetSrc(config.Media.Transfer)
+		//rdsQueue.Set(fileName, StatusQueuing, 0)
+
+		//queue.Push(stream)
 		log.Println(fileName)
 		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"id": fileName}))
 		return
@@ -174,44 +170,43 @@ func RemoteDownloadPost(vertion string) gin.HandlerFunc {
  */
 func TransferPost(version string) gin.HandlerFunc {
 
-	src := config.Upload + "/"
-	dst := config.Transfer + "/"
 	return func(ctx *gin.Context) {
-		b, err := openssl.HexKey()
-		if err != nil {
-			resultFail(ctx, err.Error())
-			return
-		}
-		//probe := ffprobe.New(src + id)
-		//probe.IsH264AndAAC()
-		//TODO:file is not a media file
-		id := ctx.PostForm("id")
-		if id == "" {
-			resultFail(ctx, "wrong id request")
-			return
-		}
-		url := ctx.PostForm("url")
-		if url == "" {
-			url = config.KeyURL + "/" + config.Transfer + "/" + id + "/key"
-		}
-
-		en := ctx.PostForm("encrypt")
-		encrypt := false
-		if en != "" {
-			encrypt, err = strconv.ParseBool(en)
-			if err != nil {
-				encrypt = false
-			}
-		}
-
-		stream := NewStreamer(string(b), id)
-		stream.SetEncrypt(encrypt)
-		stream.SetURI(url)
-		stream.SetDst(dst)
-		stream.SetSrc(src)
-		rdsQueue.Set(id, StatusQueuing, 0)
-		queue.Push(stream)
-		resultOK(ctx, gin.H{"id": id})
+		return
+		//b, err := openssl.HexKey()
+		//if err != nil {
+		//	resultFail(ctx, err.Error())
+		//	return
+		//}
+		////probe := ffprobe.New(fileSource + id)
+		////probe.IsH264AndAAC()
+		////TODO:file is not a media file
+		//objectKey := ctx.PostForm("key")
+		//if objectKey == "" {
+		//	resultFail(ctx, "wrong id request")
+		//	return
+		//}
+		//url := ctx.PostForm("url")
+		//if url == "" {
+		//	url = config.Media.KeyURL + "/" + config.Media.Transfer + "/" + id + "/key"
+		//}
+		//
+		//en := ctx.PostForm("encrypt")
+		//encrypt := false
+		//if en != "" {
+		//	encrypt, err = strconv.ParseBool(en)
+		//	if err != nil {
+		//		encrypt = false
+		//	}
+		//}
+		//
+		//stream := NewStreamer(objectKey)
+		////stream.SetEncrypt(encrypt)
+		////stream.SetURI(url)
+		////stream.SetDst(config.Media.Transfer)
+		////stream.SetSrc(config.Media.Upload)
+		//rdsQueue.Set(id, StatusQueuing, 0)
+		//queue.Push(stream)
+		//resultOK(ctx, gin.H{"id": id})
 	}
 }
 
@@ -228,7 +223,7 @@ func TransferPost(version string) gin.HandlerFunc {
 * @apiUse Success
 * @apiSuccess  {string} code 返回状态码：【异常错误：-1】，【正常：0】，【文件不存在：1】,【处理中：2】，【文件异常：3】，【队列中：4】，
 * @apiSuccess  {json} [detail] 正常则返回detail
-* @apiSuccess (detail) {string} uri 视频存放的相对地址
+* @apiSuccess (detail) {string} keyURL 视频存放的相对地址
 * @apiSuccess (detail) {string} m3u8 m3u8存放的文件名
 * @apiSuccess (detail) {string} key key存放的文件名
 * @apiSuccess (detail) {string} keyInfo keyInfo存放的文件名
@@ -242,7 +237,7 @@ func TransferPost(version string) gin.HandlerFunc {
 *       "code":0,
 *       "msg":"ok",
 *       "detail":{
-*			"uri":"transfer/xxx",
+*			"keyURL":"transfer/xxx",
 *			"m3u8":"media.m3u8",
 *			"key":"key"
 *			"keyInfo":"KeyInfo",
@@ -268,28 +263,28 @@ func TransferPost(version string) gin.HandlerFunc {
  */
 func InfoGet(version string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		id := ctx.Param("id")
-		val, err := rdsQueue.Get(id).Result()
-		if err != nil {
-			ctx.JSON(http.StatusOK, JSON(1, "data not found"))
-			return
-		}
-		if val == StatusTransferring {
-			ctx.JSON(http.StatusOK, JSON(2, val))
-			return
-		} else if val == StatusFileWrong {
-			ctx.JSON(http.StatusOK, JSON(3, val))
-			return
-		} else if val == StatusQueuing {
-			ctx.JSON(http.StatusOK, JSON(4, val))
-			return
-		}
-		resultOK(ctx, gin.H{
-			"uri":     config.Transfer + "/" + id,
-			"m3u8":    config.M3U8,
-			"key":     config.KeyFile,
-			"keyInfo": config.KeyInfoFile,
-		})
+		//id := ctx.Param("id")
+		//val, err := rdsQueue.Get(id).Result()
+		//if err != nil {
+		//	ctx.JSON(http.StatusOK, JSON(1, "data not found"))
+		//	return
+		//}
+		//if val == StatusTransferring {
+		//	ctx.JSON(http.StatusOK, JSON(2, val))
+		//	return
+		//} else if val == StatusFileWrong {
+		//	ctx.JSON(http.StatusOK, JSON(3, val))
+		//	return
+		//} else if val == StatusQueuing {
+		//	ctx.JSON(http.StatusOK, JSON(4, val))
+		//	return
+		//}
+		//resultOK(ctx, gin.H{
+		//	"keyURL":  config.Transfer + "/" + id,
+		//	"m3u8":    config.M3U8,
+		//	"key":     config.KeyFile,
+		//	"keyInfo": config.KeyInfoFile,
+		//})
 		return
 	}
 }
@@ -344,55 +339,56 @@ func InfoGet(version string) gin.HandlerFunc {
 func CommitPost(ver string) gin.HandlerFunc {
 
 	return func(ctx *gin.Context) {
-		var err error
-		ipfsInfo := map[string]string{}
-		id := ctx.PostForm("id")
-		ipns := ctx.PostForm("ipns")
-
-		//dir, err = api.AddDir(config.Transfer + "/" + id + "/")
-		ipfsInfo, err = api.AddDir(config.Transfer + "/" + id + "/")
-		if err != nil {
-			resultFail(ctx, err.Error())
-			return
-		}
-
-		keyID := ""
-		if ipns != "" {
-			keyID, err = rdsIPNS.Get(ipns).Result()
-		}
-		log.Println(ipns, keyID, "error:", err)
-		if ipns == "" || err != nil {
-			keyID = uuid.NewV1().String()
-			m, err := api.Key().Gen(keyID, "rsa", 2048)
-			if err != nil {
-				resultFail(ctx, err.Error())
-				return
-			}
-			ipns = m["Id"]
-			log.Println("ipns:", ipns, "key:", keyID)
-			err = rdsIPNS.Set(ipns, keyID, 0).Err()
-			if err != nil {
-				log.Println(err)
-				resultFail(ctx, err.Error())
-				return
-			}
-		}
-		log.Println(ipfsInfo)
-		ipnsInfo, err := api.Name().PublishWithKey("/ipfs/"+ipfsInfo["Hash"], keyID)
-		log.Println(ipnsInfo, err)
-		if err != nil {
-
-			resultFail(ctx, err.Error())
-			return
-		}
-		log.Println(id, ipnsInfo)
-		resultOK(ctx, gin.H{
-			"fileID":   id,
-			"ipns":     ipns,
-			"ipnsKey":  keyID,
-			"ipfsInfo": ipfsInfo,
-			"ipnsInfo": ipnsInfo,
-		})
+		return
+		//var err error
+		//ipfsInfo := map[string]string{}
+		//id := ctx.PostForm("id")
+		//ipns := ctx.PostForm("ipns")
+		//
+		////dir, err = api.AddDir(config.Transfer + "/" + id + "/")
+		//ipfsInfo, err = api.AddDir(config.Transfer + "/" + id + "/")
+		//if err != nil {
+		//	resultFail(ctx, err.Error())
+		//	return
+		//}
+		//
+		//keyID := ""
+		//if ipns != "" {
+		//	keyID, err = rdsIPNS.Get(ipns).Result()
+		//}
+		//log.Println(ipns, keyID, "error:", err)
+		//if ipns == "" || err != nil {
+		//	keyID = uuid.NewV1().String()
+		//	m, err := api.Key().Gen(keyID, "rsa", 2048)
+		//	if err != nil {
+		//		resultFail(ctx, err.Error())
+		//		return
+		//	}
+		//	ipns = m["Id"]
+		//	log.Println("ipns:", ipns, "key:", keyID)
+		//	err = rdsIPNS.Set(ipns, keyID, 0).Err()
+		//	if err != nil {
+		//		log.Println(err)
+		//		resultFail(ctx, err.Error())
+		//		return
+		//	}
+		//}
+		//log.Println(ipfsInfo)
+		//ipnsInfo, err := api.Name().PublishWithKey("/ipfs/"+ipfsInfo["Hash"], keyID)
+		//log.Println(ipnsInfo, err)
+		//if err != nil {
+		//
+		//	resultFail(ctx, err.Error())
+		//	return
+		//}
+		//log.Println(id, ipnsInfo)
+		//resultOK(ctx, gin.H{
+		//	"fileID":   id,
+		//	"ipns":     ipns,
+		//	"ipnsKey":  keyID,
+		//	"ipfsInfo": ipfsInfo,
+		//	"ipnsInfo": ipnsInfo,
+		//})
 	}
 }
 
@@ -459,7 +455,7 @@ func findDir(start, end string) (*DirList, error) {
 	if err != nil {
 		ed = st + limit
 	}
-	d, err := os.Open(config.Transfer)
+	d, err := os.Open(config.Media.Transfer)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err

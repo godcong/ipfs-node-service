@@ -6,12 +6,13 @@ import (
 	"os"
 )
 
-// IPFS ...
-type IPFS struct {
+// Media ...
+type Media struct {
 	Upload      string `toml:"upload"`        //上传路径
 	Transfer    string `toml:"transfer"`      //转换路径
 	M3U8        string `toml:"m3u8"`          //m3u8文件名
 	KeyURL      string `toml:"key_url"`       //default url
+	KeyDest     string `toml:"key_dest"`      //key 文件输出目录
 	KeyFile     string `toml:"key_file"`      //key文件名
 	KeyInfoFile string `toml:"key_info_file"` //keyFile文件名
 }
@@ -28,9 +29,9 @@ type REST struct {
 
 // Configure ...
 type Configure struct {
-	IPFS IPFS `toml:"ipfs"`
-	GRPC GRPC `toml:"grpc"`
-	REST REST `toml:"rest"`
+	Media Media `toml:"media"`
+	GRPC  GRPC  `toml:"grpc"`
+	REST  REST  `toml:"rest"`
 }
 
 var config *Configure
@@ -43,14 +44,14 @@ func Initialize(filePath ...string) error {
 
 	cfg := LoadConfig(filePath[0])
 
-	if !IsExists(cfg.IPFS.Upload) {
-		err := os.Mkdir(cfg.IPFS.Upload, os.ModePerm)
+	if !IsExists(cfg.Media.Upload) {
+		err := os.Mkdir(cfg.Media.Upload, os.ModePerm)
 		if err != nil {
 			return err
 		}
 	}
-	if !IsExists(cfg.IPFS.Transfer) {
-		err := os.Mkdir(cfg.IPFS.Transfer, os.ModePerm)
+	if !IsExists(cfg.Media.Transfer) {
+		err := os.Mkdir(cfg.Media.Transfer, os.ModePerm)
 		if err != nil {
 			return err
 		}
