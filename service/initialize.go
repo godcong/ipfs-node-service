@@ -18,7 +18,10 @@ type Config struct {
 var config = InitConfig()
 
 // InitConfig ...
-func InitConfig() *Config {
+func InitConfig(path ...string) *Config {
+	if path == nil {
+
+	}
 	//	TODO:load
 	return &Config{
 		URL:         "http://localhost:8080",

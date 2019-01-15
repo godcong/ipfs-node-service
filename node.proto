@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.github.godcong.proto";
+option java_outer_classname = "NodeServiceProto";
+
+package proto;
+
+service NodeService {
+    rpc RemoteDownload (RemoteDownloadRequest) returns (ServiceReply) {
+    }
+    rpc Status (StatusRequest) returns (ServiceReply){
+    }
+}
+
+message Response{
+
+}
+
+message StatusRequest {
+    string id = 1;
+}
+
+enum RemoteType {
+    RemoteBasic = 0;
+    RemoteRetry = 1;
+    RemoteForce = 2;
+  }
+
+
+enum BackType {
+    BackHTTP = 0;
+    BackGRPC = 1;
+}
+
+message RemoteDownloadRequest {
+    string objectKey = 1;
+    RemoteType remoteType = 2 [default=RemoteBasic];
+    BackType backType = 3 [default = BackHTTP];
+    string backHost = 4;
+}
+
+message ServiceReply {
+    int32 code = 1;
+    string message = 2;
+    ReplyDetail detail =3;
+}
+
+message ReplyDetail {
+    string json = 1;
+}
