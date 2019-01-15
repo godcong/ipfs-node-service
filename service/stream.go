@@ -121,11 +121,6 @@ type StreamQueue struct {
 	lock  sync.RWMutex
 }
 
-// NewRedisQueue ...
-func NewRedisQueue() *redis.Client {
-	return newRedisWithDB(RedisQueueIndex)
-}
-
 // NewStreamQueue ...
 func NewStreamQueue() *StreamQueue {
 	return &StreamQueue{

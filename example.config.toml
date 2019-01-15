@@ -11,7 +11,17 @@
 		m3u8 =        "media.m3u8"
 		key_url =         "http://localhost:8080"
 		key_file =      "key"
+		key_dest = "output_key"
 		key_info_file = "KeyInfoFile"
+
+[queue]
+        addr = "redis"
+        host_port = ""
+        password = ""
+        db = 1
+[ipfs]
+        host = ""
+        port = ""
 
 [callback]
        address = ""

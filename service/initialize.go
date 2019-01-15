@@ -33,6 +33,12 @@ type REST struct {
 	Enable string `toml:"enable"`
 }
 
+// Queue ...
+type Queue struct {
+	Addr     string
+	Password string
+}
+
 // Configure ...
 type Configure struct {
 	Media Media `toml:"media"`

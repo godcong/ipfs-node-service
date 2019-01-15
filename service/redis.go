@@ -7,8 +7,21 @@ import (
 // RedisQueueIndex ...
 const RedisQueueIndex = 1
 
-//var rdsQueue = newRedisWithDB(1)
-var rdsIPNS = newRedisWithDB(2)
+// RedisKeyStoreIndex ...
+const RedisKeyStoreIndex = 2
+
+var store *redis.Client
+var queue *redis.Client
+
+// NewKeyStore ...
+func NewKeyStore() *redis.Client {
+	return newRedisWithDB(RedisKeyStoreIndex)
+}
+
+// NewRedisQueue ...
+func NewRedisQueue() *redis.Client {
+	return newRedisWithDB(RedisQueueIndex)
+}
 
 // newRedisWithDB ...
 func newRedisWithDB(idx int) *redis.Client {

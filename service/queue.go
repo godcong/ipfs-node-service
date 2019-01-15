@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"github.com/go-redis/redis"
 	"github.com/godcong/go-ffmpeg/oss"
 	"github.com/json-iterator/go"
 	"io/ioutil"
@@ -14,7 +15,6 @@ import (
 // HandleFunc ...
 type HandleFunc func(name, key string) error
 
-var queue = NewRedisQueue()
 var globalCancel context.CancelFunc
 
 // Push ...
@@ -30,6 +30,13 @@ func Pop() *Streamer {
 
 // StartQueue ...
 func StartQueue(ctx context.Context, process int) {
+	if queue == nil {
+		queue = redis.NewClient(&redis.Options{
+			Addr:     "",
+			Password: "",              // no password set
+			DB:       RedisQueueIndex, // use default DB
+		})
+	}
 	var c context.Context
 	c, globalCancel = context.WithCancel(ctx)
 	//run with a new go channel
