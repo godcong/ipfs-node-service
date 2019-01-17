@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
-	"os"
+	"syscall"
 )
 
 // GRPCServer ...
@@ -64,7 +64,7 @@ func (s *GRPCServer) Start() {
 	go func() {
 
 		if config.GRPC.Type == "sock" {
-			_ = os.Remove("/tmp/node.sock")
+			_ = syscall.Unlink("/tmp/node.sock")
 			lis, err = net.Listen("unix", "/tmp/node.sock")
 			port = lis.Addr().String()
 		} else {
