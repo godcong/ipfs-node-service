@@ -19,22 +19,21 @@ func Router(engine *gin.Engine) error {
 	engine.Static("/transfer", "./transfer")
 	engine.Static("/upload", "./upload")
 
+	engine.GET("ping", func(ctx *gin.Context) {
+		ctx.String(http.StatusOK, "pong")
+	})
 	ver := "v0"
 	group := engine.Group(ver)
 
-	group.Any("/", func(ctx *gin.Context) {
-		ctx.String(http.StatusOK, "%s", "hello world")
-	})
-
 	//上传文件
-	group.POST("/upload", UploadPost(ver))
+	//group.POST("/upload", UploadPost(ver))
 	//获取文件
 	group.POST("/rd", RemoteDownloadPost(ver))
 	//视频转换
-	group.POST("/transfer", TransferPost(ver))
+	//group.POST("/transfer", TransferPost(ver))
 	//服务器视频列表
-	group.GET("/list", ListGet(ver))
-	group.POST("/commit", CommitPost(ver))
+	//group.GET("/list", ListGet(ver))
+	//group.POST("/commit", CommitPost(ver))
 	//查看状态
 	group.GET("/status/:id", StatusGet(ver))
 

@@ -45,7 +45,7 @@ func Result(detail *proto.ReplyDetail) *proto.ServiceReply {
 func NewGRPCServer() *GRPCServer {
 	port := config.GRPC.Port
 	if port == "" {
-		port = ":7782"
+		port = ":7781"
 	}
 	return &GRPCServer{
 		Port: port,

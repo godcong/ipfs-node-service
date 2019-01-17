@@ -47,5 +47,6 @@ message ServiceReply {
 }
 
 message ReplyDetail {
-    string json = 1;
+    string ID = 1;
+    string json = 2;
 }
