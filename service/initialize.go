@@ -26,12 +26,16 @@ type IPFS struct {
 // GRPC ...
 type GRPC struct {
 	Enable bool   `toml:"enable"`
+	Type   string `toml:"type"`
+	Path   string `toml:"path"`
 	Port   string `toml:"port"`
 }
 
 // REST ...
 type REST struct {
 	Enable bool   `toml:"enable"`
+	Type   string `toml:"type"`
+	Path   string `toml:"path"`
 	Port   string `toml:"port"`
 }
 

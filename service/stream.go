@@ -54,6 +54,7 @@ func NewStreamerWithConfig(cfg *Configure) *Streamer {
 	}
 }
 
+// FileName ...
 func (s *Streamer) FileName() string {
 	_, file := filepath.Split(s.ObjectKey)
 	return file

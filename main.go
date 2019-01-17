@@ -7,6 +7,7 @@ import (
 	"flag"
 	"github.com/godcong/node-service/service"
 	_ "github.com/godcong/node-service/statik"
+	"io"
 	"log"
 	"os"
 	"runtime/pprof"
@@ -31,7 +32,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	log.SetOutput(file)
+	log.SetOutput(io.MultiWriter(file, os.Stdout))
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	service.RunMain()
 }

@@ -35,7 +35,6 @@ func (s *RestServer) Start() {
 		Addr:    s.Port,
 		Handler: s.Engine,
 	}
-	log.Println("starting restful")
 	go func() {
 		log.Printf("Listening and serving HTTP on %s\n", s.Port)
 		if err := s.server.ListenAndServe(); err != nil {

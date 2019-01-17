@@ -8,9 +8,10 @@ import (
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
+	"os"
 )
 
-// RestServer ...
+// GRPCServer ...
 type GRPCServer struct {
 	Port   string
 	server *grpc.Server
@@ -40,10 +41,11 @@ func Result(detail *proto.ReplyDetail) *proto.ServiceReply {
 	}
 }
 
+// NewGRPCServer ...
 func NewGRPCServer() *GRPCServer {
 	port := config.GRPC.Port
 	if port == "" {
-		port = ":7781"
+		port = ":7782"
 	}
 	return &GRPCServer{
 		Port: port,
@@ -55,11 +57,21 @@ func (s *GRPCServer) Start() {
 	if !config.GRPC.Enable {
 		return
 	}
-	log.Println("starting grpc")
 	s.server = grpc.NewServer()
-
+	var lis net.Listener
+	var port string
+	var err error
 	go func() {
-		lis, err := net.Listen("tcp", s.Port)
+
+		if config.GRPC.Type == "sock" {
+			_ = os.Remove("/tmp/node.sock")
+			lis, err = net.Listen("unix", "/tmp/node.sock")
+			port = lis.Addr().String()
+		} else {
+			lis, err = net.Listen("tcp", config.GRPC.Port)
+			port = config.GRPC.Port
+		}
+
 		if err != nil {
 			panic(fmt.Sprintf("failed to listen: %v", err))
 		}
@@ -67,7 +79,7 @@ func (s *GRPCServer) Start() {
 		proto.RegisterNodeServiceServer(s.server, s)
 		// Register reflection service on gRPC server.
 		reflection.Register(s.server)
-		log.Printf("Listening and serving TCP on %s\n", s.Port)
+		log.Printf("Listening and serving TCP on %s\n", port)
 		if err := s.server.Serve(lis); err != nil {
 			log.Fatalf("failed to serve: %v", err)
 		}
