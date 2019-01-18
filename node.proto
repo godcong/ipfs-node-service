@@ -7,9 +7,9 @@ option java_outer_classname = "NodeServiceProto";
 package proto;
 
 service NodeService {
-    rpc RemoteDownload (RemoteDownloadRequest) returns (ServiceReply) {
+    rpc RemoteDownload (RemoteDownloadRequest) returns (NodeReply) {
     }
-    rpc Status (StatusRequest) returns (ServiceReply){
+    rpc Status (StatusRequest) returns (NodeReply){
     }
 }
 
@@ -40,7 +40,7 @@ message RemoteDownloadRequest {
     string backHost = 4;
 }
 
-message ServiceReply {
+message NodeReply {
     int32 code = 1;
     string message = 2;
     ReplyDetail detail =3;
