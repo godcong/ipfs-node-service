@@ -15,6 +15,9 @@ import (
 // StatusUploaded 已上传
 const StatusUploaded = "uploaded"
 
+// StatusDownloading 正在下载
+const StatusDownloading = "downloading"
+
 // StatusDownloaded 已下载
 const StatusDownloaded = "downloaded"
 

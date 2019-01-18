@@ -12,16 +12,17 @@ import (
 
 // Streamer ...
 type Streamer struct {
-	encrypt     bool
-	ID          string
-	Key         string
-	ObjectKey   string
-	KeyURL      string
-	KeyName     string
-	KeyInfoName string
-	KeyDest     string
-	FileSource  string
-	FileDest    string
+	encrypt      bool
+	ID           string
+	Key          string
+	ObjectKey    string
+	KeyURL       string
+	KeyName      string
+	KeyInfoName  string
+	KeyDest      string
+	FileSource   string
+	FileDest     string
+	CallbackFunc func(string)
 }
 
 // NewStreamer ...

@@ -5,6 +5,7 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/godcong/node-service/oss"
 	"github.com/json-iterator/go"
+	"github.com/satori/go.uuid"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -19,12 +20,12 @@ var globalCancel context.CancelFunc
 
 // Push ...
 func Push(v *Streamer) {
-	queue.RPush("queue", v.JSON())
+	queue.RPush("node_queue", v.JSON())
 }
 
 // Pop ...
 func Pop() *Streamer {
-	pop := queue.LPop("queue").Val()
+	pop := queue.LPop("node_queue").Val()
 	return ParseStreamer(pop)
 }
 
@@ -47,7 +48,6 @@ func StartQueue(ctx context.Context, process int) {
 			log.Println("start", i)
 			go transferNothing(threads)
 		}
-
 		isStop := false
 		count := 0
 		for {
@@ -57,6 +57,7 @@ func StartQueue(ctx context.Context, process int) {
 				if isStop {
 					count++
 					if count == process {
+						log.Println("stoped")
 						return
 					}
 					continue
@@ -67,12 +68,8 @@ func StartQueue(ctx context.Context, process int) {
 					time.Sleep(3 * time.Second)
 					go transferNothing(threads)
 				}
-				time.Sleep(5 * time.Second)
 			case <-c.Done():
 				isStop = true
-				//default:
-				//	log.Println("default")
-				//	time.Sleep(3 * time.Second)
 			}
 		}
 	}()
@@ -86,20 +83,31 @@ func StopQueue() {
 	globalCancel()
 }
 
-func transfer(chanints chan<- string, info *Streamer) {
-	var err error
+func download(info *Streamer) error {
 	server := oss.Server2()
-
-	//fileSource := "./upload/" + util.GenerateRandomString(64)
+	queue.Set(info.ID, StatusDownloading, 0)
 	p := oss.NewProgress()
 	p.SetObjectKey(info.ObjectKey)
+	p.SetPath(config.Media.Upload)
+	err := server.Download(p, info.FileName())
+	if err != nil {
+		//chanRes = err.Error()
+		log.Println(err)
+		return err
+	}
+	return nil
+}
 
-	//fileName := filepath.Split(key)
-	p.SetPath("./upload/")
-	err = server.Download(p, info.FileName())
+func transfer(ch chan<- string, info *Streamer) {
+	var err error
+	chanRes := info.FileName()
+	defer func() {
+		ch <- chanRes
+	}()
 
 	if err != nil {
-		log.Println()
+		chanRes = err.Error()
+		log.Println(err)
 		return
 	}
 
@@ -107,24 +115,67 @@ func transfer(chanints chan<- string, info *Streamer) {
 		_ = info.KeyFile()
 		err = ToM3U8WithKey(info.FileName())
 	} else {
-		err = ToM3U8(info.FileName())
+		err = ToM3U8(info.ID, info.FileName(), info.FileSource, info.FileDest)
 	}
 
 	if err != nil {
-		//err = rdsQueue.Set(info.FileName, StatusFileWrong, 0).Err()
 		if err != nil {
+			chanRes = err.Error()
 			log.Println(err)
 		}
 		return
 	}
 	log.Println("transferred:", *info)
 
-	//err = rdsQueue.Set(info.FileName, StatusFinished, 0).Err()
 	if err != nil {
+		chanRes = err.Error()
+		log.Println(err)
+		return
+	}
+	ipfsInfo, err := api.AddDir(info.FileDest + "/" + info.FileName() + "/")
+	if err != nil {
+		chanRes = err.Error()
 		log.Println(err)
 		return
 	}
 
+	keyID := ""
+	if ipns != "" {
+		keyID, err = rdsIPNS.Get(ipns).Result()
+	}
+	log.Println(ipns, keyID, "error:", err)
+	if ipns == "" || err != nil {
+		keyID = uuid.NewV1().String()
+		m, err := api.Key().Gen(keyID, "rsa", 2048)
+		if err != nil {
+			resultFail(ctx, err.Error())
+			return
+		}
+		ipns = m["Id"]
+		log.Println("ipns:", ipns, "key:", keyID)
+		err = rdsIPNS.Set(ipns, keyID, 0).Err()
+		if err != nil {
+			log.Println(err)
+			resultFail(ctx, err.Error())
+			return
+		}
+	}
+	log.Println(ipfsInfo)
+	ipnsInfo, err := api.Name().PublishWithKey("/ipfs/"+ipfsInfo["Hash"], keyID)
+	log.Println(ipnsInfo, err)
+	if err != nil {
+		chanRes = err.Error()
+
+		return
+	}
+	log.Println(info.ID, ipnsInfo)
+	//resultOK(ctx, gin.H{
+	//	"fileID":   id,
+	//	"ipns":     ipns,
+	//	"ipnsKey":  keyID,
+	//	"ipfsInfo": ipfsInfo,
+	//	"ipnsInfo": ipnsInfo,
+	//})
 	resp, err := http.PostForm("http://127.0.0.1:7790/v1/commit", url.Values{
 		"id": []string{info.FileName()},
 		//"ipns": []string{uuid.NewV1().String()},

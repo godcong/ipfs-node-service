@@ -188,8 +188,8 @@ func (o *OSS) Download(p Progress, fileName string) error {
 	dir, _ := filepath.Split(fp)
 	err := os.MkdirAll(dir, os.ModePerm)
 	if err != nil {
-		//ignore error
 		log.Println(err)
+		//ignore error
 	}
 	err = o.Bucket.DownloadFile(p.ObjectKey(), fp, di.PartSize, di.Routines, p.Option(), di.Checkpoint)
 	if err != nil {

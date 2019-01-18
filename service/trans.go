@@ -35,19 +35,13 @@ func ToM3U8WithKey(id string) error {
 }
 
 // ToM3U8 ...
-func ToM3U8(id string) error {
+func ToM3U8(id string, fileName, source, dest string) error {
 
-	output := config.Media.Transfer + "/" + id
+	output := dest + "/" + id
 	_ = os.MkdirAll(output, os.ModePerm) //ignore err
 
-	source := config.Media.Upload + "/" + id
+	source = source + "/" + id + "/" + fileName
 	probe := ffprobe.New(source)
-
-	//err := rdsQueue.Set(id, StatusTransferring, 0).Err()
-	//if err != nil {
-	//	log.Println(err)
-	//	return err
-	//}
 
 	procFunc := ffmpeg.Split
 	if probe.Run().IsH264AndAAC() {

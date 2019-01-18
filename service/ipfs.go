@@ -12,7 +12,7 @@ func InitIPFS(url, port string) ipfs.API {
 	return api
 }
 
-// Shell ...
-//func Shell() *shell.Shell {
-//	return shell.NewShell("localhost:5001")
-//}
+// DefaultIPFS ...
+func DefaultIPFS() ipfs.API {
+	return InitIPFS("localhost", "5001")
+}
