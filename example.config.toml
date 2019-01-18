@@ -15,8 +15,8 @@
     key_info_file = "KeyInfoFile"
 
 [queue]
-    addr = "redis"
-    host_port = ""
+    type = "redis"
+    host_port = ":6379"
     password = ""
     db = 1
 [ipfs]

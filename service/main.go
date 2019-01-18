@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -39,12 +38,17 @@ func RunMain() {
 	grpc := NewGRPCServer()
 	grpc.Start()
 
-	StartQueue(context.Background(), 5)
+	queue := NewQueueServer()
+	queue.Processes = 5
+	queue.Start()
+
 	go func() {
 		sig := <-sigs
 		//bm.Stop()
 		fmt.Println(sig, "exiting")
-		StopQueue()
+		rest.Stop()
+		grpc.Stop()
+		queue.Stop()
 		done <- true
 	}()
 	<-done

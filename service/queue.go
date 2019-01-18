@@ -11,8 +11,13 @@ import (
 
 // HandleFunc ...
 type HandleFunc func(name, key string) error
+type QueueServer struct {
+	*redis.Client
+	Processes int
+	cancel    context.CancelFunc
+}
 
-var globalCancel context.CancelFunc
+var queue *QueueServer
 
 // Push ...
 func Push(v *Streamer) {
@@ -23,63 +28,6 @@ func Push(v *Streamer) {
 func Pop() *Streamer {
 	pop := queue.LPop("node_queue").Val()
 	return ParseStreamer(pop)
-}
-
-// StartQueue ...
-func StartQueue(ctx context.Context, process int) {
-	if queue == nil {
-		queue = redis.NewClient(&redis.Options{
-			Addr:     "",
-			Password: "",              // no password set
-			DB:       RedisQueueIndex, // use default DB
-		})
-	}
-	var c context.Context
-	c, globalCancel = context.WithCancel(ctx)
-	//run with a new go channel
-	go func() {
-		threads := make(chan string, process)
-
-		for i := 0; i < process; i++ {
-			log.Println("start", i)
-			go transferNothing(threads)
-		}
-		isStop := false
-		count := 0
-		for {
-			select {
-			case v := <-threads:
-				if v != "" {
-					log.Println("success: ", v)
-				}
-				if isStop {
-					count++
-					if count == process {
-						log.Println("stopped")
-						return
-					}
-					continue
-				}
-				if s := Pop(); s != nil {
-					go transfer(threads, s)
-				} else {
-					go transferNothing(threads)
-				}
-			case <-c.Done():
-				isStop = true
-			default:
-				time.Sleep(1 * time.Second)
-			}
-		}
-	}()
-}
-
-// StopQueue ...
-func StopQueue() {
-	if globalCancel == nil {
-		return
-	}
-	globalCancel()
 }
 
 func transfer(ch chan<- string, info *Streamer) {
@@ -168,4 +116,69 @@ func (r *QueueResult) JSON() string {
 func transferNothing(threads chan<- string) {
 	time.Sleep(3 * time.Second)
 	threads <- ""
+}
+
+func NewQueueServer() *QueueServer {
+	client := redis.NewClient(&redis.Options{
+		Addr:     DefaultString(config.Queue.HostPort, ":6379"),
+		Password: DefaultString(config.Queue.Password, ""), // no password set
+		DB:       config.Queue.DB,                          // use default DB
+	})
+	return &QueueServer{
+		Client: client,
+	}
+}
+
+func (s *QueueServer) Start() {
+	pong, err := s.Ping().Result()
+	if err != nil {
+		panic(err)
+	}
+	log.Println(pong)
+
+	var c context.Context
+	c, s.cancel = context.WithCancel(context.Background())
+	//run with a new go channel
+	go func() {
+		threads := make(chan string, s.Processes)
+
+		for i := 0; i < s.Processes; i++ {
+			log.Println("start", i)
+			go transferNothing(threads)
+		}
+		//isStop := false
+		//count := 0
+		for {
+			select {
+			case v := <-threads:
+				if v != "" {
+					log.Println("success: ", v)
+				}
+				//if isStop {
+				//	count++
+				//	if count ==  s.Processes {
+				//		log.Println("stopped")
+				//		return
+				//	}
+				//	continue
+				//}
+				if s := Pop(); s != nil {
+					go transfer(threads, s)
+				} else {
+					go transferNothing(threads)
+				}
+			case <-c.Done():
+				//isStop = true
+			default:
+				time.Sleep(1 * time.Second)
+			}
+		}
+	}()
+}
+
+func (s *QueueServer) Stop() {
+	if s.cancel == nil {
+		return
+	}
+	s.cancel()
 }

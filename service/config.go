@@ -49,16 +49,20 @@ type REST struct {
 
 // Queue ...
 type Queue struct {
-	Addr     string
-	Password string
+	Type     string `json:"type"`
+	HostPort string `json:"host_port"`
+	Password string `json:"password"`
+	DB       int    `json:"db"`
 }
 
 // Configure ...
 type Configure struct {
-	Media    Media    `toml:"media"`
-	GRPC     GRPC     `toml:"grpc"`
-	REST     REST     `toml:"rest"`
-	IPFS     IPFS     `toml:"ipfs"`
+	Media Media `toml:"media"`
+	Queue Queue `toml:"queue"`
+	GRPC  GRPC  `toml:"grpc"`
+	REST  REST  `toml:"rest"`
+	IPFS  IPFS  `toml:"ipfs"`
+
 	Callback Callback `toml:"callback"`
 }
 

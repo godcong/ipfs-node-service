@@ -11,7 +11,6 @@ const RedisQueueIndex = 1
 const RedisKeyStoreIndex = 2
 
 var store *redis.Client
-var queue *redis.Client
 
 // NewKeyStore ...
 func NewKeyStore() *redis.Client {
