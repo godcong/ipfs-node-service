@@ -13,7 +13,9 @@ import (
 
 // GRPCServer ...
 type GRPCServer struct {
+	Type   string
 	Port   string
+	Path   string
 	server *grpc.Server
 }
 
@@ -43,12 +45,10 @@ func Result(detail *proto.ReplyDetail) *proto.ServiceReply {
 
 // NewGRPCServer ...
 func NewGRPCServer() *GRPCServer {
-	port := config.GRPC.Port
-	if port == "" {
-		port = ":7781"
-	}
 	return &GRPCServer{
-		Port: port,
+		Type: DefaultString(config.GRPC.Type, Type),
+		Port: DefaultString(config.GRPC.Port, ":7782"),
+		Path: DefaultString(config.GRPC.Path, "/tmp/node.sock"),
 	}
 }
 
@@ -62,11 +62,10 @@ func (s *GRPCServer) Start() {
 	var port string
 	var err error
 	go func() {
-
-		if config.GRPC.Type == "sock" {
-			_ = syscall.Unlink("/tmp/node.sock")
-			lis, err = net.Listen("unix", "/tmp/node.sock")
-			port = lis.Addr().String()
+		if s.Type == "sock" {
+			_ = syscall.Unlink(s.Path)
+			lis, err = net.Listen("unix", s.Path)
+			port = s.Path
 		} else {
 			lis, err = net.Listen("tcp", config.GRPC.Port)
 			port = config.GRPC.Port

@@ -1,27 +1,28 @@
 [grpc]
-        enable = true
-        port = ":7780"
+    enable = true
+#    type = "sock"
+    port = ":7781"
+    path = "/tmp/node1.sock"
 [rest]
-        enable = true
-        port = ":7781"
+    enable = true
 [media]
-		upload=      "upload"
-		transfer=    "transfer"
-		m3u8 =        "media.m3u8"
-		key_url =         "http://localhost:8080"
-		key_file =      "key"
-		key_dest = "output_key"
-		key_info_file = "KeyInfoFile"
+    upload= "upload"
+    transfer= "transfer"
+    m3u8 = "media.m3u8"
+    key_url = "http://localhost:8080"
+    key_file = "key"
+    key_dest = "output_key"
+    key_info_file = "KeyInfoFile"
 
 [queue]
-        addr = "redis"
-        host_port = ""
-        password = ""
-        db = 1
+    addr = "redis"
+    host_port = ""
+    password = ""
+    db = 1
 [ipfs]
-        host = ""
-        port = ""
+    host = ""
+    port = ""
 
 [callback]
-       address = ""
-       port =""
+    address = ""
+    port =""

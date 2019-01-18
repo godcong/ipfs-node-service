@@ -122,3 +122,11 @@ func Config() *Configure {
 	}
 	return config
 }
+
+// DefaultString ...
+func DefaultString(v, def string) string {
+	if v == "" {
+		return def
+	}
+	return v
+}
