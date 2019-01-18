@@ -21,13 +21,13 @@ type GRPCServer struct {
 }
 
 // RemoteDownload ...
-func (s *GRPCServer) RemoteDownload(ctx context.Context, p *proto.RemoteDownloadRequest) (*proto.ServiceReply, error) {
+func (s *GRPCServer) RemoteDownload(ctx context.Context, p *proto.RemoteDownloadRequest) (*proto.NodeReply, error) {
 	log.Printf("Received: %v", p.String())
 	stream := NewStreamerWithConfig(Config(), p.ObjectKey)
 	//stream.Dir, stream.FileName = filepath.Split(key)
 	stream.ObjectKey = p.ObjectKey
 	stream.SetEncrypt(false)
-	stream.StreamerCallback = NewBack()
+	stream.Callback = Config().Callback.Type
 	//stream.SetURI("")
 	//stream.FileDest = config.Media.Upload
 	//stream.SetSrc(config.Media.Transfer)
@@ -60,7 +60,7 @@ func (b *grpcBack) Callback(r *QueueResult) error {
 	client := proto.NewManagerServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	reply, err := client.Back(ctx, &proto.ManagerRequest{
+	reply, err := client.Back(ctx, &proto.ManagerCallbackRequest{
 		ObjectKey: r.ID,
 		Detail:    r.JSON(),
 	})
@@ -81,20 +81,17 @@ func NewGRPCBack(cfg *Configure) StreamerCallback {
 }
 
 // Status ...
-func (s *GRPCServer) Status(ctx context.Context, p *proto.StatusRequest) (*proto.ServiceReply, error) {
+func (s *GRPCServer) Status(ctx context.Context, p *proto.StatusRequest) (*proto.NodeReply, error) {
 	log.Printf("Received: %v", p.String())
 	return Result(nil), nil
 }
 
 // Result ...
-func Result(detail *proto.ReplyDetail) *proto.ServiceReply {
-	return &proto.ServiceReply{
-		Code:                 0,
-		Message:              "",
-		Detail:               detail,
-		XXX_NoUnkeyedLiteral: struct{}{},
-		XXX_unrecognized:     nil,
-		XXX_sizecache:        0,
+func Result(detail *proto.NodeReplyDetail) *proto.NodeReply {
+	return &proto.NodeReply{
+		Code:    0,
+		Message: "success",
+		Detail:  detail,
 	}
 }
 

@@ -123,7 +123,10 @@ func transfer(ch chan<- string, info *Streamer) {
 		log.Println(err)
 		return
 	}
-	err = info.Callback(&qr)
+
+	//stream.Callback = Config().Callback.Type
+
+	err = NewBack().Callback(&qr)
 
 	//response, err := http.PostForm("http://127.0.0.1:7788/v0/ipfs/callback", url.Values{
 	//	"id":       []string{info.FileName()},

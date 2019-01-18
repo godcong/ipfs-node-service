@@ -27,7 +27,7 @@ type Streamer struct {
 	KeyDest     string
 	FileSource  string
 	FileDest    string
-	StreamerCallback
+	Callback    string
 }
 
 // NewStreamer ...
