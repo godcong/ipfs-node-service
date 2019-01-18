@@ -6,6 +6,11 @@ import (
 	"os"
 )
 
+// Callback ...
+type Callback struct {
+	Type string `toml:"type"`
+}
+
 // Media ...
 type Media struct {
 	Upload      string `toml:"upload"`        //上传路径
@@ -50,10 +55,11 @@ type Queue struct {
 
 // Configure ...
 type Configure struct {
-	Media Media `toml:"media"`
-	GRPC  GRPC  `toml:"grpc"`
-	REST  REST  `toml:"rest"`
-	IPFS  IPFS  `toml:"ipfs"`
+	Media    Media    `toml:"media"`
+	GRPC     GRPC     `toml:"grpc"`
+	REST     REST     `toml:"rest"`
+	IPFS     IPFS     `toml:"ipfs"`
+	Callback Callback `toml:"callback"`
 }
 
 var config *Configure

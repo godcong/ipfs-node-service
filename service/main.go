@@ -49,3 +49,12 @@ func RunMain() {
 	}()
 	<-done
 }
+
+// NewBack ...
+func NewBack() StreamerCallback {
+	cfg := Config()
+	if cfg != nil && cfg.Callback.Type == "grpc" {
+		return NewGRPCBack(cfg)
+	}
+	return NewRestBack(cfg)
+}

@@ -9,6 +9,7 @@ import (
 	"log"
 	"net"
 	"syscall"
+	"time"
 )
 
 // GRPCServer ...
@@ -22,7 +23,61 @@ type GRPCServer struct {
 // RemoteDownload ...
 func (s *GRPCServer) RemoteDownload(ctx context.Context, p *proto.RemoteDownloadRequest) (*proto.ServiceReply, error) {
 	log.Printf("Received: %v", p.String())
+	stream := NewStreamerWithConfig(Config(), p.ObjectKey)
+	//stream.Dir, stream.FileName = filepath.Split(key)
+	stream.ObjectKey = p.ObjectKey
+	stream.SetEncrypt(false)
+	stream.StreamerCallback = NewBack()
+	//stream.SetURI("")
+	//stream.FileDest = config.Media.Upload
+	//stream.SetSrc(config.Media.Transfer)
+	queue.Set(stream.ID, StatusQueuing, 0)
+	Push(stream)
 	return Result(nil), nil
+}
+
+type grpcBack struct {
+	BackType string
+	BackAddr string
+}
+
+// Callback ...
+func (b *grpcBack) Callback(r *QueueResult) error {
+	var conn *grpc.ClientConn
+	var err error
+
+	if b.BackType == "unix" {
+		conn, err = grpc.Dial("passthrough:///unix://" + b.BackAddr)
+		//conn, err = net.Dial(b.BackType, b.BackAddr)
+	} else {
+		conn, err = grpc.Dial(b.BackAddr)
+		//conn, err = net.Dial("tcp", b.BackAddr)
+	}
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	client := proto.NewManagerServiceClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	reply, err := client.Back(ctx, &proto.ManagerRequest{
+		ObjectKey: r.ID,
+		Detail:    r.JSON(),
+	})
+
+	if err != nil {
+		return err
+	}
+	log.Printf("%+v", reply)
+	return nil
+}
+
+// NewGRPCBack ...
+func NewGRPCBack(cfg *Configure) StreamerCallback {
+	return &grpcBack{
+		BackType: DefaultString(cfg.GRPC.BackType, "tcp"),
+		BackAddr: DefaultString(cfg.GRPC.BackAddr, "localhost:7783"),
+	}
 }
 
 // Status ...
@@ -67,8 +122,8 @@ func (s *GRPCServer) Start() {
 			lis, err = net.Listen(s.Type, s.Path)
 			port = s.Path
 		} else {
-			lis, err = net.Listen("tcp", config.GRPC.Port)
-			port = config.GRPC.Port
+			lis, err = net.Listen("tcp", s.Port)
+			port = s.Port
 		}
 
 		if err != nil {
