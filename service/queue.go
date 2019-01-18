@@ -6,7 +6,6 @@ import (
 	"github.com/json-iterator/go"
 	"github.com/mitchellh/mapstructure"
 	"log"
-	"strconv"
 	"time"
 )
 
@@ -43,25 +42,28 @@ func StartQueue(ctx context.Context, process int) {
 
 		for i := 0; i < process; i++ {
 			log.Println("start", i)
-			go transferNothing(threads, strconv.Itoa(i))
+			go transferNothing(threads)
 		}
 		isStop := false
 		count := 0
 		for {
 			select {
 			case v := <-threads:
+				if v != "" {
+					log.Println("success: ", v)
+				}
 				if isStop {
 					count++
 					if count == process {
-						log.Println("stoped")
+						log.Println("stopped")
 						return
 					}
 					continue
 				}
 				if s := Pop(); s != nil {
-					go transfer(threads, s, v)
+					go transfer(threads, s)
 				} else {
-					go transferNothing(threads, v)
+					go transferNothing(threads)
 				}
 			case <-c.Done():
 				isStop = true
@@ -80,13 +82,13 @@ func StopQueue() {
 	globalCancel()
 }
 
-func transfer(ch chan<- string, info *Streamer, idx string) {
+func transfer(ch chan<- string, info *Streamer) {
 	var err error
-	chanRes := idx
+	chanRes := info.FileName()
 	defer func() {
 		if err != nil {
 			log.Println(err)
-			chanRes = idx + info.FileName() + err.Error()
+			chanRes = info.FileName() + err.Error()
 		}
 		ch <- chanRes
 	}()
@@ -163,7 +165,7 @@ func (r *QueueResult) JSON() string {
 	return s
 }
 
-func transferNothing(threads chan<- string, idx string) {
+func transferNothing(threads chan<- string) {
 	time.Sleep(3 * time.Second)
-	threads <- idx
+	threads <- ""
 }
