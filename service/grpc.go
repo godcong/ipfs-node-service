@@ -31,7 +31,7 @@ func (s *GRPCServer) RemoteDownload(ctx context.Context, p *proto.RemoteDownload
 	//stream.SetURI("")
 	//stream.FileDest = config.Media.Upload
 	//stream.SetSrc(config.Media.Transfer)
-	queue.Set(stream.ID, StatusQueuing, 0)
+	globalQueue.Set(stream.ID, StatusQueuing, 0)
 	Push(stream)
 	return Result(nil), nil
 }

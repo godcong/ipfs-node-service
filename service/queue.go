@@ -17,16 +17,24 @@ type QueueServer struct {
 	cancel    context.CancelFunc
 }
 
-var queue *QueueServer
+var globalQueue *QueueServer
+
+func Push(v *Streamer) {
+	globalQueue.Push(v)
+}
 
 // Push ...
-func Push(v *Streamer) {
-	queue.RPush("node_queue", v.JSON())
+func (s *QueueServer) Push(v *Streamer) {
+	s.RPush("node_queue", v.JSON())
+}
+
+func Pop() *Streamer {
+	return globalQueue.Pop()
 }
 
 // Pop ...
-func Pop() *Streamer {
-	pop := queue.LPop("node_queue").Val()
+func (s *QueueServer) Pop() *Streamer {
+	pop := s.LPop("node_queue").Val()
 	return ParseStreamer(pop)
 }
 
@@ -41,13 +49,13 @@ func transfer(ch chan<- string, info *Streamer) {
 		ch <- chanRes
 	}()
 
-	queue.Set(info.ID, StatusDownloading, 0)
+	globalQueue.Set(info.ID, StatusDownloading, 0)
 	err = download(info)
 	if err != nil {
 		return
 	}
 
-	queue.Set(info.ID, StatusTransferring, 0)
+	globalQueue.Set(info.ID, StatusTransferring, 0)
 	if info.Encrypt() {
 		_ = info.KeyFile()
 		err = toM3U8WithKey(info.ID, info.SourceFile(), info.FileDest, info.KeyInfoName)
@@ -134,6 +142,7 @@ func (s *QueueServer) Start() {
 	if err != nil {
 		panic(err)
 	}
+	globalQueue = s
 	log.Println(pong)
 
 	var c context.Context

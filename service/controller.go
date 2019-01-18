@@ -136,7 +136,7 @@ func RemoteDownloadPost(vertion string) gin.HandlerFunc {
 		//stream.SetURI("")
 		//stream.FileDest = config.Media.Upload
 		//stream.SetSrc(config.Media.Transfer)
-		queue.Set(stream.ID, StatusQueuing, 0)
+		globalQueue.Set(stream.ID, StatusQueuing, 0)
 		Push(stream)
 
 		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"id": stream.ID}))
@@ -271,7 +271,7 @@ func TransferPost(version string) gin.HandlerFunc {
 func StatusGet(version string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
-		val, err := queue.Get(id).Result()
+		val, err := globalQueue.Get(id).Result()
 		if err != nil {
 			ctx.JSON(http.StatusOK, JSON(1, "data not found"))
 			return

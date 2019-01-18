@@ -1,4 +1,4 @@
 package service
 
 // Type ...
-const Type = "sock"
+const Type = "unix"
