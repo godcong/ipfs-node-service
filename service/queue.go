@@ -6,6 +6,7 @@ import (
 	"github.com/json-iterator/go"
 	"github.com/mitchellh/mapstructure"
 	"log"
+	"strconv"
 	"time"
 )
 
@@ -42,14 +43,13 @@ func StartQueue(ctx context.Context, process int) {
 
 		for i := 0; i < process; i++ {
 			log.Println("start", i)
-			go transferNothing(threads)
+			go transferNothing(threads, strconv.Itoa(i))
 		}
 		isStop := false
 		count := 0
 		for {
 			select {
 			case v := <-threads:
-				log.Println("success:", v)
 				if isStop {
 					count++
 					if count == process {
@@ -59,13 +59,14 @@ func StartQueue(ctx context.Context, process int) {
 					continue
 				}
 				if s := Pop(); s != nil {
-					go transfer(threads, s)
+					go transfer(threads, s, v)
 				} else {
-					time.Sleep(3 * time.Second)
-					go transferNothing(threads)
+					go transferNothing(threads, v)
 				}
 			case <-c.Done():
 				isStop = true
+			default:
+				time.Sleep(1 * time.Second)
 			}
 		}
 	}()
@@ -79,18 +80,20 @@ func StopQueue() {
 	globalCancel()
 }
 
-func transfer(ch chan<- string, info *Streamer) {
+func transfer(ch chan<- string, info *Streamer, idx string) {
 	var err error
-	chanRes := info.FileName()
+	chanRes := idx
 	defer func() {
+		if err != nil {
+			log.Println(err)
+			chanRes = idx + info.FileName() + err.Error()
+		}
 		ch <- chanRes
 	}()
 
 	queue.Set(info.ID, StatusDownloading, 0)
 	err = download(info)
 	if err != nil {
-		chanRes = err.Error()
-		log.Println(err)
 		return
 	}
 
@@ -103,15 +106,11 @@ func transfer(ch chan<- string, info *Streamer) {
 	}
 
 	if err != nil {
-		chanRes = err.Error()
-		log.Println(err)
 		return
 	}
 
 	detail, err := commitToIPNS(info.ID, info.DestPath())
 	if err != nil {
-		chanRes = err.Error()
-		log.Println(err)
 		return
 	}
 
@@ -119,8 +118,6 @@ func transfer(ch chan<- string, info *Streamer) {
 
 	err = mapstructure.Decode(detail, &qr)
 	if err != nil {
-		chanRes = err.Error()
-		log.Println(err)
 		return
 	}
 
@@ -135,7 +132,6 @@ func transfer(ch chan<- string, info *Streamer) {
 	//	"ipns_key": []string{cr.Detail.IpnsKey},
 	//})
 	if err != nil {
-		log.Println(err)
 		return
 	}
 	//by, err := ioutil.ReadAll(response.Body)
@@ -167,6 +163,7 @@ func (r *QueueResult) JSON() string {
 	return s
 }
 
-func transferNothing(threads chan<- string) {
-	threads <- "nothing"
+func transferNothing(threads chan<- string, idx string) {
+	time.Sleep(3 * time.Second)
+	threads <- idx
 }

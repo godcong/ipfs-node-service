@@ -39,7 +39,7 @@ func RunMain() {
 	grpc := NewGRPCServer()
 	grpc.Start()
 
-	StartQueue(context.Background(), 2)
+	StartQueue(context.Background(), 5)
 	go func() {
 		sig := <-sigs
 		//bm.Stop()
