@@ -13,40 +13,36 @@ service NodeService {
     }
 }
 
-message Response{
-
-}
-
 message StatusRequest {
     string id = 1;
 }
 
-enum RemoteType {
+enum NodeRemoteType {
     RemoteBasic = 0;
     RemoteRetry = 1;
     RemoteForce = 2;
   }
 
 
-enum BackType {
+enum NodeBackType {
     BackHTTP = 0;
     BackGRPC = 1;
 }
 
 message RemoteDownloadRequest {
     string objectKey = 1;
-    RemoteType remoteType = 2 ;
-    BackType backType = 3 ;
+    NodeRemoteType remoteType = 2 ;
+    NodeBackType backType = 3 ;
     string backHost = 4;
 }
 
 message NodeReply {
     int32 code = 1;
     string message = 2;
-    ReplyDetail detail =3;
+    NodeReplyDetail detail =3;
 }
 
-message ReplyDetail {
+message NodeReplyDetail {
     string ID = 1;
     string json = 2;
 }
