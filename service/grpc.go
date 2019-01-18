@@ -62,9 +62,9 @@ func (s *GRPCServer) Start() {
 	var port string
 	var err error
 	go func() {
-		if s.Type == "sock" {
+		if s.Type == "unix" {
 			_ = syscall.Unlink(s.Path)
-			lis, err = net.Listen("unix", s.Path)
+			lis, err = net.Listen(s.Type, s.Path)
 			port = s.Path
 		} else {
 			lis, err = net.Listen("tcp", config.GRPC.Port)

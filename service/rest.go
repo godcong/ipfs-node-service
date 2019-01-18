@@ -9,19 +9,16 @@ import (
 // RestServer ...
 type RestServer struct {
 	*gin.Engine
-	Port   string
-	server *http.Server
+	BackURL string
+	Port    string
+	server  *http.Server
 }
 
 // NewRestServer ...
 func NewRestServer() *RestServer {
-	port := config.REST.Port
-	if port == "" {
-		port = ":7780"
-	}
 	s := &RestServer{
 		Engine: gin.Default(),
-		Port:   port,
+		Port:   DefaultString(config.REST.Port, ":7780"),
 	}
 	return s
 }
@@ -49,6 +46,13 @@ func (s *RestServer) Stop() {
 	if err := s.server.Shutdown(nil); err != nil {
 		panic(err) // failure/timeout shutting down the server gracefully
 	}
+}
+
+// Callback ...
+func (s *RestServer) Callback(result *QueueResult) error {
+
+	url := "/v0/ipfs/callback"
+
 }
 
 // JSON ...

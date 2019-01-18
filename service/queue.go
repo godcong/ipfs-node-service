@@ -3,13 +3,9 @@ package service
 import (
 	"context"
 	"github.com/go-redis/redis"
-	"github.com/godcong/node-service/oss"
 	"github.com/json-iterator/go"
-	"github.com/satori/go.uuid"
-	"io/ioutil"
+	"github.com/mitchellh/mapstructure"
 	"log"
-	"net/http"
-	"net/url"
 	"time"
 )
 
@@ -83,21 +79,6 @@ func StopQueue() {
 	globalCancel()
 }
 
-func download(info *Streamer) error {
-	server := oss.Server2()
-	queue.Set(info.ID, StatusDownloading, 0)
-	p := oss.NewProgress()
-	p.SetObjectKey(info.ObjectKey)
-	p.SetPath(info.FileDest)
-	err := server.Download(p, info.FileName())
-	if err != nil {
-		//chanRes = err.Error()
-		log.Println(err)
-		return err
-	}
-	return nil
-}
-
 func transfer(ch chan<- string, info *Streamer) {
 	var err error
 	chanRes := info.FileName()
@@ -105,131 +86,82 @@ func transfer(ch chan<- string, info *Streamer) {
 		ch <- chanRes
 	}()
 
+	queue.Set(info.ID, StatusDownloading, 0)
+	err = download(info)
 	if err != nil {
 		chanRes = err.Error()
 		log.Println(err)
 		return
 	}
 
+	queue.Set(info.ID, StatusTransferring, 0)
 	if info.Encrypt() {
 		_ = info.KeyFile()
-		err = ToM3U8WithKey(info.FileName())
+		err = toM3U8WithKey(info.ID, info.SourceFile(), info.FileDest, info.KeyInfoName)
 	} else {
-		err = ToM3U8(info.ID, info.FileName(), info.FileSource, info.FileDest)
+		err = toM3U8(info.ID, info.SourceFile(), info.FileDest)
 	}
-
-	if err != nil {
-		if err != nil {
-			chanRes = err.Error()
-			log.Println(err)
-		}
-		return
-	}
-	log.Println("transferred:", *info)
 
 	if err != nil {
 		chanRes = err.Error()
 		log.Println(err)
 		return
 	}
-	ipfsInfo, err := api.AddDir(info.FileDest + "/" + info.FileName() + "/")
+
+	detail, err := commitToIPNS(info.ID, info.DestPath())
 	if err != nil {
 		chanRes = err.Error()
 		log.Println(err)
 		return
 	}
 
-	ipns := ""
-	keyID := ""
-	if ipns != "" {
-		keyID, err = queue.Get(ipns).Result()
-	}
-	log.Println(ipns, keyID, "error:", err)
-	if ipns == "" || err != nil {
-		keyID = uuid.NewV1().String()
-		m, err := api.Key().Gen(keyID, "rsa", 2048)
-		if err != nil {
-			//resultFail(ctx, err.Error())
-			return
-		}
-		log.Println(m)
-		//	ipns = m["Id"]
-		//	log.Println("ipns:", ipns, "key:", keyID)
-		//	err = rdsIPNS.Set(ipns, keyID, 0).Err()
-		//	if err != nil {
-		//		log.Println(err)
-		//		resultFail(ctx, err.Error())
-		//		return
-		//	}
-		//}
-		log.Println(ipfsInfo)
-		ipnsInfo, err := api.Name().PublishWithKey("/ipfs/"+ipfsInfo["Hash"], keyID)
-		log.Println(ipnsInfo, err)
-		if err != nil {
-			chanRes = err.Error()
+	var qr QueueResult
 
-			return
-		}
-		log.Println(info.ID, ipnsInfo)
-		//resultOK(ctx, gin.H{
-		//	"fileID":   id,
-		//	"ipns":     ipns,
-		//	"ipnsKey":  keyID,
-		//	"ipfsInfo": ipfsInfo,
-		//	"ipnsInfo": ipnsInfo,
-		//})
-		resp, err := http.PostForm("http://127.0.0.1:7790/v1/commit", url.Values{
-			"id": []string{info.FileName()},
-			//"ipns": []string{uuid.NewV1().String()},
-		})
-		bytes, err := ioutil.ReadAll(resp.Body)
-		log.Println(string(bytes), err)
-		if err == nil {
-			var cr CommitResult
-			err := jsoniter.Unmarshal(bytes, &cr)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			response, err := http.PostForm("http://127.0.0.1:7788/v0/ipfs/callback", url.Values{
-				"id":       []string{info.FileName()},
-				"ipfs":     []string{cr.Detail.IpfsInfo.Hash},
-				"ipns":     []string{cr.Detail.Ipns},
-				"ipns_key": []string{cr.Detail.IpnsKey},
-			})
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			by, err := ioutil.ReadAll(response.Body)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			log.Println(string(by))
-		}
-
+	err = mapstructure.Decode(detail, &qr)
+	if err != nil {
+		chanRes = err.Error()
+		log.Println(err)
+		return
 	}
+	err = info.Callback(&qr)
+
+	//response, err := http.PostForm("http://127.0.0.1:7788/v0/ipfs/callback", url.Values{
+	//	"id":       []string{info.FileName()},
+	//	"ipfs":     []string{cr.Detail.IpfsInfo.Hash},
+	//	"ipns":     []string{cr.Detail.Ipns},
+	//	"ipns_key": []string{cr.Detail.IpnsKey},
+	//})
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	//by, err := ioutil.ReadAll(response.Body)
+	//if err != nil {
+	//	log.Println(err)
+	//	return
+	//}
+	//log.Println(string(by))
+
 }
 
-// CommitResult ...
-type CommitResult struct {
-	Code   int    `json:"code"`
-	Msg    string `json:"msg"`
-	Detail struct {
-		FileID   string `json:"fileID"`
-		IpfsInfo struct {
-			Hash string `json:"Hash"`
-			Name string `json:"Name"`
-			Size string `json:"Size"`
-		} `json:"ipfsInfo"`
-		Ipns     string `json:"ipns"`
-		IpnsInfo struct {
-			Name  string `json:"Name"`
-			Value string `json:"Value"`
-		} `json:"ipnsInfo"`
-		IpnsKey string `json:"ipnsKey"`
-	} `json:"detail"`
+// QueueResult ...
+type QueueResult struct {
+	ID     string `mapstructure:"id"`
+	FSInfo struct {
+		Hash string `mapstructure:"hash"`
+		Name string `mapstructure:"name"`
+		Size string `mapstructure:"size"`
+	} `mapstructure:"fs_info"`
+	NSInfo struct {
+		Name  string `mapstructure:"name"`
+		Value string `mapstructure:"value"`
+	} `mapstructure:"ns_info"`
+}
+
+// JSON ...
+func (r *QueueResult) JSON() string {
+	s, _ := jsoniter.MarshalToString(r)
+	return s
 }
 
 func transferNothing(threads chan<- string) {

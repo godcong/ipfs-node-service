@@ -3,15 +3,16 @@ package service
 import (
 	"github.com/godcong/node-service/ffmpeg"
 	"github.com/godcong/node-service/ffprobe"
+	"github.com/godcong/node-service/oss"
 	"log"
 	"os"
+	"path/filepath"
 )
 
-// ToM3U8WithKey ...
-func ToM3U8WithKey(id string) error {
+// toM3U8WithKey ...
+func toM3U8WithKey(id, source, dest string, key string) error {
 
-	output := config.Media.Transfer + "/" + id
-	source := config.Media.Upload + "/" + id
+	output := filepath.Join(dest, id)
 	probe := ffprobe.New(source)
 
 	//err := rdsQueue.Set(id, StatusTransferring, 0).Err()
@@ -25,7 +26,7 @@ func ToM3U8WithKey(id string) error {
 		procFunc = ffmpeg.QuickSplitWithKey
 	}
 
-	b, err := procFunc(source, output, config.Media.KeyInfoFile, "media", config.Media.M3U8)
+	b, err := procFunc(source, output, config.Media.KeyInfoFile, "media", "media.m3u8")
 	if err != nil {
 		log.Println(string(b), err)
 		return err
@@ -34,13 +35,13 @@ func ToM3U8WithKey(id string) error {
 	return nil
 }
 
-// ToM3U8 ...
-func ToM3U8(id string, fileName, source, dest string) error {
+// toM3U8 ...
+func toM3U8(id string, source, dest string) error {
 
-	output := dest + "/" + id
+	output := filepath.Join(dest, id)
 	_ = os.MkdirAll(output, os.ModePerm) //ignore err
 
-	source = source + "/" + id + "/" + fileName
+	//source = source + "/" + id + "/" + fileName
 	probe := ffprobe.New(source)
 
 	procFunc := ffmpeg.Split
@@ -48,11 +49,24 @@ func ToM3U8(id string, fileName, source, dest string) error {
 		procFunc = ffmpeg.QuickSplit
 	}
 
-	b, err := procFunc(source, output, "media", config.Media.M3U8)
+	b, err := procFunc(source, output, "media", "media.m3u8")
 	if err != nil {
 		log.Println(string(b), err)
 		return err
 	}
 
+	return nil
+}
+
+func download(info *Streamer) error {
+	server := oss.Server2()
+
+	p := oss.NewProgress()
+	p.SetObjectKey(info.ObjectKey)
+	p.SetPath(info.FileSource + "/" + info.ID)
+	err := server.Download(p, info.FileName())
+	if err != nil {
+		return err
+	}
 	return nil
 }

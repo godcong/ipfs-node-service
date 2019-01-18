@@ -123,20 +123,21 @@ func RemoteDownloadPost(vertion string) gin.HandlerFunc {
 			resultFail(ctx, "null object key")
 			return
 		}
+		//url := ctx.PostForm("callback")
 		//fileName := util.GenerateRandomString(64)
 
 		//rdsQueue.Set(fileName, StatusDownloaded, 0)
-		//stream := NewStreamer(key)
-		stream := NewStreamerWithConfig(Config())
+
+		stream := NewStreamerWithConfig(Config(), ctx.PostForm("id"))
 		//stream.Dir, stream.FileName = filepath.Split(key)
 		stream.ObjectKey = key
 		stream.SetEncrypt(false)
 		//stream.SetURI("")
 		//stream.FileDest = config.Media.Upload
 		//stream.SetSrc(config.Media.Transfer)
-		//rdsQueue.Set(fileName, StatusQueuing, 0)
+		queue.Set(stream.ID, StatusQueuing, 0)
 		Push(stream)
-		//log.Println(fileName)
+
 		ctx.JSON(http.StatusOK, JSON(0, "ok", gin.H{"id": stream.ID}))
 		return
 	}

@@ -12,11 +12,15 @@ import (
 
 var configPath = flag.String("path", "config.toml", "load config file from path")
 
-// RunMain 主线程
-func RunMain() {
+func init() {
 	if !flag.Parsed() {
 		flag.Parse()
 	}
+}
+
+// RunMain 主线程
+func RunMain() {
+
 	err := Initialize(*configPath)
 	if err != nil {
 		panic(err)

@@ -10,19 +10,24 @@ import (
 	"sync"
 )
 
+// StreamerCallback ...
+type StreamerCallback interface {
+	Callback(*QueueResult) error
+}
+
 // Streamer ...
 type Streamer struct {
-	encrypt      bool
-	ID           string
-	Key          string
-	ObjectKey    string
-	KeyURL       string
-	KeyName      string
-	KeyInfoName  string
-	KeyDest      string
-	FileSource   string
-	FileDest     string
-	CallbackFunc func(string)
+	encrypt     bool
+	ID          string
+	Key         string
+	ObjectKey   string
+	KeyURL      string
+	KeyName     string
+	KeyInfoName string
+	KeyDest     string
+	FileSource  string
+	FileDest    string
+	StreamerCallback
 }
 
 // NewStreamer ...
@@ -42,10 +47,10 @@ func NewStreamer() *Streamer {
 }
 
 // NewStreamerWithConfig ...
-func NewStreamerWithConfig(cfg *Configure) *Streamer {
+func NewStreamerWithConfig(cfg *Configure, id string) *Streamer {
 	return &Streamer{
 		encrypt:     false,
-		ID:          uuid.NewV1().String(),
+		ID:          DefaultString(id, uuid.NewV1().String()),
 		KeyURL:      cfg.Media.KeyURL,
 		KeyName:     cfg.Media.KeyFile,
 		KeyInfoName: cfg.Media.KeyInfoFile,
@@ -92,6 +97,16 @@ func (s *Streamer) KeyFile() string {
 	}
 
 	return dst + "/" + s.KeyInfoName
+}
+
+// SourceFile ...
+func (s *Streamer) SourceFile() string {
+	return filepath.Join(s.FileSource, s.ID, s.FileName())
+}
+
+// DestPath ...
+func (s *Streamer) DestPath() string {
+	return filepath.Join(s.FileDest, s.ID)
 }
 
 // FromConfig ...
