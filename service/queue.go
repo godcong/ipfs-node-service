@@ -88,7 +88,7 @@ func download(info *Streamer) error {
 	queue.Set(info.ID, StatusDownloading, 0)
 	p := oss.NewProgress()
 	p.SetObjectKey(info.ObjectKey)
-	p.SetPath(config.Media.Upload)
+	p.SetPath(info.FileDest)
 	err := server.Download(p, info.FileName())
 	if err != nil {
 		//chanRes = err.Error()
@@ -139,75 +139,77 @@ func transfer(ch chan<- string, info *Streamer) {
 		return
 	}
 
+	ipns := ""
 	keyID := ""
 	if ipns != "" {
-		keyID, err = rdsIPNS.Get(ipns).Result()
+		keyID, err = queue.Get(ipns).Result()
 	}
 	log.Println(ipns, keyID, "error:", err)
 	if ipns == "" || err != nil {
 		keyID = uuid.NewV1().String()
 		m, err := api.Key().Gen(keyID, "rsa", 2048)
 		if err != nil {
-			resultFail(ctx, err.Error())
+			//resultFail(ctx, err.Error())
 			return
 		}
-		ipns = m["Id"]
-		log.Println("ipns:", ipns, "key:", keyID)
-		err = rdsIPNS.Set(ipns, keyID, 0).Err()
+		log.Println(m)
+		//	ipns = m["Id"]
+		//	log.Println("ipns:", ipns, "key:", keyID)
+		//	err = rdsIPNS.Set(ipns, keyID, 0).Err()
+		//	if err != nil {
+		//		log.Println(err)
+		//		resultFail(ctx, err.Error())
+		//		return
+		//	}
+		//}
+		log.Println(ipfsInfo)
+		ipnsInfo, err := api.Name().PublishWithKey("/ipfs/"+ipfsInfo["Hash"], keyID)
+		log.Println(ipnsInfo, err)
 		if err != nil {
-			log.Println(err)
-			resultFail(ctx, err.Error())
-			return
-		}
-	}
-	log.Println(ipfsInfo)
-	ipnsInfo, err := api.Name().PublishWithKey("/ipfs/"+ipfsInfo["Hash"], keyID)
-	log.Println(ipnsInfo, err)
-	if err != nil {
-		chanRes = err.Error()
+			chanRes = err.Error()
 
-		return
-	}
-	log.Println(info.ID, ipnsInfo)
-	//resultOK(ctx, gin.H{
-	//	"fileID":   id,
-	//	"ipns":     ipns,
-	//	"ipnsKey":  keyID,
-	//	"ipfsInfo": ipfsInfo,
-	//	"ipnsInfo": ipnsInfo,
-	//})
-	resp, err := http.PostForm("http://127.0.0.1:7790/v1/commit", url.Values{
-		"id": []string{info.FileName()},
-		//"ipns": []string{uuid.NewV1().String()},
-	})
-	bytes, err := ioutil.ReadAll(resp.Body)
-	log.Println(string(bytes), err)
-	if err == nil {
-		var cr CommitResult
-		err := jsoniter.Unmarshal(bytes, &cr)
-		if err != nil {
-			log.Println(err)
 			return
 		}
-		response, err := http.PostForm("http://127.0.0.1:7788/v0/ipfs/callback", url.Values{
-			"id":       []string{info.FileName()},
-			"ipfs":     []string{cr.Detail.IpfsInfo.Hash},
-			"ipns":     []string{cr.Detail.Ipns},
-			"ipns_key": []string{cr.Detail.IpnsKey},
+		log.Println(info.ID, ipnsInfo)
+		//resultOK(ctx, gin.H{
+		//	"fileID":   id,
+		//	"ipns":     ipns,
+		//	"ipnsKey":  keyID,
+		//	"ipfsInfo": ipfsInfo,
+		//	"ipnsInfo": ipnsInfo,
+		//})
+		resp, err := http.PostForm("http://127.0.0.1:7790/v1/commit", url.Values{
+			"id": []string{info.FileName()},
+			//"ipns": []string{uuid.NewV1().String()},
 		})
-		if err != nil {
-			log.Println(err)
-			return
+		bytes, err := ioutil.ReadAll(resp.Body)
+		log.Println(string(bytes), err)
+		if err == nil {
+			var cr CommitResult
+			err := jsoniter.Unmarshal(bytes, &cr)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			response, err := http.PostForm("http://127.0.0.1:7788/v0/ipfs/callback", url.Values{
+				"id":       []string{info.FileName()},
+				"ipfs":     []string{cr.Detail.IpfsInfo.Hash},
+				"ipns":     []string{cr.Detail.Ipns},
+				"ipns_key": []string{cr.Detail.IpnsKey},
+			})
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			by, err := ioutil.ReadAll(response.Body)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			log.Println(string(by))
 		}
-		by, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		log.Println(string(by))
-	}
 
-	chanints <- info.FileName()
+	}
 }
 
 // CommitResult ...
