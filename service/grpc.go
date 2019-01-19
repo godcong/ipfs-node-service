@@ -49,10 +49,8 @@ func (b *grpcBack) Callback(r *QueueResult) error {
 
 	if b.BackType == "unix" {
 		conn, err = grpc.Dial("passthrough:///unix://"+b.BackAddr, grpc.WithInsecure())
-		//conn, err = net.Dial(b.BackType, b.BackAddr)
 	} else {
 		conn, err = grpc.Dial(b.BackAddr, grpc.WithInsecure())
-		//conn, err = net.Dial("tcp", b.BackAddr)
 	}
 
 	if err != nil {
@@ -63,8 +61,8 @@ func (b *grpcBack) Callback(r *QueueResult) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	reply, err := client.Back(ctx, &proto.ManagerCallbackRequest{
-		ObjectKey: r.ID,
-		Detail:    r.JSON(),
+		ID:     r.ID,
+		Detail: r.JSON(),
 	})
 
 	if err != nil {

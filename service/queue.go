@@ -9,6 +9,30 @@ import (
 	"time"
 )
 
+// StatusUploaded 已上传
+const StatusUploaded = "uploaded"
+
+// StatusDownloading 正在下载
+const StatusDownloading = "downloading"
+
+// StatusDownloaded 已下载
+const StatusDownloaded = "downloaded"
+
+// StatusQueuing 队列中
+const StatusQueuing = "queuing"
+
+// StatusTransferring 转换中
+const StatusTransferring = "transferring"
+
+// StatusFileWrong 文件错误
+const StatusFileWrong = "wrong file"
+
+//StatusFailed 失败
+const StatusFailed = "failed"
+
+// StatusFinished 完成
+const StatusFinished = "finished"
+
 // HandleFunc ...
 type HandleFunc func(name, key string) error
 type QueueServer struct {
@@ -44,6 +68,7 @@ func transfer(ch chan<- string, info *Streamer) {
 	defer func() {
 		if err != nil {
 			log.Println(err)
+			globalQueue.Set(info.ID, StatusFailed, 0)
 			chanRes = info.FileName() + ":[" + err.Error() + "]"
 		}
 		ch <- chanRes
@@ -79,25 +104,12 @@ func transfer(ch chan<- string, info *Streamer) {
 		return
 	}
 
-	//stream.Callback = Config().Callback.Type
 	log.Println(qr)
 	err = NewBack().Callback(&qr)
 
-	//response, err := http.PostForm("http://127.0.0.1:7788/v0/ipfs/callback", url.Values{
-	//	"id":       []string{info.FileName()},
-	//	"ipfs":     []string{cr.Detail.IpfsInfo.Hash},
-	//	"ipns":     []string{cr.Detail.Ipns},
-	//	"ipns_key": []string{cr.Detail.IpnsKey},
-	//})
 	if err != nil {
 		return
 	}
-	//by, err := ioutil.ReadAll(response.Body)
-	//if err != nil {
-	//	log.Println(err)
-	//	return
-	//}
-	//log.Println(string(by))
 
 }
 

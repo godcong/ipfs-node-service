@@ -12,27 +12,6 @@ import (
 	"strconv"
 )
 
-// StatusUploaded 已上传
-const StatusUploaded = "uploaded"
-
-// StatusDownloading 正在下载
-const StatusDownloading = "downloading"
-
-// StatusDownloaded 已下载
-const StatusDownloaded = "downloaded"
-
-// StatusQueuing 队列中
-const StatusQueuing = "queuing"
-
-// StatusTransferring 转换中
-const StatusTransferring = "transferring"
-
-// StatusFileWrong 文件错误
-const StatusFileWrong = "wrong file"
-
-// StatusFinished 完成
-const StatusFinished = "finished"
-
 /**
  * @apiDefine Success
  * @apiSuccess {string} msg 返回具体消息
