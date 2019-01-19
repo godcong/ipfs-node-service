@@ -43,16 +43,18 @@ type grpcBack struct {
 
 // Callback ...
 func (b *grpcBack) Callback(r *QueueResult) error {
+	log.Println("callback:", r.ID)
 	var conn *grpc.ClientConn
 	var err error
 
 	if b.BackType == "unix" {
-		conn, err = grpc.Dial("passthrough:///unix://" + b.BackAddr)
+		conn, err = grpc.Dial("passthrough:///unix://"+b.BackAddr, grpc.WithInsecure())
 		//conn, err = net.Dial(b.BackType, b.BackAddr)
 	} else {
-		conn, err = grpc.Dial(b.BackAddr)
+		conn, err = grpc.Dial(b.BackAddr, grpc.WithInsecure())
 		//conn, err = net.Dial("tcp", b.BackAddr)
 	}
+
 	if err != nil {
 		return err
 	}

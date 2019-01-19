@@ -44,7 +44,7 @@ func transfer(ch chan<- string, info *Streamer) {
 	defer func() {
 		if err != nil {
 			log.Println(err)
-			chanRes = info.FileName() + err.Error()
+			chanRes = info.FileName() + ":[" + err.Error() + "]"
 		}
 		ch <- chanRes
 	}()
@@ -80,7 +80,7 @@ func transfer(ch chan<- string, info *Streamer) {
 	}
 
 	//stream.Callback = Config().Callback.Type
-
+	log.Println(qr)
 	err = NewBack().Callback(&qr)
 
 	//response, err := http.PostForm("http://127.0.0.1:7788/v0/ipfs/callback", url.Values{
