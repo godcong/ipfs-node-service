@@ -75,8 +75,8 @@ func (b *grpcBack) Callback(r *QueueResult) error {
 // NewGRPCBack ...
 func NewGRPCBack(cfg *Configure) StreamerCallback {
 	return &grpcBack{
-		BackType: DefaultString(cfg.GRPC.BackType, "tcp"),
-		BackAddr: DefaultString(cfg.GRPC.BackAddr, "localhost:7783"),
+		BackType: DefaultString(cfg.Callback.BackType, "tcp"),
+		BackAddr: DefaultString(cfg.Callback.BackAddr, "localhost:7783"),
 	}
 }
 

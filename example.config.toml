@@ -24,5 +24,6 @@
     port = ""
 
 [callback]
-    address = ""
-    port =""
+   type = "grpc"
+   back_type = "unix"
+   back_addr ="/tmp/manager.sock"

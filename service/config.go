@@ -8,7 +8,9 @@ import (
 
 // Callback ...
 type Callback struct {
-	Type string `toml:"type"`
+	Type     string `toml:"type"`
+	BackType string `toml:"back_type"`
+	BackAddr string `toml:"back_addr"`
 }
 
 // Media ...
@@ -30,12 +32,10 @@ type IPFS struct {
 
 // GRPC ...
 type GRPC struct {
-	Enable   bool   `toml:"enable"`
-	Type     string `toml:"type"`
-	Path     string `toml:"path"`
-	BackType string `toml:"back_type"`
-	BackAddr string `toml:"back_addr"`
-	Port     string `toml:"port"`
+	Enable bool   `toml:"enable"`
+	Type   string `toml:"type"`
+	Path   string `toml:"path"`
+	Port   string `toml:"port"`
 }
 
 // REST ...
