@@ -12,10 +12,8 @@ const DefaultSleepTime = 5 * time.Second
 
 // QueueInfo ...
 type QueueInfo struct {
-	ObjectKey    string
-	CallbackURL  string
-	RequestKey   string
-	CallbackFunc func(chan<- string, *QueueInfo) `json:"-"`
+	ObjectKey  string
+	RequestKey string
 }
 
 // Queue ...
@@ -125,9 +123,7 @@ func StartQueue(ctx context.Context, process int) {
 			case v := <-threads:
 				println("success:", v)
 				if s := Pop(); s != nil {
-					if s.CallbackFunc != nil {
-						go s.CallbackFunc(threads, s)
-					} else if globalCallback != nil {
+					if globalCallback != nil {
 						go globalCallback(threads, s)
 					} else {
 
