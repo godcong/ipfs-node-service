@@ -56,18 +56,20 @@ func (s *RestServer) Stop() {
 
 type restBack struct {
 	BackURL string
+	Version string
 }
 
 // NewRestBack ...
 func NewRestBack(cfg *Configure) StreamerCallback {
 	return &restBack{
-		BackURL: DefaultString(config.REST.BackURL, "localhost:7788"),
+		BackURL: DefaultString(config.Callback.BackAddr, "localhost:7787"),
+		Version: DefaultString(config.Callback.Version, "v0"),
 	}
 }
 
 // Callback ...
 func (s *restBack) Callback(result *QueueResult) error {
-	back := filepath.Join(CheckPrefix(s.BackURL), "/v0/ipfs/callback")
+	back := filepath.Join(CheckPrefix(s.BackURL), s.Version, "ipfs/callback")
 	log.Println(back)
 
 	resp, err := http.Post(back, ContentTypeJSON, strings.NewReader(result.JSON()))

@@ -76,7 +76,7 @@ func (b *grpcBack) Callback(r *QueueResult) error {
 func NewGRPCBack(cfg *Configure) StreamerCallback {
 	return &grpcBack{
 		BackType: DefaultString(cfg.Callback.BackType, "tcp"),
-		BackAddr: DefaultString(cfg.Callback.BackAddr, "localhost:7783"),
+		BackAddr: DefaultString(cfg.Callback.BackAddr, "localhost:7781"),
 	}
 }
 
@@ -99,7 +99,7 @@ func Result(detail *proto.NodeReplyDetail) *proto.NodeReply {
 func NewGRPCServer() *GRPCServer {
 	return &GRPCServer{
 		Type: DefaultString(config.GRPC.Type, Type),
-		Port: DefaultString(config.GRPC.Port, ":7782"),
+		Port: DefaultString(config.GRPC.Port, ":7788"),
 		Path: DefaultString(config.GRPC.Path, "/tmp/node.sock"),
 	}
 }

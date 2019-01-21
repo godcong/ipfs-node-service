@@ -2,7 +2,7 @@
     enable = true
 #    type = "sock"
     port = ":7781"
-    path = "/tmp/node1.sock"
+    path = "/tmp/node.sock"
 [rest]
     enable = true
 [media]
@@ -26,4 +26,5 @@
 [callback]
    type = "grpc"
    back_type = "unix"
+   version = "v0"
    back_addr ="/tmp/manager.sock"
