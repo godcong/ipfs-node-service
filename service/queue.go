@@ -35,6 +35,8 @@ const StatusFinished = "finished"
 
 // HandleFunc ...
 type HandleFunc func(name, key string) error
+
+// QueueServer ...
 type QueueServer struct {
 	*redis.Client
 	Processes int
@@ -43,6 +45,7 @@ type QueueServer struct {
 
 var globalQueue *QueueServer
 
+// Push ...
 func Push(v *Streamer) {
 	globalQueue.Push(v)
 }
@@ -52,6 +55,7 @@ func (s *QueueServer) Push(v *Streamer) {
 	s.RPush("node_queue", v.JSON())
 }
 
+// Pop ...
 func Pop() *Streamer {
 	return globalQueue.Pop()
 }
@@ -138,6 +142,7 @@ func transferNothing(threads chan<- string) {
 	threads <- ""
 }
 
+// NewQueueServer ...
 func NewQueueServer() *QueueServer {
 	client := redis.NewClient(&redis.Options{
 		Addr:     DefaultString(config.Queue.HostPort, ":6379"),
@@ -149,6 +154,7 @@ func NewQueueServer() *QueueServer {
 	}
 }
 
+// Start ...
 func (s *QueueServer) Start() {
 	pong, err := s.Ping().Result()
 	if err != nil {
@@ -197,6 +203,7 @@ func (s *QueueServer) Start() {
 	}()
 }
 
+// Stop ...
 func (s *QueueServer) Stop() {
 	if s.cancel == nil {
 		return

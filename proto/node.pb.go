@@ -23,55 +23,72 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
+// NodeRemoteType ...
 type NodeRemoteType int32
 
+// NodeRemoteType_RemoteBasic ...
 const (
 	NodeRemoteType_RemoteBasic NodeRemoteType = 0
 	NodeRemoteType_RemoteRetry NodeRemoteType = 1
 	NodeRemoteType_RemoteForce NodeRemoteType = 2
 )
 
+// NodeRemoteType_name ...
 var NodeRemoteType_name = map[int32]string{
 	0: "RemoteBasic",
 	1: "RemoteRetry",
 	2: "RemoteForce",
 }
+
+// NodeRemoteType_value ...
 var NodeRemoteType_value = map[string]int32{
 	"RemoteBasic": 0,
 	"RemoteRetry": 1,
 	"RemoteForce": 2,
 }
 
+// String ...
 func (x NodeRemoteType) String() string {
 	return proto.EnumName(NodeRemoteType_name, int32(x))
 }
+
+// EnumDescriptor ...
 func (NodeRemoteType) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_node_73801257cc819f95, []int{0}
 }
 
+// NodeBackType ...
 type NodeBackType int32
 
+// NodeBackType_BackHTTP ...
 const (
 	NodeBackType_BackHTTP NodeBackType = 0
 	NodeBackType_BackGRPC NodeBackType = 1
 )
 
+// NodeBackType_name ...
 var NodeBackType_name = map[int32]string{
 	0: "BackHTTP",
 	1: "BackGRPC",
 }
+
+// NodeBackType_value ...
 var NodeBackType_value = map[string]int32{
 	"BackHTTP": 0,
 	"BackGRPC": 1,
 }
 
+// String ...
 func (x NodeBackType) String() string {
 	return proto.EnumName(NodeBackType_name, int32(x))
 }
+
+// EnumDescriptor ...
 func (NodeBackType) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_node_73801257cc819f95, []int{1}
 }
 
+// StatusRequest ...
 type StatusRequest struct {
 	Id                   string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -79,30 +96,48 @@ type StatusRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *StatusRequest) Reset()         { *m = StatusRequest{} }
+// Reset ...
+func (m *StatusRequest) Reset() { *m = StatusRequest{} }
+
+// String ...
 func (m *StatusRequest) String() string { return proto.CompactTextString(m) }
-func (*StatusRequest) ProtoMessage()    {}
+
+// ProtoMessage ...
+func (*StatusRequest) ProtoMessage() {}
+
+// Descriptor ...
 func (*StatusRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_node_73801257cc819f95, []int{0}
 }
+
+// XXX_Unmarshal ...
 func (m *StatusRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StatusRequest.Unmarshal(m, b)
 }
+
+// XXX_Marshal ...
 func (m *StatusRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_StatusRequest.Marshal(b, m, deterministic)
 }
+
+// XXX_Merge ...
 func (dst *StatusRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_StatusRequest.Merge(dst, src)
 }
+
+// XXX_Size ...
 func (m *StatusRequest) XXX_Size() int {
 	return xxx_messageInfo_StatusRequest.Size(m)
 }
+
+// XXX_DiscardUnknown ...
 func (m *StatusRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_StatusRequest.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_StatusRequest proto.InternalMessageInfo
 
+// GetId ...
 func (m *StatusRequest) GetId() string {
 	if m != nil {
 		return m.Id
@@ -110,6 +145,7 @@ func (m *StatusRequest) GetId() string {
 	return ""
 }
 
+// RemoteDownloadRequest ...
 type RemoteDownloadRequest struct {
 	ObjectKey            string         `protobuf:"bytes,1,opt,name=objectKey,proto3" json:"objectKey,omitempty"`
 	RemoteType           NodeRemoteType `protobuf:"varint,2,opt,name=remoteType,proto3,enum=proto.NodeRemoteType" json:"remoteType,omitempty"`
@@ -120,30 +156,48 @@ type RemoteDownloadRequest struct {
 	XXX_sizecache        int32          `json:"-"`
 }
 
-func (m *RemoteDownloadRequest) Reset()         { *m = RemoteDownloadRequest{} }
+// Reset ...
+func (m *RemoteDownloadRequest) Reset() { *m = RemoteDownloadRequest{} }
+
+// String ...
 func (m *RemoteDownloadRequest) String() string { return proto.CompactTextString(m) }
-func (*RemoteDownloadRequest) ProtoMessage()    {}
+
+// ProtoMessage ...
+func (*RemoteDownloadRequest) ProtoMessage() {}
+
+// Descriptor ...
 func (*RemoteDownloadRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_node_73801257cc819f95, []int{1}
 }
+
+// XXX_Unmarshal ...
 func (m *RemoteDownloadRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RemoteDownloadRequest.Unmarshal(m, b)
 }
+
+// XXX_Marshal ...
 func (m *RemoteDownloadRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_RemoteDownloadRequest.Marshal(b, m, deterministic)
 }
+
+// XXX_Merge ...
 func (dst *RemoteDownloadRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_RemoteDownloadRequest.Merge(dst, src)
 }
+
+// XXX_Size ...
 func (m *RemoteDownloadRequest) XXX_Size() int {
 	return xxx_messageInfo_RemoteDownloadRequest.Size(m)
 }
+
+// XXX_DiscardUnknown ...
 func (m *RemoteDownloadRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_RemoteDownloadRequest.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_RemoteDownloadRequest proto.InternalMessageInfo
 
+// GetObjectKey ...
 func (m *RemoteDownloadRequest) GetObjectKey() string {
 	if m != nil {
 		return m.ObjectKey
@@ -151,6 +205,7 @@ func (m *RemoteDownloadRequest) GetObjectKey() string {
 	return ""
 }
 
+// GetRemoteType ...
 func (m *RemoteDownloadRequest) GetRemoteType() NodeRemoteType {
 	if m != nil {
 		return m.RemoteType
@@ -158,6 +213,7 @@ func (m *RemoteDownloadRequest) GetRemoteType() NodeRemoteType {
 	return NodeRemoteType_RemoteBasic
 }
 
+// GetBackType ...
 func (m *RemoteDownloadRequest) GetBackType() NodeBackType {
 	if m != nil {
 		return m.BackType
@@ -165,6 +221,7 @@ func (m *RemoteDownloadRequest) GetBackType() NodeBackType {
 	return NodeBackType_BackHTTP
 }
 
+// GetBackHost ...
 func (m *RemoteDownloadRequest) GetBackHost() string {
 	if m != nil {
 		return m.BackHost
@@ -172,6 +229,7 @@ func (m *RemoteDownloadRequest) GetBackHost() string {
 	return ""
 }
 
+// NodeReply ...
 type NodeReply struct {
 	Code                 int32            `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
 	Message              string           `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
@@ -181,30 +239,48 @@ type NodeReply struct {
 	XXX_sizecache        int32            `json:"-"`
 }
 
-func (m *NodeReply) Reset()         { *m = NodeReply{} }
+// Reset ...
+func (m *NodeReply) Reset() { *m = NodeReply{} }
+
+// String ...
 func (m *NodeReply) String() string { return proto.CompactTextString(m) }
-func (*NodeReply) ProtoMessage()    {}
+
+// ProtoMessage ...
+func (*NodeReply) ProtoMessage() {}
+
+// Descriptor ...
 func (*NodeReply) Descriptor() ([]byte, []int) {
 	return fileDescriptor_node_73801257cc819f95, []int{2}
 }
+
+// XXX_Unmarshal ...
 func (m *NodeReply) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_NodeReply.Unmarshal(m, b)
 }
+
+// XXX_Marshal ...
 func (m *NodeReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_NodeReply.Marshal(b, m, deterministic)
 }
+
+// XXX_Merge ...
 func (dst *NodeReply) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_NodeReply.Merge(dst, src)
 }
+
+// XXX_Size ...
 func (m *NodeReply) XXX_Size() int {
 	return xxx_messageInfo_NodeReply.Size(m)
 }
+
+// XXX_DiscardUnknown ...
 func (m *NodeReply) XXX_DiscardUnknown() {
 	xxx_messageInfo_NodeReply.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_NodeReply proto.InternalMessageInfo
 
+// GetCode ...
 func (m *NodeReply) GetCode() int32 {
 	if m != nil {
 		return m.Code
@@ -212,6 +288,7 @@ func (m *NodeReply) GetCode() int32 {
 	return 0
 }
 
+// GetMessage ...
 func (m *NodeReply) GetMessage() string {
 	if m != nil {
 		return m.Message
@@ -219,6 +296,7 @@ func (m *NodeReply) GetMessage() string {
 	return ""
 }
 
+// GetDetail ...
 func (m *NodeReply) GetDetail() *NodeReplyDetail {
 	if m != nil {
 		return m.Detail
@@ -226,6 +304,7 @@ func (m *NodeReply) GetDetail() *NodeReplyDetail {
 	return nil
 }
 
+// NodeReplyDetail ...
 type NodeReplyDetail struct {
 	ID                   string   `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	Json                 string   `protobuf:"bytes,2,opt,name=json,proto3" json:"json,omitempty"`
@@ -234,30 +313,48 @@ type NodeReplyDetail struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *NodeReplyDetail) Reset()         { *m = NodeReplyDetail{} }
+// Reset ...
+func (m *NodeReplyDetail) Reset() { *m = NodeReplyDetail{} }
+
+// String ...
 func (m *NodeReplyDetail) String() string { return proto.CompactTextString(m) }
-func (*NodeReplyDetail) ProtoMessage()    {}
+
+// ProtoMessage ...
+func (*NodeReplyDetail) ProtoMessage() {}
+
+// Descriptor ...
 func (*NodeReplyDetail) Descriptor() ([]byte, []int) {
 	return fileDescriptor_node_73801257cc819f95, []int{3}
 }
+
+// XXX_Unmarshal ...
 func (m *NodeReplyDetail) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_NodeReplyDetail.Unmarshal(m, b)
 }
+
+// XXX_Marshal ...
 func (m *NodeReplyDetail) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_NodeReplyDetail.Marshal(b, m, deterministic)
 }
+
+// XXX_Merge ...
 func (dst *NodeReplyDetail) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_NodeReplyDetail.Merge(dst, src)
 }
+
+// XXX_Size ...
 func (m *NodeReplyDetail) XXX_Size() int {
 	return xxx_messageInfo_NodeReplyDetail.Size(m)
 }
+
+// XXX_DiscardUnknown ...
 func (m *NodeReplyDetail) XXX_DiscardUnknown() {
 	xxx_messageInfo_NodeReplyDetail.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_NodeReplyDetail proto.InternalMessageInfo
 
+// GetID ...
 func (m *NodeReplyDetail) GetID() string {
 	if m != nil {
 		return m.ID
@@ -265,6 +362,7 @@ func (m *NodeReplyDetail) GetID() string {
 	return ""
 }
 
+// GetJson ...
 func (m *NodeReplyDetail) GetJson() string {
 	if m != nil {
 		return m.Json
@@ -301,10 +399,12 @@ type nodeServiceClient struct {
 	cc *grpc.ClientConn
 }
 
+// NewNodeServiceClient ...
 func NewNodeServiceClient(cc *grpc.ClientConn) NodeServiceClient {
 	return &nodeServiceClient{cc}
 }
 
+// RemoteDownload ...
 func (c *nodeServiceClient) RemoteDownload(ctx context.Context, in *RemoteDownloadRequest, opts ...grpc.CallOption) (*NodeReply, error) {
 	out := new(NodeReply)
 	err := c.cc.Invoke(ctx, "/proto.NodeService/RemoteDownload", in, out, opts...)
@@ -314,6 +414,7 @@ func (c *nodeServiceClient) RemoteDownload(ctx context.Context, in *RemoteDownlo
 	return out, nil
 }
 
+// Status ...
 func (c *nodeServiceClient) Status(ctx context.Context, in *StatusRequest, opts ...grpc.CallOption) (*NodeReply, error) {
 	out := new(NodeReply)
 	err := c.cc.Invoke(ctx, "/proto.NodeService/Status", in, out, opts...)
@@ -329,6 +430,7 @@ type NodeServiceServer interface {
 	Status(context.Context, *StatusRequest) (*NodeReply, error)
 }
 
+// RegisterNodeServiceServer ...
 func RegisterNodeServiceServer(s *grpc.Server, srv NodeServiceServer) {
 	s.RegisterService(&_NodeService_serviceDesc, srv)
 }
