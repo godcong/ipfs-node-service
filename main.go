@@ -11,35 +11,24 @@ import (
 	"io"
 	"log"
 	"os"
-	"runtime/pprof"
 )
 
-var cpuProfile = flag.String("cpuprofile", "", "write cpu profile to file")
 var configPath = flag.String("path", "config.toml", "load config file from path")
 
 func main() {
 	flag.Parse()
-	err := config.Initialize(*configPath)
-	if err != nil {
-		panic(err)
-	}
 
-	if *cpuProfile != "" {
-		f, err := os.Create(*cpuProfile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		err = pprof.StartCPUProfile(f)
-		if err != nil {
-			panic(err)
-		}
-		defer pprof.StopCPUProfile()
-	}
 	file, err := os.OpenFile("node.log", os.O_SYNC|os.O_RDWR|os.O_CREATE, os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
 	log.SetOutput(io.MultiWriter(file, os.Stdout))
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	err = config.Initialize(*configPath)
+	if err != nil {
+		panic(err)
+	}
+
 	service.RunMain()
 }
