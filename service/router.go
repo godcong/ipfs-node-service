@@ -8,7 +8,7 @@ import (
 )
 
 // Router ...
-func Router(engine *gin.Engine) error {
+func Router(engine *gin.Engine) {
 	//api document
 	//engine.Static("/doc", "./doc")
 	st, err := fs.New()
@@ -37,5 +37,4 @@ func Router(engine *gin.Engine) error {
 	//查看状态
 	group.GET("/status/:id", StatusGet(ver))
 
-	return nil
 }

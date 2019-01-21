@@ -36,6 +36,9 @@ func (s *RestServer) Start() {
 	if !s.config.REST.Enable {
 		return
 	}
+
+	Router(s.Engine)
+
 	s.server = &http.Server{
 		Addr:    s.Port,
 		Handler: s.Engine,

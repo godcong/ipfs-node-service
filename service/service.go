@@ -6,20 +6,20 @@ import (
 	"log"
 )
 
-// Service ...
-type Service struct {
+// service ...
+type service struct {
 	rest  *RestServer
 	grpc  *GRPCServer
 	queue *QueueServer
 }
 
-var server *Service
+var server *service
 
 // Start 主线程
 func Start() {
 	cfg := config.Config()
 
-	server = &Service{
+	server = &service{
 		grpc:  NewGRPCServer(cfg),
 		rest:  NewRestServer(cfg),
 		queue: NewQueueServer(cfg),
@@ -30,7 +30,7 @@ func Start() {
 	oss.InitOSS(cfg)
 
 	//rest start
-	_ = Router(server.rest.Engine)
+
 	server.rest.Start()
 
 	//grpc start
