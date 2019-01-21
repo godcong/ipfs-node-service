@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/godcong/node-service/config"
 	"github.com/godcong/node-service/openssl"
 	"github.com/json-iterator/go"
 	"github.com/satori/go.uuid"
@@ -17,6 +18,7 @@ type StreamerCallback interface {
 
 // Streamer ...
 type Streamer struct {
+	config      *config.Configure
 	encrypt     bool
 	ID          string
 	Key         string
@@ -47,10 +49,10 @@ func NewStreamer() *Streamer {
 }
 
 // NewStreamerWithConfig ...
-func NewStreamerWithConfig(cfg *Configure, id string) *Streamer {
+func NewStreamerWithConfig(cfg *config.Configure, id string) *Streamer {
 	return &Streamer{
 		encrypt:     false,
-		ID:          DefaultString(id, uuid.NewV1().String()),
+		ID:          config.DefaultString(id, uuid.NewV1().String()),
 		KeyURL:      cfg.Media.KeyURL,
 		KeyName:     cfg.Media.KeyFile,
 		KeyInfoName: cfg.Media.KeyInfoFile,
@@ -74,10 +76,10 @@ func (s *Streamer) Encrypt() bool {
 // SetEncrypt ...
 func (s *Streamer) SetEncrypt(encrypt bool) {
 	s.encrypt = true
-	s.KeyURL = config.Media.KeyURL
-	s.KeyName = config.Media.KeyFile
-	s.KeyInfoName = config.Media.KeyInfoFile
-	s.KeyDest = config.Media.KeyDest
+	s.KeyURL = s.config.Media.KeyURL
+	s.KeyName = s.config.Media.KeyFile
+	s.KeyInfoName = s.config.Media.KeyInfoFile
+	s.KeyDest = s.config.Media.KeyDest
 }
 
 // KeyFile ...
@@ -110,9 +112,9 @@ func (s *Streamer) DestPath() string {
 }
 
 // FromConfig ...
-func (s *Streamer) FromConfig(c *Configure) error {
-	s.FileDest = c.Media.Transfer
-	s.FileSource = c.Media.Upload
+func (s *Streamer) FromConfig(cfg *config.Configure) error {
+	s.FileDest = cfg.Media.Transfer
+	s.FileSource = cfg.Media.Upload
 	return nil
 }
 

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"github.com/go-redis/redis"
+	"github.com/godcong/node-service/config"
 	"github.com/json-iterator/go"
 	"github.com/mitchellh/mapstructure"
 	"log"
@@ -39,6 +40,7 @@ type HandleFunc func(name, key string) error
 // QueueServer ...
 type QueueServer struct {
 	*redis.Client
+	config    *config.Configure
 	Processes int
 	cancel    context.CancelFunc
 }
@@ -143,13 +145,14 @@ func transferNothing(threads chan<- string) {
 }
 
 // NewQueueServer ...
-func NewQueueServer() *QueueServer {
+func NewQueueServer(cfg *config.Configure) *QueueServer {
 	client := redis.NewClient(&redis.Options{
-		Addr:     DefaultString(config.Queue.HostPort, ":6379"),
-		Password: DefaultString(config.Queue.Password, ""), // no password set
-		DB:       config.Queue.DB,                          // use default DB
+		Addr:     config.DefaultString(cfg.Queue.HostPort, ":6379"),
+		Password: config.DefaultString(cfg.Queue.Password, ""), // no password set
+		DB:       cfg.Queue.DB,                                 // use default DB
 	})
 	return &QueueServer{
+		config: cfg,
 		Client: client,
 	}
 }
@@ -173,29 +176,21 @@ func (s *QueueServer) Start() {
 			log.Println("start", i)
 			go transferNothing(threads)
 		}
-		//isStop := false
-		//count := 0
+
 		for {
 			select {
 			case v := <-threads:
 				if v != "" {
 					log.Println("success: ", v)
 				}
-				//if isStop {
-				//	count++
-				//	if count ==  s.Processes {
-				//		log.Println("stopped")
-				//		return
-				//	}
-				//	continue
-				//}
+
 				if s := Pop(); s != nil {
 					go transfer(threads, s)
 				} else {
 					go transferNothing(threads)
 				}
 			case <-c.Done():
-				//isStop = true
+				return
 			default:
 				time.Sleep(1 * time.Second)
 			}

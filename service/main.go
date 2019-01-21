@@ -1,29 +1,16 @@
 package service
 
 import (
-	"flag"
 	"fmt"
+	"github.com/godcong/node-service/config"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
-var configPath = flag.String("path", "config.toml", "load config file from path")
-
-func init() {
-	if !flag.Parsed() {
-		flag.Parse()
-	}
-}
-
 // RunMain 主线程
 func RunMain() {
-
-	err := Initialize(*configPath)
-	if err != nil {
-		panic(err)
-	}
 	log.Println("run main")
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
@@ -56,7 +43,7 @@ func RunMain() {
 
 // NewBack ...
 func NewBack() StreamerCallback {
-	cfg := Config()
+	cfg := config.Config()
 	if cfg != nil && cfg.Callback.Type == "grpc" {
 		return NewGRPCBack(cfg)
 	}

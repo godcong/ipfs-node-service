@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/godcong/node-service/config"
 	"github.com/godcong/node-service/util"
 	"io"
 	"log"
@@ -107,11 +108,11 @@ func RemoteDownloadPost(vertion string) gin.HandlerFunc {
 
 		//rdsQueue.Set(fileName, StatusDownloaded, 0)
 
-		stream := NewStreamerWithConfig(Config(), ctx.PostForm("id"))
+		stream := NewStreamerWithConfig(config.Config(), ctx.PostForm("id"))
 		//stream.Dir, stream.FileName = filepath.Split(key)
 		stream.ObjectKey = key
 		stream.SetEncrypt(false)
-		stream.Callback = Config().Callback.Type
+		stream.Callback = config.Config().Callback.Type
 		//stream.SetURI("")
 		//stream.FileDest = config.Media.Upload
 		//stream.SetSrc(config.Media.Transfer)
@@ -441,7 +442,7 @@ func findDir(start, end string) (*DirList, error) {
 	if err != nil {
 		ed = st + limit
 	}
-	d, err := os.Open(config.Media.Transfer)
+	d, err := os.Open(config.Config().Media.Transfer)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err

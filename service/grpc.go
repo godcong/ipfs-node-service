@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"github.com/godcong/node-service/config"
 	"github.com/godcong/node-service/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -14,20 +15,21 @@ import (
 
 // GRPCServer ...
 type GRPCServer struct {
+	config *config.Configure
+	server *grpc.Server
 	Type   string
 	Port   string
 	Path   string
-	server *grpc.Server
 }
 
 // RemoteDownload ...
 func (s *GRPCServer) RemoteDownload(ctx context.Context, p *proto.RemoteDownloadRequest) (*proto.NodeReply, error) {
 	log.Printf("Received: %v", p.String())
-	stream := NewStreamerWithConfig(Config(), p.ObjectKey)
+	stream := NewStreamerWithConfig(s.config, p.ObjectKey)
 	//stream.Dir, stream.FileName = filepath.Split(key)
 	stream.ObjectKey = p.ObjectKey
 	stream.SetEncrypt(false)
-	stream.Callback = Config().Callback.Type
+	stream.Callback = s.config.Callback.Type
 	//stream.SetURI("")
 	//stream.FileDest = config.Media.Upload
 	//stream.SetSrc(config.Media.Transfer)
@@ -37,6 +39,7 @@ func (s *GRPCServer) RemoteDownload(ctx context.Context, p *proto.RemoteDownload
 }
 
 type grpcBack struct {
+	config   *config.Configure
 	BackType string
 	BackAddr string
 }
@@ -73,10 +76,11 @@ func (b *grpcBack) Callback(r *QueueResult) error {
 }
 
 // NewGRPCBack ...
-func NewGRPCBack(cfg *Configure) StreamerCallback {
+func NewGRPCBack(cfg *config.Configure) StreamerCallback {
 	return &grpcBack{
-		BackType: DefaultString(cfg.Callback.BackType, "tcp"),
-		BackAddr: DefaultString(cfg.Callback.BackAddr, "localhost:7781"),
+		config:   cfg,
+		BackType: config.DefaultString(cfg.Callback.BackType, "tcp"),
+		BackAddr: config.DefaultString(cfg.Callback.BackAddr, "localhost:7781"),
 	}
 }
 
@@ -96,17 +100,18 @@ func Result(detail *proto.NodeReplyDetail) *proto.NodeReply {
 }
 
 // NewGRPCServer ...
-func NewGRPCServer() *GRPCServer {
+func NewGRPCServer(cfg *config.Configure) *GRPCServer {
 	return &GRPCServer{
-		Type: DefaultString(config.GRPC.Type, Type),
-		Port: DefaultString(config.GRPC.Port, ":7788"),
-		Path: DefaultString(config.GRPC.Path, "/tmp/node.sock"),
+		config: cfg,
+		Type:   config.DefaultString(cfg.GRPC.Type, Type),
+		Port:   config.DefaultString(cfg.GRPC.Port, ":7788"),
+		Path:   config.DefaultString(cfg.GRPC.Path, "/tmp/node.sock"),
 	}
 }
 
 // Start ...
 func (s *GRPCServer) Start() {
-	if !config.GRPC.Enable {
+	if !s.config.GRPC.Enable {
 		return
 	}
 	s.server = grpc.NewServer()

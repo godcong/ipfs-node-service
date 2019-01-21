@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/godcong/node-service/config"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -15,23 +16,24 @@ const ContentTypeJSON = "application/json"
 // RestServer ...
 type RestServer struct {
 	*gin.Engine
-	//BackURL string
-	Port   string
+	config *config.Configure
 	server *http.Server
+	Port   string
 }
 
 // NewRestServer ...
-func NewRestServer() *RestServer {
+func NewRestServer(cfg *config.Configure) *RestServer {
 	s := &RestServer{
 		Engine: gin.Default(),
-		Port:   DefaultString(config.REST.Port, ":7780"),
+		config: cfg,
+		Port:   config.DefaultString(cfg.REST.Port, ":7780"),
 	}
 	return s
 }
 
 // Start ...
 func (s *RestServer) Start() {
-	if !config.REST.Enable {
+	if !s.config.REST.Enable {
 		return
 	}
 	s.server = &http.Server{
@@ -60,10 +62,10 @@ type restBack struct {
 }
 
 // NewRestBack ...
-func NewRestBack(cfg *Configure) StreamerCallback {
+func NewRestBack(cfg *config.Configure) StreamerCallback {
 	return &restBack{
-		BackURL: DefaultString(config.Callback.BackAddr, "localhost:7787"),
-		Version: DefaultString(config.Callback.Version, "v0"),
+		BackURL: config.DefaultString(cfg.Callback.BackAddr, "localhost:7787"),
+		Version: config.DefaultString(cfg.Callback.Version, "v0"),
 	}
 }
 

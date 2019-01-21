@@ -1,4 +1,4 @@
-package service
+package config
 
 import (
 	"github.com/pelletier/go-toml"
@@ -56,10 +56,19 @@ type Queue struct {
 	DB       int    `json:"db"`
 }
 
+// OSS ...
+type OSS struct {
+	Endpoint        string `toml:"endpoint"`
+	AccessKeyID     string `toml:"access_key_id"`
+	AccessKeySecret string `toml:"access_key_secret"`
+	BucketName      string `toml:"bucket_name"`
+}
+
 // Configure ...
 type Configure struct {
 	Media Media `toml:"media"`
 	Queue Queue `toml:"queue"`
+	OSS   []OSS `toml:"oss"`
 	GRPC  GRPC  `toml:"grpc"`
 	REST  REST  `toml:"rest"`
 	IPFS  IPFS  `toml:"ipfs"`

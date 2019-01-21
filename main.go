@@ -5,6 +5,7 @@ package main
 
 import (
 	"flag"
+	"github.com/godcong/node-service/config"
 	"github.com/godcong/node-service/service"
 	_ "github.com/godcong/node-service/statik"
 	"io"
@@ -14,9 +15,15 @@ import (
 )
 
 var cpuProfile = flag.String("cpuprofile", "", "write cpu profile to file")
+var configPath = flag.String("path", "config.toml", "load config file from path")
 
 func main() {
 	flag.Parse()
+	err := config.Initialize(*configPath)
+	if err != nil {
+		panic(err)
+	}
+
 	if *cpuProfile != "" {
 		f, err := os.Create(*cpuProfile)
 		if err != nil {
