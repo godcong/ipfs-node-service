@@ -20,7 +20,6 @@ var configPath = flag.String("path", "config.toml", "load config file from path"
 
 func main() {
 	flag.Parse()
-
 	file, err := os.OpenFile("node.log", os.O_SYNC|os.O_RDWR|os.O_CREATE, os.ModePerm)
 	if err != nil {
 		panic(err)
@@ -37,6 +36,7 @@ func main() {
 	done := make(chan bool, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
+	//start
 	service.Start()
 
 	go func() {
