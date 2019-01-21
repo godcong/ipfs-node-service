@@ -1,49 +1,52 @@
 package service
 
 import (
-	"fmt"
 	"github.com/godcong/node-service/config"
 	"github.com/godcong/node-service/oss"
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
-// RunMain 主线程
-func RunMain() {
-	log.Println("run main")
-	sigs := make(chan os.Signal, 1)
-	done := make(chan bool, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+// Service ...
+type Service struct {
+	rest  *RestServer
+	grpc  *GRPCServer
+	queue *QueueServer
+}
 
+var server *Service
+
+// Start 主线程
+func Start() {
 	cfg := config.Config()
+
+	server = &Service{
+		grpc:  NewGRPCServer(cfg),
+		rest:  NewRestServer(cfg),
+		queue: NewQueueServer(cfg),
+	}
+
+	log.Println("run main")
 
 	oss.InitOSS(cfg)
 
 	//rest start
-	rest := NewRestServer(cfg)
-	_ = Router(rest.Engine)
-	rest.Start()
+	_ = Router(server.rest.Engine)
+	server.rest.Start()
 
 	//grpc start
-	grpc := NewGRPCServer(cfg)
-	grpc.Start()
+	server.grpc.Start()
 
-	queue := NewQueueServer(cfg)
-	queue.Processes = 5
-	queue.Start()
+	//queue start
+	server.queue.Processes = 5
+	server.queue.Start()
 
-	go func() {
-		sig := <-sigs
-		//bm.Stop()
-		fmt.Println(sig, "exiting")
-		rest.Stop()
-		grpc.Stop()
-		queue.Stop()
-		done <- true
-	}()
-	<-done
+}
+
+// Stop ...
+func Stop() {
+	server.rest.Stop()
+	server.grpc.Stop()
+	server.queue.Stop()
 }
 
 // NewBack ...
