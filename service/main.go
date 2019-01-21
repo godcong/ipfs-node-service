@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"github.com/godcong/node-service/config"
+	"github.com/godcong/node-service/oss"
 	"log"
 	"os"
 	"os/signal"
@@ -16,16 +17,20 @@ func RunMain() {
 	done := make(chan bool, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
+	cfg := config.Config()
+
+	oss.InitOSS(cfg)
+
 	//rest start
-	rest := NewRestServer()
+	rest := NewRestServer(cfg)
 	_ = Router(rest.Engine)
 	rest.Start()
 
 	//grpc start
-	grpc := NewGRPCServer()
+	grpc := NewGRPCServer(cfg)
 	grpc.Start()
 
-	queue := NewQueueServer()
+	queue := NewQueueServer(cfg)
 	queue.Processes = 5
 	queue.Start()
 

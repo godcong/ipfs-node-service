@@ -26,7 +26,7 @@ func toM3U8WithKey(id, source, dest string, key string) error {
 		procFunc = ffmpeg.QuickSplitWithKey
 	}
 
-	b, err := procFunc(source, output, config.Media.KeyInfoFile, "media", "media.m3u8")
+	b, err := procFunc(source, output, key, "media", "media.m3u8")
 	if err != nil {
 		log.Println(string(b), err)
 		return err
@@ -59,7 +59,7 @@ func toM3U8(id string, source, dest string) error {
 }
 
 func download(info *Streamer) error {
-	server := oss.Server2()
+	server := oss.Server()
 
 	p := oss.NewProgress()
 	p.SetObjectKey(info.ObjectKey)

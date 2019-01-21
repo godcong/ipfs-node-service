@@ -24,12 +24,7 @@ type BucketServer struct {
 	info   *DownloadInfo
 }
 
-var server1 *OSS
-var server2 *OSS
-
-func init() {
-
-}
+var server *BucketServer
 
 // NewOSS ...
 func NewOSS(oss *config.OSS) *OSS {
@@ -64,11 +59,16 @@ func NewBucketServer(cfg *config.Configure) *BucketServer {
 		err := oss.Connect()
 		if err != nil {
 			log.Println(err)
-			return nil
+			panic(err)
 		}
 		s.server = append(s.server, oss)
 	}
 	return &s
+}
+
+// InitOSS ...
+func InitOSS(cfg *config.Configure) {
+	server = NewBucketServer(cfg)
 }
 
 // Server ...
@@ -238,17 +238,7 @@ func (o *OSS) IsExist(p Progress) bool {
 	return exist
 }
 
-// Server1 ...
-func Server1() *OSS {
-	return server1
-}
-
-// Server2 ...
-func Server2() *OSS {
-	return server2
-}
-
-// Server3 ...
-func Server3() {
-
+// Server ...
+func Server() *BucketServer {
+	return server
 }
