@@ -26,7 +26,7 @@ func NewRestServer(cfg *config.Configure) *RestServer {
 	s := &RestServer{
 		Engine: gin.Default(),
 		config: cfg,
-		Port:   config.DefaultString(cfg.REST.Port, ":7780"),
+		Port:   config.DefaultString(cfg.REST.Port, ":7787"),
 	}
 	return s
 }

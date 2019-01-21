@@ -29,11 +29,7 @@ func Start() {
 
 	oss.InitOSS(cfg)
 
-	//rest start
-
 	server.rest.Start()
-
-	//grpc start
 	server.grpc.Start()
 
 	//queue start
