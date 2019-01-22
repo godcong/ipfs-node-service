@@ -25,7 +25,7 @@ type GRPCServer struct {
 // RemoteDownload ...
 func (s *GRPCServer) RemoteDownload(ctx context.Context, p *proto.RemoteDownloadRequest) (*proto.NodeReply, error) {
 	log.Printf("Received: %v", p.String())
-	stream := NewStreamerWithConfig(s.config, p.ObjectKey)
+	stream := NewStreamerWithConfig(s.config, p.ID)
 	//stream.Dir, stream.FileName = filepath.Split(key)
 	stream.ObjectKey = p.ObjectKey
 	stream.SetEncrypt(false)

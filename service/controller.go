@@ -98,7 +98,7 @@ func UploadPost(vertion string) gin.HandlerFunc {
  */
 func RemoteDownloadPost(vertion string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		key := ctx.PostForm("key")
+		key := ctx.PostForm("object_key")
 		if key == "" {
 			resultFail(ctx, "null object key")
 			return

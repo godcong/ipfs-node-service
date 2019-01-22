@@ -51,6 +51,7 @@ func NewStreamer() *Streamer {
 // NewStreamerWithConfig ...
 func NewStreamerWithConfig(cfg *config.Configure, id string) *Streamer {
 	return &Streamer{
+		config:      cfg,
 		encrypt:     false,
 		ID:          config.DefaultString(id, uuid.NewV1().String()),
 		KeyURL:      cfg.Media.KeyURL,

@@ -30,7 +30,8 @@ enum NodeBackType {
 }
 
 message RemoteDownloadRequest {
-    string objectKey = 1;
+    string ID = 1;
+    string objectKey = 2;
     //NodeRemoteType remoteType = 2 ;
     //NodeBackType backType = 3 ;
     //string backHost = 4;
