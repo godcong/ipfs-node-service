@@ -20,6 +20,7 @@ type OSS struct {
 
 // BucketServer ...
 type BucketServer struct {
+	config *config.Configure
 	server []*OSS
 	info   *DownloadInfo
 }
@@ -54,6 +55,7 @@ func (o *OSS) Connect() error {
 // NewBucketServer ...
 func NewBucketServer(cfg *config.Configure) *BucketServer {
 	var s BucketServer
+	s.config = cfg
 	for _, val := range cfg.OSS {
 		oss := NewOSS(&val)
 		err := oss.Connect()
@@ -82,7 +84,7 @@ func (s *BucketServer) Server(idx ...int) *OSS {
 // Info ...
 func (s *BucketServer) Info() *DownloadInfo {
 	if s.info == nil {
-		s.info = NewDownloadInfo()
+		s.info = NewDownloadInfo(s.config)
 	}
 	return s.info
 }
@@ -94,6 +96,7 @@ func (s *BucketServer) SetInfo(info *DownloadInfo) {
 
 // DownloadInfo ...
 type DownloadInfo struct {
+	config     *config.Configure
 	DirPath    string
 	PartSize   int64
 	Routines   oss.Option
@@ -102,9 +105,10 @@ type DownloadInfo struct {
 }
 
 // NewDownloadInfo ...
-func NewDownloadInfo() *DownloadInfo {
+func NewDownloadInfo(cfg *config.Configure) *DownloadInfo {
 	return &DownloadInfo{
-		DirPath:    "./download",
+		config:     cfg,
+		DirPath:    config.DefaultString(cfg.Media.Download, "download"),
 		PartSize:   100 * 1024 * 1024,
 		Routines:   oss.Routines(5),
 		Checkpoint: oss.Checkpoint(true, "./cp"),
