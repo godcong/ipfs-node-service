@@ -27,3 +27,9 @@
    back_type = "unix"
    version = "v0"
    back_addr ="/tmp/manager.sock"
+
+[[oss]]
+   endpoint ="https://oss-cn-shanghai.aliyuncs.com"
+   access_key_id=""
+   access_key_secret =""
+   bucket_name =""
