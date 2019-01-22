@@ -186,14 +186,20 @@ func (p *progress) ProgressChanged(event *oss.ProgressEvent) {
 	}
 }
 
+// FileName ...
+func FileName(objectKey string) string {
+	_, file := filepath.Split(objectKey)
+	return file
+}
+
 // Download ...
-func (s *BucketServer) Download(p Progress, fileName string) error {
+func (s *BucketServer) Download(p Progress) error {
 	di := s.Info()
 	path := di.DirPath
 	if p.Path() != "" {
 		path = p.Path()
 	}
-	fp := filepath.Join(path, fileName)
+	fp := filepath.Join(path, FileName(p.ObjectKey()))
 	dir, _ := filepath.Split(fp)
 	err := os.MkdirAll(dir, os.ModePerm)
 	if err != nil {
