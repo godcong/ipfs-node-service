@@ -74,7 +74,7 @@ func NewRestBack(cfg *config.Configure) StreamerCallback {
 
 // Callback ...
 func (s *restBack) Callback(result *QueueResult) error {
-	back := filepath.Join(CheckPrefix(s.BackURL), s.Version, "ipfs/callback")
+	back := filepath.Join(CheckPrefix(s.BackURL), s.Version, "node/callback")
 	log.Println(back)
 
 	resp, err := http.Post(back, ContentTypeJSON, strings.NewReader(result.JSON()))

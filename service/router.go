@@ -16,9 +16,8 @@ func Router(engine *gin.Engine) {
 		log.Fatal(err)
 	}
 	engine.StaticFS("/doc", st)
-	engine.Static("/transfer", "./transfer")
-	engine.Static("/upload", "./upload")
-
+	//engine.Static("/transfer", "./transfer")
+	//engine.Static("/upload", "./upload")
 	engine.GET("ping", func(ctx *gin.Context) {
 		ctx.String(http.StatusOK, "pong")
 	})
