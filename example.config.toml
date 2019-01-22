@@ -1,6 +1,5 @@
 [grpc]
     enable = true
-#    type = "sock"
     port = ":7781"
     path = "/tmp/node.sock"
 [rest]

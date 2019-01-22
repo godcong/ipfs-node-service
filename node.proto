@@ -18,22 +18,22 @@ message StatusRequest {
 }
 
 enum NodeRemoteType {
-    RemoteBasic = 0;
-    RemoteRetry = 1;
-    RemoteForce = 2;
+    Basic = 0;
+    Retry = 1;
+    Force = 2;
   }
 
 
 enum NodeBackType {
-    BackHTTP = 0;
-    BackGRPC = 1;
+   HTTP = 0;
+   GRPC = 1;
 }
 
 message RemoteDownloadRequest {
     string objectKey = 1;
-    NodeRemoteType remoteType = 2 ;
-    NodeBackType backType = 3 ;
-    string backHost = 4;
+    //NodeRemoteType remoteType = 2 ;
+    //NodeBackType backType = 3 ;
+    //string backHost = 4;
 }
 
 message NodeReply {
