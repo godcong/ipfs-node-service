@@ -64,7 +64,7 @@ func (b *grpcBack) Callback(r *QueueResult) error {
 	client := proto.NewManagerServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	reply, err := client.Back(ctx, &proto.ManagerCallbackRequest{
+	reply, err := client.NodeBack(ctx, &proto.ManagerNodeRequest{
 		ID:     r.ID,
 		Detail: r.JSON(),
 	})

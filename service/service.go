@@ -26,7 +26,6 @@ func Start() {
 	}
 
 	log.Println("run main")
-
 	oss.InitOSS(cfg)
 
 	server.rest.Start()
