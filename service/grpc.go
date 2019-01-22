@@ -44,36 +44,59 @@ type grpcBack struct {
 	BackAddr string
 }
 
-// Callback ...
-func (b *grpcBack) Callback(r *QueueResult) error {
-	log.Println("callback:", r.ID)
+// NewManagerGRPC ...
+func NewManagerGRPC(cfg *config.Configure) *GRPCClient {
+	return &GRPCClient{
+		config: cfg,
+		Type:   config.DefaultString("unix", Type),
+		Port:   config.DefaultString("", ":7781"),
+		Addr:   config.DefaultString("", "/tmp/manager.sock"),
+	}
+}
+
+// GRPCClient ...
+type GRPCClient struct {
+	config *config.Configure
+	Type   string
+	Port   string
+	Addr   string
+}
+
+// Conn ...
+func (c *GRPCClient) Conn() (*grpc.ClientConn, error) {
 	var conn *grpc.ClientConn
 	var err error
 
-	target := b.BackAddr
-	if b.BackType == "unix" {
-		target = "passthrough:///unix://" + b.BackAddr
+	if c.Type == "unix" {
+		conn, err = grpc.Dial("passthrough:///unix://"+c.Addr, grpc.WithInsecure())
+	} else {
+		conn, err = grpc.Dial(c.Addr, grpc.WithInsecure())
 	}
-	log.Println(target)
-	conn, err = grpc.Dial(target, grpc.WithInsecure())
 
+	return conn, err
+}
+
+// ManagerClient ...
+func ManagerClient(g *GRPCClient) proto.ManagerServiceClient {
+	clientConn, err := g.Conn()
 	if err != nil {
-		return err
+		log.Println(err)
+		return nil
 	}
-	defer conn.Close()
-	client := proto.NewManagerServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	reply, err := client.NodeBack(ctx, &proto.ManagerNodeRequest{
+	return proto.NewManagerServiceClient(clientConn)
+}
+
+func (b *grpcBack) Callback(r *QueueResult) error {
+	grpc := NewManagerGRPC(config.Config())
+	client := ManagerClient(grpc)
+	timeout, _ := context.WithTimeout(context.Background(), time.Second*5)
+
+	reply, err := client.CensorBack(timeout, &proto.ManagerCensorRequest{
 		ID:     r.ID,
 		Detail: r.JSON(),
 	})
-
-	if err != nil {
-		return err
-	}
-	log.Printf("%+v", reply)
-	return nil
+	log.Println(reply.Detail)
+	return err
 }
 
 // NewGRPCBack ...
