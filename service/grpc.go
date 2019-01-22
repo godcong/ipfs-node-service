@@ -50,11 +50,12 @@ func (b *grpcBack) Callback(r *QueueResult) error {
 	var conn *grpc.ClientConn
 	var err error
 
+	target := b.BackAddr
 	if b.BackType == "unix" {
-		conn, err = grpc.Dial("passthrough:///unix://"+b.BackAddr, grpc.WithInsecure())
-	} else {
-		conn, err = grpc.Dial(b.BackAddr, grpc.WithInsecure())
+		target = "passthrough:///unix://" + b.BackAddr
 	}
+	log.Println(target)
+	conn, err = grpc.Dial(target, grpc.WithInsecure())
 
 	if err != nil {
 		return err

@@ -3,13 +3,12 @@
 
 package proto
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
-
 import (
-	context "golang.org/x/net/context"
+	context "context"
+	fmt "fmt"
+	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -23,8 +22,8 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-// ManagerCallbackRequest ...
-type ManagerCallbackRequest struct {
+// ManagerNodeRequest ...
+type ManagerNodeRequest struct {
 	ID                   string   `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	Detail               string   `protobuf:"bytes,2,opt,name=detail,proto3" json:"detail,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -33,48 +32,48 @@ type ManagerCallbackRequest struct {
 }
 
 // Reset ...
-func (m *ManagerCallbackRequest) Reset() { *m = ManagerCallbackRequest{} }
+func (m *ManagerNodeRequest) Reset() { *m = ManagerNodeRequest{} }
 
 // String ...
-func (m *ManagerCallbackRequest) String() string { return proto.CompactTextString(m) }
+func (m *ManagerNodeRequest) String() string { return proto.CompactTextString(m) }
 
 // ProtoMessage ...
-func (*ManagerCallbackRequest) ProtoMessage() {}
+func (*ManagerNodeRequest) ProtoMessage() {}
 
 // Descriptor ...
-func (*ManagerCallbackRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_manager_7208abb6a20b929c, []int{0}
+func (*ManagerNodeRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cde9ec64f0d2c859, []int{0}
 }
 
 // XXX_Unmarshal ...
-func (m *ManagerCallbackRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ManagerCallbackRequest.Unmarshal(m, b)
+func (m *ManagerNodeRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ManagerNodeRequest.Unmarshal(m, b)
 }
 
 // XXX_Marshal ...
-func (m *ManagerCallbackRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ManagerCallbackRequest.Marshal(b, m, deterministic)
+func (m *ManagerNodeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ManagerNodeRequest.Marshal(b, m, deterministic)
 }
 
 // XXX_Merge ...
-func (dst *ManagerCallbackRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ManagerCallbackRequest.Merge(dst, src)
+func (m *ManagerNodeRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ManagerNodeRequest.Merge(m, src)
 }
 
 // XXX_Size ...
-func (m *ManagerCallbackRequest) XXX_Size() int {
-	return xxx_messageInfo_ManagerCallbackRequest.Size(m)
+func (m *ManagerNodeRequest) XXX_Size() int {
+	return xxx_messageInfo_ManagerNodeRequest.Size(m)
 }
 
 // XXX_DiscardUnknown ...
-func (m *ManagerCallbackRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ManagerCallbackRequest.DiscardUnknown(m)
+func (m *ManagerNodeRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ManagerNodeRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ManagerCallbackRequest proto.InternalMessageInfo
+var xxx_messageInfo_ManagerNodeRequest proto.InternalMessageInfo
 
 // GetID ...
-func (m *ManagerCallbackRequest) GetID() string {
+func (m *ManagerNodeRequest) GetID() string {
 	if m != nil {
 		return m.ID
 	}
@@ -82,7 +81,73 @@ func (m *ManagerCallbackRequest) GetID() string {
 }
 
 // GetDetail ...
-func (m *ManagerCallbackRequest) GetDetail() string {
+func (m *ManagerNodeRequest) GetDetail() string {
+	if m != nil {
+		return m.Detail
+	}
+	return ""
+}
+
+// ManagerCensorRequest ...
+type ManagerCensorRequest struct {
+	ID                   string   `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	Detail               string   `protobuf:"bytes,2,opt,name=detail,proto3" json:"detail,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+// Reset ...
+func (m *ManagerCensorRequest) Reset() { *m = ManagerCensorRequest{} }
+
+// String ...
+func (m *ManagerCensorRequest) String() string { return proto.CompactTextString(m) }
+
+// ProtoMessage ...
+func (*ManagerCensorRequest) ProtoMessage() {}
+
+// Descriptor ...
+func (*ManagerCensorRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cde9ec64f0d2c859, []int{1}
+}
+
+// XXX_Unmarshal ...
+func (m *ManagerCensorRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ManagerCensorRequest.Unmarshal(m, b)
+}
+
+// XXX_Marshal ...
+func (m *ManagerCensorRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ManagerCensorRequest.Marshal(b, m, deterministic)
+}
+
+// XXX_Merge ...
+func (m *ManagerCensorRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ManagerCensorRequest.Merge(m, src)
+}
+
+// XXX_Size ...
+func (m *ManagerCensorRequest) XXX_Size() int {
+	return xxx_messageInfo_ManagerCensorRequest.Size(m)
+}
+
+// XXX_DiscardUnknown ...
+func (m *ManagerCensorRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ManagerCensorRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ManagerCensorRequest proto.InternalMessageInfo
+
+// GetID ...
+func (m *ManagerCensorRequest) GetID() string {
+	if m != nil {
+		return m.ID
+	}
+	return ""
+}
+
+// GetDetail ...
+func (m *ManagerCensorRequest) GetDetail() string {
 	if m != nil {
 		return m.Detail
 	}
@@ -110,7 +175,7 @@ func (*ManagerReply) ProtoMessage() {}
 
 // Descriptor ...
 func (*ManagerReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_manager_7208abb6a20b929c, []int{1}
+	return fileDescriptor_cde9ec64f0d2c859, []int{2}
 }
 
 // XXX_Unmarshal ...
@@ -124,8 +189,8 @@ func (m *ManagerReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error)
 }
 
 // XXX_Merge ...
-func (dst *ManagerReply) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ManagerReply.Merge(dst, src)
+func (m *ManagerReply) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ManagerReply.Merge(m, src)
 }
 
 // XXX_Size ...
@@ -184,7 +249,7 @@ func (*ManagerReplyDetail) ProtoMessage() {}
 
 // Descriptor ...
 func (*ManagerReplyDetail) Descriptor() ([]byte, []int) {
-	return fileDescriptor_manager_7208abb6a20b929c, []int{2}
+	return fileDescriptor_cde9ec64f0d2c859, []int{3}
 }
 
 // XXX_Unmarshal ...
@@ -198,8 +263,8 @@ func (m *ManagerReplyDetail) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 }
 
 // XXX_Merge ...
-func (dst *ManagerReplyDetail) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ManagerReplyDetail.Merge(dst, src)
+func (m *ManagerReplyDetail) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ManagerReplyDetail.Merge(m, src)
 }
 
 // XXX_Size ...
@@ -231,9 +296,34 @@ func (m *ManagerReplyDetail) GetJson() string {
 }
 
 func init() {
-	proto.RegisterType((*ManagerCallbackRequest)(nil), "proto.ManagerCallbackRequest")
+	proto.RegisterType((*ManagerNodeRequest)(nil), "proto.ManagerNodeRequest")
+	proto.RegisterType((*ManagerCensorRequest)(nil), "proto.ManagerCensorRequest")
 	proto.RegisterType((*ManagerReply)(nil), "proto.ManagerReply")
 	proto.RegisterType((*ManagerReplyDetail)(nil), "proto.ManagerReplyDetail")
+}
+
+func init() { proto.RegisterFile("manager.proto", fileDescriptor_cde9ec64f0d2c859) }
+
+var fileDescriptor_cde9ec64f0d2c859 = []byte{
+	// 276 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x90, 0xbb, 0x4e, 0xeb, 0x40,
+	0x10, 0x86, 0xcf, 0xfa, 0x24, 0x01, 0x06, 0x48, 0x31, 0x41, 0xc8, 0x40, 0x13, 0xb9, 0x4a, 0x65,
+	0x29, 0xa1, 0xa1, 0x88, 0x10, 0x32, 0x6e, 0x52, 0x80, 0x22, 0xf3, 0x04, 0x9b, 0xf5, 0x68, 0x31,
+	0xc4, 0x9e, 0xe0, 0x75, 0x90, 0x78, 0x0b, 0x1e, 0x19, 0x65, 0xbd, 0x58, 0x36, 0x97, 0x82, 0x6a,
+	0x77, 0x2e, 0xdf, 0xcc, 0x3f, 0x3f, 0x1c, 0xe7, 0xb2, 0x90, 0x9a, 0xca, 0x70, 0x53, 0x72, 0xc5,
+	0xd8, 0xb7, 0x4f, 0x30, 0x07, 0xbc, 0xab, 0xf3, 0xf7, 0x9c, 0x52, 0x42, 0x2f, 0x5b, 0x32, 0x15,
+	0x0e, 0xc1, 0x5b, 0xc4, 0xbe, 0x18, 0x8b, 0xc9, 0x41, 0xe2, 0x2d, 0x62, 0x3c, 0x85, 0x41, 0x4a,
+	0x95, 0xcc, 0xd6, 0xbe, 0x67, 0x73, 0x2e, 0x0a, 0xae, 0xe1, 0xc4, 0xd1, 0xb7, 0x54, 0x18, 0x2e,
+	0xff, 0xca, 0x33, 0x1c, 0x39, 0x3e, 0xa1, 0xcd, 0xfa, 0x0d, 0x11, 0x7a, 0x8a, 0x53, 0xb2, 0x64,
+	0x3f, 0xb1, 0x7f, 0xf4, 0x61, 0x2f, 0x27, 0x63, 0xa4, 0x26, 0x07, 0x7f, 0x86, 0x38, 0x6d, 0xa6,
+	0xfe, 0x1f, 0x8b, 0xc9, 0xe1, 0xec, 0xac, 0x3e, 0x2d, 0x6c, 0x8f, 0x8c, 0x6d, 0x43, 0xb3, 0xf0,
+	0xaa, 0x39, 0xb7, 0x55, 0xfd, 0x26, 0x17, 0xa1, 0xf7, 0x64, 0xb8, 0x70, 0xfb, 0xec, 0x7f, 0xf6,
+	0x2e, 0x60, 0xe8, 0xd0, 0x07, 0x2a, 0x5f, 0x33, 0x45, 0x38, 0x87, 0xfd, 0x9d, 0x69, 0x91, 0x54,
+	0xcf, 0xf8, 0x65, 0x77, 0xcb, 0xcc, 0xf3, 0xd1, 0x0f, 0xb2, 0x82, 0x7f, 0x78, 0x03, 0x50, 0x9b,
+	0x66, 0xf9, 0x8b, 0x6e, 0x53, 0xc7, 0xce, 0x5f, 0x26, 0x44, 0x53, 0xf0, 0x15, 0xe7, 0xa1, 0xce,
+	0xaa, 0xc7, 0xed, 0x2a, 0xd4, 0x9c, 0x2a, 0x2e, 0x74, 0xdd, 0x1a, 0x8d, 0xba, 0x5a, 0x97, 0xbb,
+	0xe4, 0x52, 0xac, 0x06, 0xb6, 0x7a, 0xf9, 0x11, 0x00, 0x00, 0xff, 0xff, 0x9a, 0x5d, 0x2c, 0x7f,
+	0x0d, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -248,7 +338,8 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ManagerServiceClient interface {
-	Back(ctx context.Context, in *ManagerCallbackRequest, opts ...grpc.CallOption) (*ManagerReply, error)
+	NodeBack(ctx context.Context, in *ManagerNodeRequest, opts ...grpc.CallOption) (*ManagerReply, error)
+	CensorBack(ctx context.Context, in *ManagerCensorRequest, opts ...grpc.CallOption) (*ManagerReply, error)
 }
 
 type managerServiceClient struct {
@@ -260,10 +351,20 @@ func NewManagerServiceClient(cc *grpc.ClientConn) ManagerServiceClient {
 	return &managerServiceClient{cc}
 }
 
-// Back ...
-func (c *managerServiceClient) Back(ctx context.Context, in *ManagerCallbackRequest, opts ...grpc.CallOption) (*ManagerReply, error) {
+// NodeBack ...
+func (c *managerServiceClient) NodeBack(ctx context.Context, in *ManagerNodeRequest, opts ...grpc.CallOption) (*ManagerReply, error) {
 	out := new(ManagerReply)
-	err := c.cc.Invoke(ctx, "/proto.ManagerService/Back", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/proto.ManagerService/NodeBack", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// CensorBack ...
+func (c *managerServiceClient) CensorBack(ctx context.Context, in *ManagerCensorRequest, opts ...grpc.CallOption) (*ManagerReply, error) {
+	out := new(ManagerReply)
+	err := c.cc.Invoke(ctx, "/proto.ManagerService/CensorBack", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -272,7 +373,8 @@ func (c *managerServiceClient) Back(ctx context.Context, in *ManagerCallbackRequ
 
 // ManagerServiceServer is the server API for ManagerService service.
 type ManagerServiceServer interface {
-	Back(context.Context, *ManagerCallbackRequest) (*ManagerReply, error)
+	NodeBack(context.Context, *ManagerNodeRequest) (*ManagerReply, error)
+	CensorBack(context.Context, *ManagerCensorRequest) (*ManagerReply, error)
 }
 
 // RegisterManagerServiceServer ...
@@ -280,20 +382,38 @@ func RegisterManagerServiceServer(s *grpc.Server, srv ManagerServiceServer) {
 	s.RegisterService(&_ManagerService_serviceDesc, srv)
 }
 
-func _ManagerService_Back_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ManagerCallbackRequest)
+func _ManagerService_NodeBack_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ManagerNodeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ManagerServiceServer).Back(ctx, in)
+		return srv.(ManagerServiceServer).NodeBack(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.ManagerService/Back",
+		FullMethod: "/proto.ManagerService/NodeBack",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ManagerServiceServer).Back(ctx, req.(*ManagerCallbackRequest))
+		return srv.(ManagerServiceServer).NodeBack(ctx, req.(*ManagerNodeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ManagerService_CensorBack_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ManagerCensorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ManagerServiceServer).CensorBack(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.ManagerService/CensorBack",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ManagerServiceServer).CensorBack(ctx, req.(*ManagerCensorRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -303,32 +423,14 @@ var _ManagerService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*ManagerServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Back",
-			Handler:    _ManagerService_Back_Handler,
+			MethodName: "NodeBack",
+			Handler:    _ManagerService_NodeBack_Handler,
+		},
+		{
+			MethodName: "CensorBack",
+			Handler:    _ManagerService_CensorBack_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "manager.proto",
-}
-
-func init() { proto.RegisterFile("manager.proto", fileDescriptor_manager_7208abb6a20b929c) }
-
-var fileDescriptor_manager_7208abb6a20b929c = []byte{
-	// 246 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x50, 0xcd, 0x4a, 0xc3, 0x40,
-	0x10, 0x36, 0x31, 0xad, 0x38, 0x6a, 0x0f, 0x53, 0x28, 0x51, 0x10, 0x4a, 0x4e, 0x3d, 0x05, 0x5a,
-	0x2f, 0x1e, 0x3c, 0x48, 0xcc, 0xa5, 0x07, 0xa5, 0xc4, 0x27, 0xd8, 0x6c, 0x86, 0x35, 0x76, 0x93,
-	0xa9, 0xd9, 0xad, 0xe0, 0xdb, 0x8b, 0x9b, 0xb5, 0x58, 0xdb, 0xd3, 0xce, 0x7c, 0xf3, 0xfd, 0xb1,
-	0x70, 0xd5, 0x88, 0x56, 0x28, 0xea, 0xd2, 0x4d, 0xc7, 0x96, 0x71, 0xe0, 0x9e, 0xe4, 0x11, 0x26,
-	0xcf, 0x3d, 0xfe, 0x24, 0xb4, 0x2e, 0x85, 0x5c, 0x17, 0xf4, 0xb1, 0x25, 0x63, 0x71, 0x04, 0xe1,
-	0x32, 0x8f, 0x83, 0x69, 0x30, 0x3b, 0x2f, 0xc2, 0x65, 0x8e, 0x13, 0x18, 0x56, 0x64, 0x45, 0xad,
-	0xe3, 0xd0, 0x61, 0x7e, 0x4b, 0x18, 0x2e, 0xbd, 0x43, 0x41, 0x1b, 0xfd, 0x85, 0x08, 0x91, 0xe4,
-	0x8a, 0x9c, 0x72, 0x50, 0xb8, 0x19, 0x63, 0x38, 0x6b, 0xc8, 0x18, 0xa1, 0xc8, 0x8b, 0x7f, 0x57,
-	0x9c, 0xef, 0x5c, 0x4f, 0xa7, 0xc1, 0xec, 0x62, 0x71, 0xdd, 0xd7, 0x4b, 0xff, 0x5a, 0xe6, 0x8e,
-	0xb0, 0x0b, 0xbc, 0x07, 0x3c, 0xbc, 0x1e, 0xd4, 0x45, 0x88, 0xde, 0x0d, 0xb7, 0x3e, 0xcf, 0xcd,
-	0x8b, 0x17, 0x18, 0x79, 0xe5, 0x2b, 0x75, 0x9f, 0xb5, 0x24, 0x7c, 0x80, 0x28, 0x13, 0x72, 0x8d,
-	0xb7, 0xfb, 0xb1, 0xff, 0xfe, 0xe2, 0x66, 0x7c, 0xa4, 0x55, 0x72, 0x92, 0xcd, 0x21, 0x96, 0xdc,
-	0xa4, 0xaa, 0xb6, 0x6f, 0xdb, 0x32, 0x55, 0x5c, 0x49, 0x6e, 0x55, 0x4f, 0xcd, 0xc6, 0xfb, 0x49,
-	0xab, 0x1f, 0x70, 0x15, 0x94, 0x43, 0x77, 0xbd, 0xfb, 0x0e, 0x00, 0x00, 0xff, 0xff, 0xdf, 0xdd,
-	0x33, 0x78, 0x8e, 0x01, 0x00, 0x00,
 }
