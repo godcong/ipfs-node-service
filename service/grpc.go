@@ -86,6 +86,7 @@ func ManagerClient(g *GRPCClient) proto.ManagerServiceClient {
 	return proto.NewManagerServiceClient(clientConn)
 }
 
+// Callback ...
 func (b *grpcBack) Callback(r *QueueResult) error {
 	grpc := NewManagerGRPC(config.Config())
 	client := ManagerClient(grpc)

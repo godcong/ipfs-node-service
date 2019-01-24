@@ -14,7 +14,7 @@ func TestDownload(t *testing.T) {
 		Password: "",              // no password set
 		DB:       RedisQueueIndex, // use default DB
 	})
-	err := download(&Streamer{
+	err := downloadFromOSS(&Streamer{
 		encrypt:     false,
 		ID:          uuid.NewV1().String(),
 		Key:         "",

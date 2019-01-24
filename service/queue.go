@@ -81,7 +81,7 @@ func transfer(ch chan<- string, info *Streamer) {
 	}()
 
 	globalQueue.Set(info.ID, StatusDownloading, 0)
-	err = download(info)
+	err = downloadFromOSS(info)
 	if err != nil {
 		return
 	}

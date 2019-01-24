@@ -58,13 +58,13 @@ func toM3U8(id string, source, dest string) error {
 	return nil
 }
 
-func download(info *Streamer) error {
+func downloadFromOSS(info *Streamer) error {
 	server := oss.Server()
 
 	p := oss.NewProgress()
 	p.SetObjectKey(info.ObjectKey)
 	p.SetPath(info.FileSource + "/" + info.ID)
-	err := server.Download(p)
+	err := server.Download(p, info.FileName())
 	if err != nil {
 		return err
 	}
