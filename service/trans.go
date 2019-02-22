@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/godcong/node-service/ffmpeg"
-	"github.com/godcong/node-service/ffprobe"
-	"github.com/godcong/node-service/oss"
+	"github.com/godcong/ipfs-media-service/ffmpeg"
+	"github.com/godcong/ipfs-media-service/ffprobe"
+	"github.com/godcong/ipfs-media-service/oss"
 	"log"
 	"os"
 	"path/filepath"

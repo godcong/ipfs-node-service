@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/godcong/node-service/config"
-	"github.com/godcong/node-service/openssl"
+	"github.com/godcong/ipfs-media-service/config"
+	"github.com/godcong/ipfs-media-service/openssl"
 	"github.com/json-iterator/go"
 	"github.com/satori/go.uuid"
 	"log"

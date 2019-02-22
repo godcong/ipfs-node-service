@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/godcong/node-service/config"
-	"github.com/godcong/node-service/proto"
+	"github.com/godcong/ipfs-media-service/config"
+	"github.com/godcong/ipfs-media-service/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"

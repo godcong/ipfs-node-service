@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/godcong/node-service/util"
+	"github.com/godcong/ipfs-media-service/util"
 	"log"
 	"testing"
 )
