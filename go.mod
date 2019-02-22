@@ -4,10 +4,10 @@ require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/aliyun/aliyun-oss-go-sdk v0.0.0-20190110114555-6a25665e652a
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
 	github.com/gin-gonic/gin v1.3.0
 	github.com/go-redis/redis v6.14.2+incompatible
+	github.com/godcong/go-trait v0.0.0-20190222073043-5e5d5d384ce4
 	github.com/golang/protobuf v1.2.0
 	github.com/ipfs/go-ipfs-cmdkit v1.1.3
 	github.com/json-iterator/go v1.1.5
@@ -19,12 +19,9 @@ require (
 	github.com/onsi/ginkgo v1.7.0 // indirect
 	github.com/onsi/gomega v1.4.3 // indirect
 	github.com/pelletier/go-toml v1.2.0
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rakyll/statik v0.1.5
 	github.com/satori/go.uuid v1.2.0
-	github.com/stretchr/testify v1.2.2 // indirect
 	github.com/ugorji/go/codec v0.0.0-20181209151446-772ced7fd4c2 // indirect
-	golang.org/x/net v0.0.0-20181217023233-e147a9138326
 	golang.org/x/sync v0.0.0-20181108010431-42b317875d0f // indirect
 	golang.org/x/sys v0.0.0-20181213200352-4d1cda033e06 // indirect
 	google.golang.org/grpc v1.17.0

@@ -6,11 +6,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/godcong/go-trait"
 	"github.com/godcong/node-service/config"
 	"github.com/godcong/node-service/service"
 	_ "github.com/godcong/node-service/statik"
-	"io"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -20,14 +19,9 @@ var configPath = flag.String("path", "config.toml", "load config file from path"
 
 func main() {
 	flag.Parse()
-	file, err := os.OpenFile("node.log", os.O_SYNC|os.O_RDWR|os.O_CREATE, os.ModePerm)
-	if err != nil {
-		panic(err)
-	}
-	log.SetOutput(io.MultiWriter(file, os.Stdout))
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	trait.InitElasticLog("node-service", nil)
 
-	err = config.Initialize(*configPath)
+	err := config.Initialize(*configPath)
 	if err != nil {
 		panic(err)
 	}
