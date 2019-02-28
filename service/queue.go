@@ -73,7 +73,7 @@ func transfer(ch chan<- string, info *Streamer) {
 	chanRes := info.FileName()
 	defer func() {
 		if err != nil {
-			log.Println(err)
+			log.Error(err)
 			globalQueue.Set(info.ID, StatusFailed, 0)
 			chanRes = info.FileName() + ":[" + err.Error() + "]"
 		}
@@ -107,13 +107,15 @@ func transfer(ch chan<- string, info *Streamer) {
 
 	err = mapstructure.Decode(detail, &qr)
 	if err != nil {
+		log.Error(err)
 		return
 	}
 
-	log.Println(qr)
+	log.Info(qr)
 	err = NewBack().Callback(&qr)
 
 	if err != nil {
+		log.Error(err)
 		return
 	}
 

@@ -92,7 +92,7 @@ func (b *grpcBack) Callback(r *QueueResult) error {
 	client := ManagerClient(grpc)
 	timeout, _ := context.WithTimeout(context.Background(), time.Second*5)
 
-	reply, err := client.CensorBack(timeout, &proto.ManagerCensorRequest{
+	reply, err := client.NodeBack(timeout, &proto.ManagerNodeRequest{
 		ID:     r.ID,
 		Detail: r.JSON(),
 	})
