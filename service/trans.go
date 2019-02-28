@@ -64,7 +64,7 @@ func downloadFromOSS(info *Streamer) error {
 	p := oss.NewProgress()
 	p.SetObjectKey(info.ObjectKey)
 	p.SetPath(info.FileSource + "/" + info.ID)
-	err := server.Download(p, info.FileName())
+	err := server.Download(p)
 	if err != nil {
 		return err
 	}
