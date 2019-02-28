@@ -99,7 +99,7 @@ func (b *grpcBack) Callback(r *QueueResult) error {
 	if err != nil {
 		log.Error(err)
 	}
-	log.Println(reply)
+	log.Printf("%+v,%+v", r, reply)
 	return err
 }
 
