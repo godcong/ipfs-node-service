@@ -123,16 +123,16 @@ func transfer(ch chan<- string, info *Streamer) {
 
 // QueueResult ...
 type QueueResult struct {
-	ID     string `mapstructure:"id"`
+	ID     string `json:"id" mapstructure:"id"`
 	FSInfo struct {
-		Hash string `mapstructure:"hash"`
-		Name string `mapstructure:"name"`
-		Size string `mapstructure:"size"`
-	} `mapstructure:"fs_info"`
+		Hash string `json:"hash" mapstructure:"hash"`
+		Name string `json:"name" mapstructure:"name"`
+		Size string `json:"size" mapstructure:"size"`
+	} `json:"fs_info" mapstructure:"fs_info"`
 	NSInfo struct {
-		Name  string `mapstructure:"name"`
-		Value string `mapstructure:"value"`
-	} `mapstructure:"ns_info"`
+		Name  string `json:"name" mapstructure:"name"`
+		Value string `json:"value" mapstructure:"value"`
+	} `json:"ns_info" mapstructure:"ns_info"`
 }
 
 // JSON ...
