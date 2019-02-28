@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/godcong/ipfs-media-service/ipfs"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 var api ipfs.API

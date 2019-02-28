@@ -4,7 +4,7 @@ import (
 	"github.com/godcong/ipfs-media-service/ffmpeg"
 	"github.com/godcong/ipfs-media-service/ffprobe"
 	"github.com/godcong/ipfs-media-service/oss"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"
 )

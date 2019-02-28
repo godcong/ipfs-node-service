@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/pelletier/go-toml"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 )
 

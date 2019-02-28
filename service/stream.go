@@ -5,7 +5,7 @@ import (
 	"github.com/godcong/ipfs-media-service/openssl"
 	"github.com/json-iterator/go"
 	"github.com/satori/go.uuid"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"
 	"sync"

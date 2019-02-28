@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/rakyll/statik/fs"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 

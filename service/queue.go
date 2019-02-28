@@ -6,7 +6,7 @@ import (
 	"github.com/godcong/ipfs-media-service/config"
 	"github.com/json-iterator/go"
 	"github.com/mitchellh/mapstructure"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"time"
 )
 

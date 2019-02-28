@@ -1,7 +1,7 @@
 package ffprobe
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"os/exec"
 	"strings"

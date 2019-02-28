@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/godcong/ipfs-media-service/config"
 	"github.com/godcong/ipfs-media-service/proto"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"log"
 	"net"
 	"syscall"
 	"time"
@@ -96,7 +96,10 @@ func (b *grpcBack) Callback(r *QueueResult) error {
 		ID:     r.ID,
 		Detail: r.JSON(),
 	})
-	log.Println(reply.Detail)
+	if err != nil {
+		log.Error(err)
+	}
+	log.Println(reply)
 	return err
 }
 

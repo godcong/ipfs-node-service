@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/godcong/ipfs-media-service/config"
 	"github.com/godcong/ipfs-media-service/oss"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 // service ...

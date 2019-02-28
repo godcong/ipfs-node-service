@@ -19,7 +19,7 @@ var configPath = flag.String("path", "config.toml", "load config file from path"
 
 func main() {
 	flag.Parse()
-	trait.InitElasticLog("node-service", nil)
+	trait.InitElasticLog("ipfs-node-service", nil)
 
 	err := config.Initialize(*configPath)
 	if err != nil {

@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/godcong/ipfs-media-service/util"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"testing"
 )
 
