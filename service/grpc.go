@@ -48,9 +48,9 @@ type grpcBack struct {
 func NewManagerGRPC(cfg *config.Configure) *GRPCClient {
 	return &GRPCClient{
 		config: cfg,
-		Type:   config.DefaultString("unix", Type),
+		Type:   config.DefaultString("tcp", Type),
 		Port:   config.DefaultString("", ":7781"),
-		Addr:   config.DefaultString("", "/tmp/manager.sock"),
+		Addr:   config.DefaultString("", "localhost"),
 	}
 }
 
@@ -70,7 +70,7 @@ func (c *GRPCClient) Conn() (*grpc.ClientConn, error) {
 	if c.Type == "unix" {
 		conn, err = grpc.Dial("passthrough:///unix://"+c.Addr, grpc.WithInsecure())
 	} else {
-		conn, err = grpc.Dial(c.Addr, grpc.WithInsecure())
+		conn, err = grpc.Dial(c.Addr+c.Port, grpc.WithInsecure())
 	}
 
 	return conn, err

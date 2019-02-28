@@ -21,6 +21,7 @@ require (
 	github.com/pelletier/go-toml v1.2.0
 	github.com/rakyll/statik v0.1.5
 	github.com/satori/go.uuid v1.2.0
+	github.com/sirupsen/logrus v1.3.0
 	github.com/ugorji/go/codec v0.0.0-20181209151446-772ced7fd4c2 // indirect
 	golang.org/x/sync v0.0.0-20181108010431-42b317875d0f // indirect
 	golang.org/x/sys v0.0.0-20181213200352-4d1cda033e06 // indirect
