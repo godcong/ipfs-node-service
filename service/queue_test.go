@@ -2,8 +2,8 @@ package service
 
 import (
 	"github.com/go-redis/redis"
+	"github.com/google/uuid"
 	"github.com/mitchellh/mapstructure"
-	"github.com/satori/go.uuid"
 	"testing"
 )
 

@@ -9,6 +9,7 @@ require (
 	github.com/go-redis/redis v6.14.2+incompatible
 	github.com/godcong/go-trait v0.0.0-20190222073043-5e5d5d384ce4
 	github.com/golang/protobuf v1.2.0
+	github.com/google/uuid v1.1.1
 	github.com/ipfs/go-ipfs-cmdkit v1.1.3
 	github.com/json-iterator/go v1.1.5
 	github.com/kr/pretty v0.1.0 // indirect

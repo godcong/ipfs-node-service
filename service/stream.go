@@ -3,8 +3,8 @@ package service
 import (
 	"github.com/godcong/ipfs-media-service/config"
 	"github.com/godcong/ipfs-media-service/openssl"
+	"github.com/google/uuid"
 	"github.com/json-iterator/go"
-	"github.com/satori/go.uuid"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"
@@ -36,7 +36,7 @@ type Streamer struct {
 func NewStreamer() *Streamer {
 	return &Streamer{
 		encrypt:     false,
-		ID:          uuid.NewV1().String(),
+		ID:          uuid.New().String(),
 		Key:         "",
 		KeyURL:      "",
 		KeyName:     "",
@@ -53,7 +53,7 @@ func NewStreamerWithConfig(cfg *config.Configure, id string) *Streamer {
 	return &Streamer{
 		config:      cfg,
 		encrypt:     false,
-		ID:          config.DefaultString(id, uuid.NewV1().String()),
+		ID:          config.DefaultString(id, uuid.New().String()),
 		KeyURL:      cfg.Media.KeyURL,
 		KeyName:     cfg.Media.KeyFile,
 		KeyInfoName: cfg.Media.KeyInfoFile,
