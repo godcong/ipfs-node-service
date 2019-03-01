@@ -35,7 +35,9 @@ func (s *GRPCServer) RemoteDownload(ctx context.Context, p *proto.RemoteDownload
 	//stream.SetSrc(config.Media.Transfer)
 	globalQueue.Set(stream.ID, StatusQueuing, 0)
 	Push(stream)
-	return Result(nil), nil
+	return Result(&proto.NodeReplyDetail{
+		ID: stream.ID,
+	}), nil
 }
 
 type grpcBack struct {
