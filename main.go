@@ -4,11 +4,11 @@
 package main
 
 import (
-	"fmt"
 	"github.com/godcong/go-trait"
 	"github.com/godcong/ipfs-media-service/config"
 	"github.com/godcong/ipfs-media-service/service"
 	_ "github.com/godcong/ipfs-media-service/statik"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
@@ -16,16 +16,18 @@ import (
 	"syscall"
 )
 
+var rootCmd = &cobra.Command{
+	Use: "node",
+}
+
 func main() {
-	rootCmd := &cobra.Command{
-		Use: "node",
-	}
 
 	configPath := rootCmd.PersistentFlags().StringP("config", "c", "config.toml", "Config name for load config")
 	elk := rootCmd.PersistentFlags().Bool("elk", true, "Log output with elk")
 	_ = viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
 	_ = viper.BindPFlag("elk", rootCmd.PersistentFlags().Lookup("elk"))
-	_ = rootCmd.Execute()
+	Execute()
+
 	if *elk {
 		trait.InitElasticLog("ipfs-node-service", nil)
 	}
@@ -45,10 +47,17 @@ func main() {
 	go func() {
 		sig := <-sigs
 		//bm.Stop()
-		fmt.Println(sig, "exiting")
+		log.Info(sig, "exiting")
 		service.Stop()
 		done <- true
 	}()
 	<-done
 
+}
+
+func Execute() {
+	if err := rootCmd.Execute(); err != nil {
+		log.Error(err)
+		os.Exit(1)
+	}
 }
