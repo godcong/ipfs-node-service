@@ -4,22 +4,31 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"github.com/godcong/go-trait"
 	"github.com/godcong/ipfs-media-service/config"
 	"github.com/godcong/ipfs-media-service/service"
 	_ "github.com/godcong/ipfs-media-service/statik"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
-var configPath = flag.String("path", "config.toml", "load config file from path")
-
 func main() {
-	flag.Parse()
-	trait.InitElasticLog("ipfs-node-service", nil)
+	rootCmd := &cobra.Command{
+		Use: "node",
+	}
+
+	configPath := rootCmd.PersistentFlags().StringP("config", "c", "config.toml", "Config name for load config")
+	elk := rootCmd.PersistentFlags().Bool("elk", true, "Log output with elk")
+	_ = viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
+	_ = viper.BindPFlag("elk", rootCmd.PersistentFlags().Lookup("elk"))
+	_ = rootCmd.Execute()
+	if *elk {
+		trait.InitElasticLog("ipfs-node-service", nil)
+	}
 
 	err := config.Initialize(*configPath)
 	if err != nil {
