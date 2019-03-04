@@ -10,7 +10,6 @@ import (
 	"google.golang.org/grpc/reflection"
 	"net"
 	"syscall"
-	"time"
 )
 
 // GRPCServer ...
@@ -38,12 +37,6 @@ func (s *GRPCServer) RemoteDownload(ctx context.Context, p *proto.RemoteDownload
 	return Result(&proto.NodeReplyDetail{
 		ID: stream.ID,
 	}), nil
-}
-
-type grpcBack struct {
-	config   *config.Configure
-	BackType string
-	BackAddr string
 }
 
 // NewManagerGRPC ...
@@ -86,32 +79,6 @@ func ManagerClient(g *GRPCClient) proto.ManagerServiceClient {
 		return nil
 	}
 	return proto.NewManagerServiceClient(clientConn)
-}
-
-// Callback ...
-func (b *grpcBack) Callback(r *QueueResult) error {
-	grpc := NewManagerGRPC(config.Config())
-	client := ManagerClient(grpc)
-	timeout, _ := context.WithTimeout(context.Background(), time.Second*5)
-
-	reply, err := client.NodeBack(timeout, &proto.ManagerNodeRequest{
-		ID:     r.ID,
-		Detail: r.JSON(),
-	})
-	if err != nil {
-		log.Error(err)
-	}
-	log.Printf("%+v,%+v", r, reply)
-	return err
-}
-
-// NewGRPCBack ...
-func NewGRPCBack(cfg *config.Configure) StreamerCallback {
-	return &grpcBack{
-		config:   cfg,
-		BackType: config.DefaultString(cfg.Callback.BackType, "tcp"),
-		BackAddr: config.DefaultString(cfg.Callback.BackAddr, "localhost:7781"),
-	}
 }
 
 // Status ...

@@ -8,10 +8,8 @@ import (
 
 // Callback ...
 type Callback struct {
-	Type     string `toml:"type"`
-	Version  string `toml:"version"`
-	BackType string `toml:"back_type"`
-	BackAddr string `toml:"back_addr"`
+	Type    string `toml:"type"`
+	Version string `toml:"version"`
 }
 
 // Media ...
@@ -45,8 +43,7 @@ type REST struct {
 	Enable bool   `toml:"enable"`
 	Type   string `toml:"type"`
 	Path   string `toml:"path"`
-	//BackURL string `toml:"back_url"`
-	Port string `toml:"port"`
+	Port   string `toml:"port"`
 }
 
 // Queue ...
