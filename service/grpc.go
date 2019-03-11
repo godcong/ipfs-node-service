@@ -48,6 +48,7 @@ func (s *GRPCServer) Status(ctx context.Context, req *proto.StatusRequest, rep *
 
 // NewManagerGRPC ...
 func NewManagerGRPC(cfg *config.Configure) *GRPCClient {
+
 	return &GRPCClient{
 		config: cfg,
 		Type:   config.DefaultString("tcp", Type),
@@ -66,6 +67,7 @@ type GRPCClient struct {
 
 // Conn ...
 func (c *GRPCClient) Conn() (*grpc.ClientConn, error) {
+
 	var conn *grpc.ClientConn
 	var err error
 

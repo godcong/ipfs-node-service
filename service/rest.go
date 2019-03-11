@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/ipfs-media-service/config"
+	"github.com/micro/go-web"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
@@ -17,8 +18,9 @@ const ContentTypeJSON = "application/json"
 type RestServer struct {
 	*gin.Engine
 	config *config.Configure
-	server *http.Server
-	Port   string
+	//server *http.Server
+	service web.Service
+	Port    string
 }
 
 // NewRestServer ...
@@ -36,17 +38,28 @@ func (s *RestServer) Start() {
 	if !s.config.REST.Enable {
 		return
 	}
+	s.service = web.NewService(
+		web.Name("go.micro.api.node"),
+	)
+
+	_ = s.service.Init()
 
 	Router(s.Engine)
 
-	s.server = &http.Server{
-		Addr:    s.Port,
-		Handler: s.Engine,
-	}
+	s.service.Handle("/", s.Engine)
+
+	//s.server = &http.Server{
+	//	Addr:    s.Port,
+	//	Handler: s.Engine,
+	//}
 	go func() {
-		log.Printf("Listening and serving HTTP on %s\n", s.Port)
-		if err := s.server.ListenAndServe(); err != nil {
-			log.Printf("Httpserver: ListenAndServe() error: %s", err)
+		//log.Printf("Listening and serving HTTP on %s\n", s.Port)
+		//if err := s.server.ListenAndServe(); err != nil {
+		//	log.Printf("Httpserver: ListenAndServe() error: %s", err)
+		//}
+		// Run server
+		if err := s.service.Run(); err != nil {
+			log.Fatal(err)
 		}
 	}()
 
@@ -54,9 +67,9 @@ func (s *RestServer) Start() {
 
 // Stop ...
 func (s *RestServer) Stop() {
-	if err := s.server.Shutdown(nil); err != nil {
-		panic(err) // failure/timeout shutting down the server gracefully
-	}
+	//if err := s.server.Shutdown(nil); err != nil {
+	//	panic(err) // failure/timeout shutting down the server gracefully
+	//}
 }
 
 type restBack struct {
