@@ -6,12 +6,6 @@ import (
 	"os"
 )
 
-// Callback ...
-type Callback struct {
-	Type    string `toml:"type"`
-	Version string `toml:"version"`
-}
-
 // Media ...
 type Media struct {
 	Upload      string `toml:"upload"`        //上传路径
@@ -62,16 +56,21 @@ type OSS struct {
 	BucketName      string `toml:"bucket_name"`
 }
 
+type ManagerConfig struct {
+	GRPC     GRPC   `toml:"grpc"`
+	REST     REST   `toml:"rest"`
+	CallType string `json:"call_type"`
+}
+
 // Configure ...
 type Configure struct {
-	Media Media `toml:"media"`
-	Queue Queue `toml:"queue"`
-	OSS   []OSS `toml:"oss"`
-	GRPC  GRPC  `toml:"grpc"`
-	REST  REST  `toml:"rest"`
-	IPFS  IPFS  `toml:"ipfs"`
-
-	Callback Callback `toml:"callback"`
+	Media         Media         `toml:"media"`
+	Queue         Queue         `toml:"queue"`
+	OSS           []OSS         `toml:"oss"`
+	GRPC          GRPC          `toml:"grpc"`
+	REST          REST          `toml:"rest"`
+	IPFS          IPFS          `toml:"ipfs"`
+	ManagerConfig ManagerConfig `json:"manager_config"`
 }
 
 var config *Configure

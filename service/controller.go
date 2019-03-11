@@ -112,7 +112,7 @@ func RemoteDownloadPost(vertion string) gin.HandlerFunc {
 		//stream.Dir, stream.FileName = filepath.Split(key)
 		stream.ObjectKey = key
 		stream.SetEncrypt(false)
-		stream.Callback = config.Config().Callback.Type
+		stream.Callback = config.Config().ManagerConfig.CallType
 		//stream.SetURI("")
 		//stream.FileDest = config.Media.Upload
 		//stream.SetSrc(config.Media.Transfer)

@@ -67,8 +67,8 @@ type restBack struct {
 // NewRestBack ...
 func NewRestBack(cfg *config.Configure) StreamerCallback {
 	return &restBack{
-		BackURL: config.DefaultString(cfg.Callback.BackAddr, "localhost:7780"),
-		Version: config.DefaultString(cfg.Callback.Version, "v0"),
+		BackURL: config.DefaultString(cfg.ManagerConfig.REST.Path+cfg.ManagerConfig.REST.Port, "localhost:7780"),
+		Version: config.DefaultString("", "v0"),
 	}
 }
 

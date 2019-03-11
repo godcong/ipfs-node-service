@@ -23,13 +23,16 @@ var rootCmd = &cobra.Command{
 func main() {
 
 	configPath := rootCmd.PersistentFlags().StringP("config", "c", "config.toml", "Config name for load config")
-	elk := rootCmd.PersistentFlags().Bool("elk", true, "Log output with elk")
+	logPath := rootCmd.PersistentFlags().StringP("log", "l", "logs/node.log", "set the log path")
+	elk := rootCmd.PersistentFlags().Bool("elk", false, "Log output with elk")
 	_ = viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
 	_ = viper.BindPFlag("elk", rootCmd.PersistentFlags().Lookup("elk"))
 	Execute()
 
 	if *elk {
 		trait.InitElasticLog("ipfs-node-service", nil)
+	} else {
+		trait.InitRotateLog(*logPath, nil)
 	}
 
 	err := config.Initialize(*configPath)

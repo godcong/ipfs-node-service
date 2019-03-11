@@ -5,38 +5,45 @@ import (
 	"fmt"
 	"github.com/godcong/ipfs-media-service/config"
 	"github.com/godcong/ipfs-media-service/proto"
+	"github.com/micro/go-micro"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 	"net"
 	"syscall"
+	"time"
 )
 
 // GRPCServer ...
 type GRPCServer struct {
-	config *config.Configure
-	server *grpc.Server
-	Type   string
-	Port   string
-	Path   string
+	config  *config.Configure
+	service micro.Service
+	Type    string
+	Port    string
+	Path    string
 }
 
-// RemoteDownload ...
-func (s *GRPCServer) RemoteDownload(ctx context.Context, p *proto.RemoteDownloadRequest) (*proto.NodeReply, error) {
-	log.Printf("Received: %v", p.String())
-	stream := NewStreamerWithConfig(s.config, p.ID)
+func (s *GRPCServer) RemoteDownload(ctx context.Context, req *proto.RemoteDownloadRequest, rep *proto.NodeReply) error {
+	log.Printf("Received: %v", req.String())
+	stream := NewStreamerWithConfig(s.config, req.ID)
 	//stream.Dir, stream.FileName = filepath.Split(key)
-	stream.ObjectKey = p.ObjectKey
+	stream.ObjectKey = req.ObjectKey
 	stream.SetEncrypt(false)
-	stream.Callback = s.config.Callback.Type
+	stream.Callback = s.config.ManagerConfig.CallType
 	//stream.SetURI("")
 	//stream.FileDest = config.Media.Upload
 	//stream.SetSrc(config.Media.Transfer)
 	globalQueue.Set(stream.ID, StatusQueuing, 0)
 	Push(stream)
-	return Result(&proto.NodeReplyDetail{
+	rep = Result(&proto.NodeReplyDetail{
 		ID: stream.ID,
-	}), nil
+	})
+	return nil
+}
+
+func (s *GRPCServer) Status(ctx context.Context, req *proto.StatusRequest, rep *proto.NodeReply) error {
+	log.Printf("Received: %v", req.String())
+	rep = Result(nil)
+	return nil
 }
 
 // NewManagerGRPC ...
@@ -81,12 +88,6 @@ func ManagerClient(g *GRPCClient) proto.ManagerServiceClient {
 	return proto.NewManagerServiceClient(clientConn)
 }
 
-// Status ...
-func (s *GRPCServer) Status(ctx context.Context, p *proto.StatusRequest) (*proto.NodeReply, error) {
-	log.Printf("Received: %v", p.String())
-	return Result(nil), nil
-}
-
 // Result ...
 func Result(detail *proto.NodeReplyDetail) *proto.NodeReply {
 	return &proto.NodeReply{
@@ -111,10 +112,16 @@ func (s *GRPCServer) Start() {
 	if !s.config.GRPC.Enable {
 		return
 	}
-	s.server = grpc.NewServer()
 	var lis net.Listener
 	var port string
 	var err error
+	s.service = micro.NewService(
+		micro.Name("node"),
+		micro.RegisterTTL(time.Second*30),
+		micro.RegisterInterval(time.Second*15),
+		micro.Version("latest"),
+	)
+	s.service.Init()
 	go func() {
 		if s.Type == "unix" {
 			_ = syscall.Unlink(s.Path)
@@ -129,11 +136,10 @@ func (s *GRPCServer) Start() {
 			panic(fmt.Sprintf("failed to listen: %v", err))
 		}
 
-		proto.RegisterNodeServiceServer(s.server, s)
-		// Register reflection service on gRPC server.
-		reflection.Register(s.server)
+		_ = proto.RegisterNodeServiceHandler(s.service.Server(), s)
+
 		log.Printf("Listening and serving TCP on %s\n", port)
-		if err := s.server.Serve(lis); err != nil {
+		if err := s.service.Run(); err != nil {
 			log.Fatalf("failed to serve: %v", err)
 		}
 	}()
@@ -142,5 +148,5 @@ func (s *GRPCServer) Start() {
 
 // Stop ...
 func (s *GRPCServer) Stop() {
-	s.server.Stop()
+	//s.server.Stop()
 }

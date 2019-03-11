@@ -47,7 +47,7 @@ func Stop() {
 // NewBack ...
 func NewBack() StreamerCallback {
 	cfg := config.Config()
-	if cfg != nil && cfg.Callback.Type == "grpc" {
+	if cfg != nil && cfg.ManagerConfig.CallType == "grpc" {
 		return NewGRPCBack(cfg)
 	}
 	return NewRestBack(cfg)
