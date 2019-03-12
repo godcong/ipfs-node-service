@@ -117,8 +117,10 @@ func (s *GRPCServer) Start() {
 	var lis net.Listener
 	var port string
 	var err error
+	//reg := consul.NewRegistry()
+
 	s.service = micro.NewService(
-		micro.Name("node"),
+		micro.Name("go.micro.grpc.node"),
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*15),
 		micro.Version("latest"),
