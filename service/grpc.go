@@ -7,7 +7,6 @@ import (
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry/consul"
 	log "github.com/sirupsen/logrus"
-	"google.golang.org/grpc"
 	"time"
 )
 
@@ -44,52 +43,32 @@ func (s *GRPCServer) Status(ctx context.Context, req *proto.StatusRequest, rep *
 	return nil
 }
 
-// NewManagerGRPC ...
-func NewManagerGRPC(cfg *config.Configure) *GRPCClient {
-	reg := consul.NewRegistry()
-	return &GRPCClient{
-		config: cfg,
-		service: micro.NewService(
-			micro.Registry(reg),
-		),
-		Type: config.DefaultString("tcp", Type),
-		Port: config.DefaultString("", ":7781"),
-		Addr: config.DefaultString("", "localhost"),
-	}
-}
-
 // GRPCClient ...
 type GRPCClient struct {
 	config  *config.Configure
 	service micro.Service
-	Type    string
-	Port    string
-	Addr    string
 }
 
-// Conn ...
-func (c *GRPCClient) Conn() (*grpc.ClientConn, error) {
-
-	var conn *grpc.ClientConn
-	var err error
-
-	if c.Type == "unix" {
-		conn, err = grpc.Dial("passthrough:///unix://"+c.Addr, grpc.WithInsecure())
-	} else {
-		conn, err = grpc.Dial(c.Addr+c.Port, grpc.WithInsecure())
+// NewGRPCClient ...
+func NewGRPCClient(cfg *config.Configure) *GRPCClient {
+	reg := consul.NewRegistry()
+	client := &GRPCClient{
+		service: micro.NewService(
+			micro.Registry(reg)),
+		config: cfg,
 	}
+	client.service.Init()
+	return client
+}
 
-	return conn, err
+// NodeClient ...
+func NodeClient(g *GRPCClient) proto.NodeService {
+	return proto.NewNodeService(g.config.Node.NodeName, g.service.Client())
 }
 
 // ManagerClient ...
-func ManagerClient(g *GRPCClient) proto.ManagerServiceClient {
-	clientConn, err := g.Conn()
-	if err != nil {
-		log.Println(err)
-		return nil
-	}
-	return proto.NewManagerServiceClient(clientConn)
+func ManagerClient(g *GRPCClient) proto.ManagerService {
+	return proto.NewManagerService(g.config.Node.ManagerName, g.service.Client())
 }
 
 // Result ...
@@ -117,7 +96,7 @@ func (s *GRPCServer) Start() {
 	reg := consul.NewRegistry()
 
 	s.service = micro.NewService(
-		micro.Name("go.micro.grpc.node"),
+		micro.Name(s.config.Node.NodeName),
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*15),
 		micro.Registry(reg),
