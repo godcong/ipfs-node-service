@@ -26,7 +26,7 @@ func (s *GRPCServer) RemoteDownload(ctx context.Context, req *proto.RemoteDownlo
 	//stream.Dir, stream.FileName = filepath.Split(key)
 	stream.ObjectKey = req.ObjectKey
 	stream.SetEncrypt(false)
-	stream.Callback = s.config.ManagerConfig.CallType
+	stream.Callback = s.config.Node.RequestType
 	//stream.SetURI("")
 	//stream.FileDest = config.Media.Upload
 	//stream.SetSrc(config.Media.Transfer)
@@ -103,17 +103,12 @@ func Result(detail *proto.NodeReplyDetail) proto.NodeReply {
 
 // NewGRPCServer ...
 func NewGRPCServer(cfg *config.Configure) *GRPCServer {
-	return &GRPCServer{
-		config: cfg,
-		Type:   config.DefaultString(cfg.GRPC.Type, Type),
-		Port:   config.DefaultString(cfg.GRPC.Port, ":7788"),
-		Path:   config.DefaultString(cfg.GRPC.Path, "/tmp/node.sock"),
-	}
+	return &GRPCServer{}
 }
 
 // Start ...
 func (s *GRPCServer) Start() {
-	if !s.config.GRPC.Enable {
+	if !s.config.Node.EnableGRPC {
 		return
 	}
 

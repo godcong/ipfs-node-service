@@ -30,14 +30,14 @@ func NewRestServer(cfg *config.Configure) *RestServer {
 	s := &RestServer{
 		Engine: gin.Default(),
 		config: cfg,
-		Port:   config.DefaultString(cfg.REST.Port, ":7787"),
+		Port:   config.DefaultString(cfg.Node.REST.Port, ":7787"),
 	}
 	return s
 }
 
 // Start ...
 func (s *RestServer) Start() {
-	if !s.config.REST.Enable {
+	if !s.config.Node.EnableREST {
 		return
 	}
 	reg := consul.NewRegistry()
@@ -84,8 +84,8 @@ type restBack struct {
 // NewRestBack ...
 func NewRestBack(cfg *config.Configure) StreamerCallback {
 	return &restBack{
-		BackURL: config.DefaultString(cfg.ManagerConfig.REST.Path+cfg.ManagerConfig.REST.Port, "localhost:7780"),
-		Version: config.DefaultString("", "v0"),
+		BackURL: config.DefaultString(cfg.Callback.BackAddr, "localhost:7780"),
+		Version: config.DefaultString(cfg.Callback.Version, "v0"),
 	}
 }
 

@@ -61,16 +61,32 @@ type ManagerConfig struct {
 	REST     REST   `toml:"rest"`
 	CallType string `json:"call_type"`
 }
+type Node struct {
+	ManagerName string `toml:"manager_name"`
+	NodeName    string `toml:"node_name"`
+	CensorName  string `toml:"censor_name"`
+	EnableGRPC  bool   `toml:"enable_grpc"`
+	EnableREST  bool   `toml:"enable_rest"`
+	REST        REST   `toml:"rest"`
+	RequestType string `toml:"request_type"`
+}
+
+// Callback ...
+type Callback struct {
+	Type     string `toml:"type"`
+	BackType string `toml:"back_type"`
+	BackAddr string `toml:"back_addr"`
+	Version  string `toml:"version"`
+}
 
 // Configure ...
 type Configure struct {
-	Media         Media         `toml:"media"`
-	Queue         Queue         `toml:"queue"`
-	OSS           []OSS         `toml:"oss"`
-	GRPC          GRPC          `toml:"grpc"`
-	REST          REST          `toml:"rest"`
-	IPFS          IPFS          `toml:"ipfs"`
-	ManagerConfig ManagerConfig `json:"manager_config"`
+	Media    Media    `toml:"media"`
+	Queue    Queue    `toml:"queue"`
+	OSS      []OSS    `toml:"oss"`
+	Node     Node     `toml:"node"`
+	IPFS     IPFS     `toml:"ipfs"`
+	Callback Callback `toml:"callback"`
 }
 
 var config *Configure
