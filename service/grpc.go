@@ -35,16 +35,15 @@ func (s *GRPCServer) RemoteDownload(ctx context.Context, req *proto.RemoteDownlo
 	//stream.SetSrc(config.Media.Transfer)
 	globalQueue.Set(stream.ID, StatusQueuing, 0)
 	Push(stream)
-	rep.Detail = &proto.NodeReplyDetail{
+	*rep = Result(&proto.NodeReplyDetail{
 		ID: stream.ID,
-	}
-	rep.Message = "success"
+	})
 	return nil
 }
 
 func (s *GRPCServer) Status(ctx context.Context, req *proto.StatusRequest, rep *proto.NodeReply) error {
 	log.Printf("Received: %v", req.String())
-	rep.Message = "success"
+	*rep = Result(nil)
 	return nil
 }
 
@@ -93,8 +92,8 @@ func ManagerClient(g *GRPCClient) proto.ManagerServiceClient {
 }
 
 // Result ...
-func Result(detail *proto.NodeReplyDetail) *proto.NodeReply {
-	return &proto.NodeReply{
+func Result(detail *proto.NodeReplyDetail) proto.NodeReply {
+	return proto.NodeReply{
 		Code:    0,
 		Message: "success",
 		Detail:  detail,
