@@ -1,9 +1,4 @@
-[grpc]
-    enable = true
-    port = ":7781"
-    path = "/tmp/node.sock"
-[rest]
-    enable = true
+
 [media]
     upload= "upload"
     transfer= "transfer"
@@ -33,3 +28,16 @@
    access_key_id=""
    access_key_secret =""
    bucket_name =""
+
+     [node]
+         manager_name = "vlavr.grpc.manager"
+         censor_name = "vlavr.grpc.censor"
+         node_name = "vlavr.grpc.node"
+         enable_grpc = true
+         enable_rest = true
+         request_type = "grpc"
+       [node.rest]
+         enable = false
+         type = ""
+         path = ""
+         port = ":7787"

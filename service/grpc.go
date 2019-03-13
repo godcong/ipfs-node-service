@@ -103,7 +103,9 @@ func Result(detail *proto.NodeReplyDetail) proto.NodeReply {
 
 // NewGRPCServer ...
 func NewGRPCServer(cfg *config.Configure) *GRPCServer {
-	return &GRPCServer{}
+	return &GRPCServer{
+		config: cfg,
+	}
 }
 
 // Start ...
