@@ -2,15 +2,12 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"github.com/godcong/ipfs-media-service/config"
 	"github.com/godcong/ipfs-media-service/proto"
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry/consul"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
-	"net"
-	"syscall"
 	"time"
 )
 
@@ -119,9 +116,7 @@ func (s *GRPCServer) Start() {
 	if !s.config.GRPC.Enable {
 		return
 	}
-	var lis net.Listener
-	var port string
-	var err error
+
 	reg := consul.NewRegistry()
 
 	s.service = micro.NewService(
@@ -132,22 +127,9 @@ func (s *GRPCServer) Start() {
 	)
 	s.service.Init()
 	go func() {
-		if s.Type == "unix" {
-			_ = syscall.Unlink(s.Path)
-			lis, err = net.Listen(s.Type, s.Path)
-			port = s.Path
-		} else {
-			lis, err = net.Listen("tcp", s.Port)
-			port = s.Port
-		}
-
-		if err != nil {
-			panic(fmt.Sprintf("failed to listen: %v", err))
-		}
 
 		_ = proto.RegisterNodeServiceHandler(s.service.Server(), s)
 
-		log.Printf("Listening and serving TCP on %s\n", port)
 		if err := s.service.Run(); err != nil {
 			log.Fatalf("failed to serve: %v", err)
 		}
