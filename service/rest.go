@@ -3,6 +3,8 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/ipfs-media-service/config"
+	"github.com/micro/go-micro/registry/consul"
+
 	"github.com/micro/go-web"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -38,8 +40,10 @@ func (s *RestServer) Start() {
 	if !s.config.REST.Enable {
 		return
 	}
+	reg := consul.NewRegistry()
 	s.service = web.NewService(
 		web.Name("go.micro.api.node"),
+		web.Registry(reg),
 	)
 
 	_ = s.service.Init()

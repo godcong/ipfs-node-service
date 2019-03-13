@@ -6,6 +6,7 @@ import (
 	"github.com/godcong/ipfs-media-service/config"
 	"github.com/godcong/ipfs-media-service/proto"
 	"github.com/micro/go-micro"
+	"github.com/micro/go-micro/registry/consul"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"net"
@@ -34,15 +35,16 @@ func (s *GRPCServer) RemoteDownload(ctx context.Context, req *proto.RemoteDownlo
 	//stream.SetSrc(config.Media.Transfer)
 	globalQueue.Set(stream.ID, StatusQueuing, 0)
 	Push(stream)
-	rep = Result(&proto.NodeReplyDetail{
+	rep.Detail = &proto.NodeReplyDetail{
 		ID: stream.ID,
-	})
+	}
+	rep.Message = "success"
 	return nil
 }
 
 func (s *GRPCServer) Status(ctx context.Context, req *proto.StatusRequest, rep *proto.NodeReply) error {
 	log.Printf("Received: %v", req.String())
-	rep = Result(nil)
+	rep.Message = "success"
 	return nil
 }
 
@@ -117,13 +119,13 @@ func (s *GRPCServer) Start() {
 	var lis net.Listener
 	var port string
 	var err error
-	//reg := consul.NewRegistry()
+	reg := consul.NewRegistry()
 
 	s.service = micro.NewService(
 		micro.Name("go.micro.grpc.node"),
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*15),
-		micro.Version("latest"),
+		micro.Registry(reg),
 	)
 	s.service.Init()
 	go func() {
