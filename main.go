@@ -4,30 +4,23 @@
 package main
 
 import (
+	"flag"
 	"github.com/godcong/go-trait"
 	"github.com/godcong/ipfs-node-service/config"
 	"github.com/godcong/ipfs-node-service/service"
 	_ "github.com/godcong/ipfs-node-service/statik"
 	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
-var rootCmd = &cobra.Command{
-	Use: "node",
-}
+var configPath = flag.String("config", "config.toml", "load config file from path")
+var elk = flag.Bool("elk", false, "set log to elk")
+var logPath = flag.String("log", "logs/manager.log", "set the default log path")
 
 func main() {
-
-	configPath := rootCmd.PersistentFlags().StringP("config", "c", "config.toml", "Config name for load config")
-	logPath := rootCmd.PersistentFlags().StringP("log", "l", "logs/node.log", "set the log path")
-	elk := rootCmd.PersistentFlags().Bool("elk", false, "Log output with elk")
-	_ = viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
-	_ = viper.BindPFlag("elk", rootCmd.PersistentFlags().Lookup("elk"))
-	Execute()
+	flag.Parse()
 
 	if *elk {
 		trait.InitElasticLog("ipfs-node-service", nil)
@@ -56,11 +49,4 @@ func main() {
 	}()
 	<-done
 
-}
-
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		log.Error(err)
-		os.Exit(1)
-	}
 }
