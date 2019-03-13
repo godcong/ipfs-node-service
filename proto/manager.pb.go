@@ -22,7 +22,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-// ManagerNodeRequest ...
 type ManagerNodeRequest struct {
 	ID                   string   `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	Detail               string   `protobuf:"bytes,2,opt,name=detail,proto3" json:"detail,omitempty"`
@@ -31,48 +30,31 @@ type ManagerNodeRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-// Reset ...
-func (m *ManagerNodeRequest) Reset() { *m = ManagerNodeRequest{} }
-
-// String ...
+func (m *ManagerNodeRequest) Reset()         { *m = ManagerNodeRequest{} }
 func (m *ManagerNodeRequest) String() string { return proto.CompactTextString(m) }
-
-// ProtoMessage ...
-func (*ManagerNodeRequest) ProtoMessage() {}
-
-// Descriptor ...
+func (*ManagerNodeRequest) ProtoMessage()    {}
 func (*ManagerNodeRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_cde9ec64f0d2c859, []int{0}
 }
 
-// XXX_Unmarshal ...
 func (m *ManagerNodeRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ManagerNodeRequest.Unmarshal(m, b)
 }
-
-// XXX_Marshal ...
 func (m *ManagerNodeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ManagerNodeRequest.Marshal(b, m, deterministic)
 }
-
-// XXX_Merge ...
 func (m *ManagerNodeRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ManagerNodeRequest.Merge(m, src)
 }
-
-// XXX_Size ...
 func (m *ManagerNodeRequest) XXX_Size() int {
 	return xxx_messageInfo_ManagerNodeRequest.Size(m)
 }
-
-// XXX_DiscardUnknown ...
 func (m *ManagerNodeRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_ManagerNodeRequest.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_ManagerNodeRequest proto.InternalMessageInfo
 
-// GetID ...
 func (m *ManagerNodeRequest) GetID() string {
 	if m != nil {
 		return m.ID
@@ -80,7 +62,6 @@ func (m *ManagerNodeRequest) GetID() string {
 	return ""
 }
 
-// GetDetail ...
 func (m *ManagerNodeRequest) GetDetail() string {
 	if m != nil {
 		return m.Detail
@@ -88,7 +69,6 @@ func (m *ManagerNodeRequest) GetDetail() string {
 	return ""
 }
 
-// ManagerCensorRequest ...
 type ManagerCensorRequest struct {
 	ID                   string   `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	Detail               string   `protobuf:"bytes,2,opt,name=detail,proto3" json:"detail,omitempty"`
@@ -97,48 +77,31 @@ type ManagerCensorRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-// Reset ...
-func (m *ManagerCensorRequest) Reset() { *m = ManagerCensorRequest{} }
-
-// String ...
+func (m *ManagerCensorRequest) Reset()         { *m = ManagerCensorRequest{} }
 func (m *ManagerCensorRequest) String() string { return proto.CompactTextString(m) }
-
-// ProtoMessage ...
-func (*ManagerCensorRequest) ProtoMessage() {}
-
-// Descriptor ...
+func (*ManagerCensorRequest) ProtoMessage()    {}
 func (*ManagerCensorRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_cde9ec64f0d2c859, []int{1}
 }
 
-// XXX_Unmarshal ...
 func (m *ManagerCensorRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ManagerCensorRequest.Unmarshal(m, b)
 }
-
-// XXX_Marshal ...
 func (m *ManagerCensorRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ManagerCensorRequest.Marshal(b, m, deterministic)
 }
-
-// XXX_Merge ...
 func (m *ManagerCensorRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ManagerCensorRequest.Merge(m, src)
 }
-
-// XXX_Size ...
 func (m *ManagerCensorRequest) XXX_Size() int {
 	return xxx_messageInfo_ManagerCensorRequest.Size(m)
 }
-
-// XXX_DiscardUnknown ...
 func (m *ManagerCensorRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_ManagerCensorRequest.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_ManagerCensorRequest proto.InternalMessageInfo
 
-// GetID ...
 func (m *ManagerCensorRequest) GetID() string {
 	if m != nil {
 		return m.ID
@@ -146,7 +109,6 @@ func (m *ManagerCensorRequest) GetID() string {
 	return ""
 }
 
-// GetDetail ...
 func (m *ManagerCensorRequest) GetDetail() string {
 	if m != nil {
 		return m.Detail
@@ -154,7 +116,6 @@ func (m *ManagerCensorRequest) GetDetail() string {
 	return ""
 }
 
-// ManagerReply ...
 type ManagerReply struct {
 	Code                 int32               `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
 	Message              string              `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
@@ -164,48 +125,31 @@ type ManagerReply struct {
 	XXX_sizecache        int32               `json:"-"`
 }
 
-// Reset ...
-func (m *ManagerReply) Reset() { *m = ManagerReply{} }
-
-// String ...
+func (m *ManagerReply) Reset()         { *m = ManagerReply{} }
 func (m *ManagerReply) String() string { return proto.CompactTextString(m) }
-
-// ProtoMessage ...
-func (*ManagerReply) ProtoMessage() {}
-
-// Descriptor ...
+func (*ManagerReply) ProtoMessage()    {}
 func (*ManagerReply) Descriptor() ([]byte, []int) {
 	return fileDescriptor_cde9ec64f0d2c859, []int{2}
 }
 
-// XXX_Unmarshal ...
 func (m *ManagerReply) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ManagerReply.Unmarshal(m, b)
 }
-
-// XXX_Marshal ...
 func (m *ManagerReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ManagerReply.Marshal(b, m, deterministic)
 }
-
-// XXX_Merge ...
 func (m *ManagerReply) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ManagerReply.Merge(m, src)
 }
-
-// XXX_Size ...
 func (m *ManagerReply) XXX_Size() int {
 	return xxx_messageInfo_ManagerReply.Size(m)
 }
-
-// XXX_DiscardUnknown ...
 func (m *ManagerReply) XXX_DiscardUnknown() {
 	xxx_messageInfo_ManagerReply.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_ManagerReply proto.InternalMessageInfo
 
-// GetCode ...
 func (m *ManagerReply) GetCode() int32 {
 	if m != nil {
 		return m.Code
@@ -213,7 +157,6 @@ func (m *ManagerReply) GetCode() int32 {
 	return 0
 }
 
-// GetMessage ...
 func (m *ManagerReply) GetMessage() string {
 	if m != nil {
 		return m.Message
@@ -221,7 +164,6 @@ func (m *ManagerReply) GetMessage() string {
 	return ""
 }
 
-// GetDetail ...
 func (m *ManagerReply) GetDetail() *ManagerReplyDetail {
 	if m != nil {
 		return m.Detail
@@ -229,7 +171,6 @@ func (m *ManagerReply) GetDetail() *ManagerReplyDetail {
 	return nil
 }
 
-// ManagerReplyDetail ...
 type ManagerReplyDetail struct {
 	ID                   string   `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	Json                 string   `protobuf:"bytes,2,opt,name=json,proto3" json:"json,omitempty"`
@@ -238,48 +179,31 @@ type ManagerReplyDetail struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-// Reset ...
-func (m *ManagerReplyDetail) Reset() { *m = ManagerReplyDetail{} }
-
-// String ...
+func (m *ManagerReplyDetail) Reset()         { *m = ManagerReplyDetail{} }
 func (m *ManagerReplyDetail) String() string { return proto.CompactTextString(m) }
-
-// ProtoMessage ...
-func (*ManagerReplyDetail) ProtoMessage() {}
-
-// Descriptor ...
+func (*ManagerReplyDetail) ProtoMessage()    {}
 func (*ManagerReplyDetail) Descriptor() ([]byte, []int) {
 	return fileDescriptor_cde9ec64f0d2c859, []int{3}
 }
 
-// XXX_Unmarshal ...
 func (m *ManagerReplyDetail) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ManagerReplyDetail.Unmarshal(m, b)
 }
-
-// XXX_Marshal ...
 func (m *ManagerReplyDetail) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ManagerReplyDetail.Marshal(b, m, deterministic)
 }
-
-// XXX_Merge ...
 func (m *ManagerReplyDetail) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ManagerReplyDetail.Merge(m, src)
 }
-
-// XXX_Size ...
 func (m *ManagerReplyDetail) XXX_Size() int {
 	return xxx_messageInfo_ManagerReplyDetail.Size(m)
 }
-
-// XXX_DiscardUnknown ...
 func (m *ManagerReplyDetail) XXX_DiscardUnknown() {
 	xxx_messageInfo_ManagerReplyDetail.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_ManagerReplyDetail proto.InternalMessageInfo
 
-// GetID ...
 func (m *ManagerReplyDetail) GetID() string {
 	if m != nil {
 		return m.ID
@@ -287,7 +211,6 @@ func (m *ManagerReplyDetail) GetID() string {
 	return ""
 }
 
-// GetJson ...
 func (m *ManagerReplyDetail) GetJson() string {
 	if m != nil {
 		return m.Json
@@ -346,12 +269,10 @@ type managerServiceClient struct {
 	cc *grpc.ClientConn
 }
 
-// NewManagerServiceClient ...
 func NewManagerServiceClient(cc *grpc.ClientConn) ManagerServiceClient {
 	return &managerServiceClient{cc}
 }
 
-// NodeBack ...
 func (c *managerServiceClient) NodeBack(ctx context.Context, in *ManagerNodeRequest, opts ...grpc.CallOption) (*ManagerReply, error) {
 	out := new(ManagerReply)
 	err := c.cc.Invoke(ctx, "/proto.ManagerService/NodeBack", in, out, opts...)
@@ -361,7 +282,6 @@ func (c *managerServiceClient) NodeBack(ctx context.Context, in *ManagerNodeRequ
 	return out, nil
 }
 
-// CensorBack ...
 func (c *managerServiceClient) CensorBack(ctx context.Context, in *ManagerCensorRequest, opts ...grpc.CallOption) (*ManagerReply, error) {
 	out := new(ManagerReply)
 	err := c.cc.Invoke(ctx, "/proto.ManagerService/CensorBack", in, out, opts...)
@@ -377,7 +297,6 @@ type ManagerServiceServer interface {
 	CensorBack(context.Context, *ManagerCensorRequest) (*ManagerReply, error)
 }
 
-// RegisterManagerServiceServer ...
 func RegisterManagerServiceServer(s *grpc.Server, srv ManagerServiceServer) {
 	s.RegisterService(&_ManagerService_serviceDesc, srv)
 }
