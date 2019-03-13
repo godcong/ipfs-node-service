@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/godcong/ipfs-media-service/config"
+	"github.com/godcong/ipfs-node-service/config"
 	"github.com/micro/go-micro/registry/consul"
 
 	"github.com/micro/go-web"

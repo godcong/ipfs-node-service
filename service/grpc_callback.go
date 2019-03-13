@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"github.com/godcong/ipfs-media-service/config"
-	"github.com/godcong/ipfs-media-service/proto"
+	"github.com/godcong/ipfs-node-service/config"
+	"github.com/godcong/ipfs-node-service/proto"
 	log "github.com/sirupsen/logrus"
 	"time"
 )

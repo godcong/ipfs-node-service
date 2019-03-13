@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/godcong/ipfs-media-service/config"
-	"github.com/godcong/ipfs-media-service/openssl"
+	"github.com/godcong/ipfs-node-service/config"
+	"github.com/godcong/ipfs-node-service/openssl"
 	"github.com/google/uuid"
 	"github.com/json-iterator/go"
 	log "github.com/sirupsen/logrus"

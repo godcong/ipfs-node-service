@@ -3,7 +3,7 @@ package oss
 import (
 	"fmt"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"github.com/godcong/ipfs-media-service/config"
+	"github.com/godcong/ipfs-node-service/config"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"

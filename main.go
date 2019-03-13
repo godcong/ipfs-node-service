@@ -5,9 +5,9 @@ package main
 
 import (
 	"github.com/godcong/go-trait"
-	"github.com/godcong/ipfs-media-service/config"
-	"github.com/godcong/ipfs-media-service/service"
-	_ "github.com/godcong/ipfs-media-service/statik"
+	"github.com/godcong/ipfs-node-service/config"
+	"github.com/godcong/ipfs-node-service/service"
+	_ "github.com/godcong/ipfs-node-service/statik"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

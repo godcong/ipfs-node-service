@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"github.com/go-redis/redis"
-	"github.com/godcong/ipfs-media-service/config"
+	"github.com/godcong/ipfs-node-service/config"
 	"github.com/json-iterator/go"
 	"github.com/mitchellh/mapstructure"
 	log "github.com/sirupsen/logrus"

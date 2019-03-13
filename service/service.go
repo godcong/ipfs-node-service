@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/godcong/ipfs-media-service/config"
-	"github.com/godcong/ipfs-media-service/oss"
+	"github.com/godcong/ipfs-node-service/config"
+	"github.com/godcong/ipfs-node-service/oss"
 	log "github.com/sirupsen/logrus"
 )
 

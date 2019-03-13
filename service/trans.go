@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/godcong/ipfs-media-service/ffmpeg"
-	"github.com/godcong/ipfs-media-service/ffprobe"
-	"github.com/godcong/ipfs-media-service/oss"
+	"github.com/godcong/ipfs-node-service/ffmpeg"
+	"github.com/godcong/ipfs-node-service/ffprobe"
+	"github.com/godcong/ipfs-node-service/oss"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"
