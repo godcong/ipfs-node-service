@@ -15,7 +15,7 @@ type grpcBack struct {
 // Callback ...
 func (b *grpcBack) Callback(r *QueueResult) error {
 	grpc := NewManagerGRPC(b.config)
-	client := ManagerClient(grpc)
+	client := proto.NewManagerService("go.micro.grpc.manager", grpc.service.Client())
 	timeout, _ := context.WithTimeout(context.Background(), time.Second*5)
 
 	reply, err := client.NodeBack(timeout, &proto.ManagerNodeRequest{

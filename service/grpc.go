@@ -49,21 +49,25 @@ func (s *GRPCServer) Status(ctx context.Context, req *proto.StatusRequest, rep *
 
 // NewManagerGRPC ...
 func NewManagerGRPC(cfg *config.Configure) *GRPCClient {
-
+	reg := consul.NewRegistry()
 	return &GRPCClient{
 		config: cfg,
-		Type:   config.DefaultString("tcp", Type),
-		Port:   config.DefaultString("", ":7781"),
-		Addr:   config.DefaultString("", "localhost"),
+		service: micro.NewService(
+			micro.Registry(reg),
+		),
+		Type: config.DefaultString("tcp", Type),
+		Port: config.DefaultString("", ":7781"),
+		Addr: config.DefaultString("", "localhost"),
 	}
 }
 
 // GRPCClient ...
 type GRPCClient struct {
-	config *config.Configure
-	Type   string
-	Port   string
-	Addr   string
+	config  *config.Configure
+	service micro.Service
+	Type    string
+	Port    string
+	Addr    string
 }
 
 // Conn ...
