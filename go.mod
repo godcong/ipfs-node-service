@@ -38,7 +38,7 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/go-stomp/stomp v2.0.2+incompatible // indirect
 	github.com/gocql/gocql v0.0.0-20190301043612-f6df8288f9b4 // indirect
-	github.com/godcong/go-trait v0.0.0-20190308094246-c2aaaec3a01c
+	github.com/godcong/go-trait v0.0.0-20190314060719-7776fc37e37f
 	github.com/gogo/googleapis v1.1.0 // indirect
 	github.com/gogo/protobuf v1.2.1 // indirect
 	github.com/golang/groupcache v0.0.0-20190129154638-5b532d6fd5ef // indirect
