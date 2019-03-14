@@ -145,18 +145,56 @@ func IsExists(name string) bool {
 
 // LoadConfig ...
 func LoadConfig(filePath string) *Configure {
-	var cfg Configure
+	cfg := DefaultConfigure()
 	openFile, err := os.OpenFile(filePath, os.O_RDONLY|os.O_SYNC, os.ModePerm)
 	if err != nil {
 		panic(err.Error())
 	}
 	decoder := toml.NewDecoder(openFile)
-	err = decoder.Decode(&cfg)
+	err = decoder.Decode(cfg)
 	if err != nil {
 		panic(err.Error())
 	}
 	log.Printf("config: %+v", cfg)
-	return &cfg
+	return cfg
+}
+
+func DefaultConfigure() *Configure {
+	return &Configure{
+		Media: Media{
+			//upload= "upload"
+			//transfer= "transfer"
+			//m3u8 = "media.m3u8"
+			//key_url = "http://localhost:8080"
+			//key_file = "key"
+			//key_dest = "output_key"
+			//key_info_file = "KeyInfoFile"
+			Download:    "download",
+			Upload:      "upload",
+			Transfer:    "transfer",
+			M3U8:        "media.m3u8",
+			KeyURL:      "http://localhost:8080",
+			KeyDest:     "output_key",
+			KeyFile:     "key",
+			KeyInfoFile: "KeyInfoFile",
+		},
+		Node: Node{
+			ManagerName: "",
+			NodeName:    "",
+			CensorName:  "",
+			EnableGRPC:  true,
+			EnableREST:  true,
+			REST: REST{
+				Enable: true,
+				Type:   "",
+				Path:   "",
+				Port:   ":7787",
+			},
+			RequestType: "",
+		},
+		IPFS:     IPFS{},
+		Callback: Callback{},
+	}
 }
 
 // Config ...

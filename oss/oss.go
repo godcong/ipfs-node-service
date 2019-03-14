@@ -20,9 +20,15 @@ type OSS struct {
 
 // BucketServer ...
 type BucketServer struct {
-	config *config.Configure
-	server []*OSS
-	info   *DownloadInfo
+	config       *config.Configure
+	server       map[string]*OSS
+	current      *OSS
+	DownloadPath string
+	UploadPath   string
+	PartSize     int64
+	Routines     oss.Option
+	Checkpoint   oss.Option
+	Progress     oss.Option
 }
 
 var server *BucketServer
@@ -56,14 +62,23 @@ func (o *OSS) Connect() error {
 func NewBucketServer(cfg *config.Configure) *BucketServer {
 	var s BucketServer
 	s.config = cfg
+	s.server = make(map[string]*OSS)
+	s.DownloadPath = config.DefaultString(cfg.Media.Download, "download")
+	s.UploadPath = config.DefaultString(cfg.Media.Upload, "upload")
+	s.PartSize = 100 * 1024 * 1024
+	s.Routines = oss.Routines(5)
+	s.Checkpoint = oss.Checkpoint(true, "./cp")
+	s.Progress = oss.Progress(&s)
+
 	for _, val := range cfg.OSS {
 		oss := NewOSS(&val)
 		err := oss.Connect()
 		if err != nil {
-			log.Println(err)
-			panic(err)
+			log.Panic(err)
+			return nil
 		}
-		s.server = append(s.server, oss)
+		s.server[oss.BucketName] = oss
+		s.current = oss
 	}
 	return &s
 }
@@ -73,117 +88,97 @@ func InitOSS(cfg *config.Configure) {
 	server = NewBucketServer(cfg)
 }
 
-// Server ...
-func (s *BucketServer) Server(idx ...int) *OSS {
-	if idx == nil {
-		return s.server[0]
-	}
-	return s.server[idx[0]]
-}
-
-// Info ...
-func (s *BucketServer) Info() *DownloadInfo {
-	if s.info == nil {
-		s.info = NewDownloadInfo(s.config)
-	}
-	return s.info
-}
-
-// SetInfo ...
-func (s *BucketServer) SetInfo(info *DownloadInfo) {
-	s.info = info
-}
-
-// DownloadInfo ...
-type DownloadInfo struct {
-	config     *config.Configure
-	DirPath    string
-	PartSize   int64
-	Routines   oss.Option
-	Checkpoint oss.Option
-	Progress   oss.Option
-}
-
-// NewDownloadInfo ...
-func NewDownloadInfo(cfg *config.Configure) *DownloadInfo {
-	return &DownloadInfo{
-		config:     cfg,
-		DirPath:    config.DefaultString(cfg.Media.Download, "download"),
-		PartSize:   100 * 1024 * 1024,
-		Routines:   oss.Routines(5),
-		Checkpoint: oss.Checkpoint(true, "./cp"),
-		Progress:   oss.Progress(&progress{}),
-	}
-}
-
-// RegisterListener ...
-func (i *DownloadInfo) RegisterListener(lis Progress) {
-	i.Progress = oss.Progress(lis)
-}
-
-// Progress ...
-type Progress interface {
-	ProgressChanged(event *oss.ProgressEvent)
-	SetObjectKey(objectKey string)
-	ObjectKey() string
-	Path() string
-	SetPath(path string)
-	Option() oss.Option
-}
-
-type progress struct {
-	objectKey string
-	path      string
-}
-
-// Path ...
-func (p *progress) Path() string {
-	return p.path
-}
-
-// SetPath ...
-func (p *progress) SetPath(path string) {
-	p.path = path
-}
-
-// NewProgress ...
-func NewProgress() Progress {
-	return &progress{}
-}
-
-// Option ...
-func (p *progress) Option() oss.Option {
-	return oss.Progress(p)
-}
-
-// ObjectKey ...
-func (p *progress) ObjectKey() string {
-	return p.objectKey
-}
-
-// SetObjectKey ...
-func (p *progress) SetObjectKey(objectKey string) {
-	p.objectKey = objectKey
-}
-
 // 定义进度变更事件处理函数。
-func (p *progress) ProgressChanged(event *oss.ProgressEvent) {
+func (s *BucketServer) ProgressChanged(event *oss.ProgressEvent) {
 	switch event.EventType {
 	case oss.TransferStartedEvent:
-		fmt.Printf("Transfer Started, ConsumedBytes: %d, TotalBytes %d.\n",
+		log.Printf("Transfer Started, ConsumedBytes: %d, TotalBytes %d.\n",
 			event.ConsumedBytes, event.TotalBytes)
 	case oss.TransferDataEvent:
-		fmt.Printf("\rTransfer Data, ConsumedBytes: %d, TotalBytes %d, %d%%.",
+		log.Printf("\rTransfer Data, ConsumedBytes: %d, TotalBytes %d, %d%%.",
 			event.ConsumedBytes, event.TotalBytes, event.ConsumedBytes*100/event.TotalBytes)
 	case oss.TransferCompletedEvent:
-		fmt.Printf("\nTransfer Completed, ConsumedBytes: %d, TotalBytes %d.\n",
+		log.Printf("\nTransfer Completed, ConsumedBytes: %d, TotalBytes %d.\n",
 			event.ConsumedBytes, event.TotalBytes)
 
 	case oss.TransferFailedEvent:
-		fmt.Printf("\nTransfer Failed, ConsumedBytes: %d, TotalBytes %d.\n",
+		log.Printf("\nTransfer Failed, ConsumedBytes: %d, TotalBytes %d.\n",
 			event.ConsumedBytes, event.TotalBytes)
 	default:
 	}
+}
+
+func (s *BucketServer) Current() *OSS {
+	var b bool
+	if s.current == nil {
+		s.current, b = s.Server("")
+		if !b {
+			log.Panic("no oss founded")
+		}
+	}
+	return s.current
+}
+
+// Server ...
+func (s *BucketServer) Server(name string) (*OSS, bool) {
+	if name == "" {
+		for _, v := range s.server {
+			if v != nil {
+				return v, true
+			}
+		}
+	}
+	v, b := s.server[name]
+	return v, b
+}
+
+// Node ...
+type Node interface {
+	SetBucketName(string)
+	BucketName() string
+	ObjectKey() string
+	OutputName() string
+}
+
+type data struct {
+	bucketName string
+	objectKey  string
+	outputName string
+}
+
+func (d *data) SetBucketName(name string) {
+	d.bucketName = name
+}
+
+func (d *data) BucketName() string {
+	return d.bucketName
+}
+
+func (d *data) Options() []oss.Option {
+	panic("implement me")
+}
+
+// Path ...
+func (d *data) OutputName() string {
+	return d.outputName
+}
+
+// NewNode ...
+func NewNode(objectKey string, outputName string) Node {
+	return &data{
+		objectKey:  objectKey,
+		outputName: outputName,
+	}
+}
+
+// ObjectKey ...
+func (d *data) ObjectKey() string {
+	return d.objectKey
+}
+
+// SetObjectKey ...
+func (d *data) SetObjectKey(objectKey string) {
+	d.objectKey = objectKey
 }
 
 // FileName ...
@@ -193,35 +188,29 @@ func FileName(objectKey string) string {
 }
 
 // Download ...
-func (s *BucketServer) Download(p Progress) error {
-	di := s.Info()
-	path := di.DirPath
-	if p.Path() != "" {
-		path = p.Path()
+func (s *BucketServer) Download(p Node) error {
+	fp := filepath.Join(s.DownloadPath, p.OutputName())
+	abs, e := filepath.Abs(s.DownloadPath)
+	if e != nil {
+		return e
 	}
-	fp := filepath.Join(path, FileName(p.ObjectKey()))
-	dir, _ := filepath.Split(fp)
-	err := os.MkdirAll(dir, os.ModePerm)
-	if err != nil {
-		log.Println(err)
-		//ignore error
-	}
-	err = s.Server().DownloadFile(p.ObjectKey(), fp, di.PartSize, di.Routines, p.Option(), di.Checkpoint)
-	if err != nil {
-		return err
+	_ = os.MkdirAll(abs, os.ModePerm)
+	e = s.Current().DownloadFile(p.ObjectKey(), fp, s.PartSize, s.Routines, s.Progress, s.Checkpoint)
+	if e != nil {
+		return e
 	}
 	return nil
 }
 
 // Upload ...
-func (s *BucketServer) Upload(p Progress) error {
-	di := s.Info()
-	path := di.DirPath
-	if p.Path() != "" {
-		path = p.Path()
-	}
-	fp := filepath.Join(path, p.ObjectKey())
-	err := s.Server().UploadFile(p.ObjectKey(), fp, di.PartSize, di.Routines, p.Option(), di.Checkpoint)
+func (s *BucketServer) Upload(p Node) error {
+	fp := filepath.Join(s.DownloadPath, p.OutputName())
+	//abs, e := filepath.Abs(s.DownloadPath)
+	//if e != nil {
+	//	return e
+	//}
+	//_ = os.MkdirAll(abs, os.ModePerm)
+	err := s.Current().UploadFile(p.ObjectKey(), fp, s.PartSize, s.Routines, s.Progress, s.Checkpoint)
 	if err != nil {
 		return err
 	}
@@ -229,8 +218,8 @@ func (s *BucketServer) Upload(p Progress) error {
 }
 
 // URL ...
-func (s *BucketServer) URL(p Progress) (string, error) {
-	signedURL, err := s.Server().SignURL(p.ObjectKey(), oss.HTTPGet, 60*60*24)
+func (s *BucketServer) URL(p Node) (string, error) {
+	signedURL, err := s.Current().SignURL(p.ObjectKey(), oss.HTTPGet, 60*60*24)
 	if err != nil {
 		return "", err
 	}
@@ -239,7 +228,7 @@ func (s *BucketServer) URL(p Progress) (string, error) {
 }
 
 // IsExist ...
-func (o *OSS) IsExist(p Progress) bool {
+func (o *OSS) IsExist(p Node) bool {
 	exist, err := o.Bucket.IsObjectExist(p.ObjectKey())
 	if err != nil {
 		log.Println(err)
