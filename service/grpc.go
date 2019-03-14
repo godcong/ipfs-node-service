@@ -27,7 +27,7 @@ func (s *GRPCServer) RemoteDownload(ctx context.Context, req *proto.RemoteDownlo
 	stream.SetEncrypt(false)
 	stream.Callback = s.config.Node.RequestType
 	//stream.SetURI("")
-	//stream.FileDest = config.Media.Upload
+	//stream.Transfer = config.Media.Upload
 	//stream.SetSrc(config.Media.Transfer)
 	globalQueue.Set(stream.ID, StatusQueuing, 0)
 	Push(stream)

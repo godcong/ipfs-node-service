@@ -141,7 +141,7 @@ func QuickSplitWithKey(src string, out string, key string, media, m3u8 string) (
 		"-hls_playlist_type", "vod",
 		//"-segment_format", "mpegts",
 		"-hls_segment_filename", out+"/"+media+"-%03d.ts",
-		"-hls_key_info_file", out+"/"+key,
+		"-hls_key_info_file", key,
 		out+"/"+m3u8)
 }
 

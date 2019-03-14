@@ -114,7 +114,7 @@ func RemoteDownloadPost(vertion string) gin.HandlerFunc {
 		stream.SetEncrypt(false)
 		stream.Callback = config.Config().Node.RequestType
 		//stream.SetURI("")
-		//stream.FileDest = config.Media.Upload
+		//stream.Transfer = config.Media.Upload
 		//stream.SetSrc(config.Media.Transfer)
 		globalQueue.Set(stream.ID, StatusQueuing, 0)
 		Push(stream)

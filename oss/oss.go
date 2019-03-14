@@ -195,6 +195,7 @@ func (s *BucketServer) Download(p Node) error {
 		return e
 	}
 	_ = os.MkdirAll(abs, os.ModePerm)
+	log.Infof("download:%s,%s,%s", p.ObjectKey(), p.OutputName(), fp)
 	e = s.Current().DownloadFile(p.ObjectKey(), fp, s.PartSize, s.Routines, s.Progress, s.Checkpoint)
 	if e != nil {
 		return e

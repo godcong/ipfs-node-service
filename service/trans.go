@@ -11,7 +11,7 @@ import (
 
 // toM3U8WithKey ...
 func toM3U8WithKey(id, source, dest string, key string) error {
-
+	log.Info("trans:", id, source, dest)
 	output := filepath.Join(dest, id)
 	probe := ffprobe.New(source)
 
@@ -37,11 +37,12 @@ func toM3U8WithKey(id, source, dest string, key string) error {
 
 // toM3U8 ...
 func toM3U8(id string, source, dest string) error {
-
+	log.Info("trans:", id, source, dest)
 	output := filepath.Join(dest, id)
 	_ = os.MkdirAll(output, os.ModePerm) //ignore err
 
 	//source = source + "/" + id + "/" + fileName
+
 	probe := ffprobe.New(source)
 
 	procFunc := ffmpeg.Split
@@ -61,9 +62,7 @@ func toM3U8(id string, source, dest string) error {
 func downloadFromOSS(info *Streamer) error {
 	server := oss.Server()
 
-	p := oss.NewProgress()
-	p.SetObjectKey(info.ObjectKey)
-	p.SetPath(info.FileSource + "/" + info.ID)
+	p := oss.NewNode(info.ObjectKey, info.ID)
 	err := server.Download(p)
 	if err != nil {
 		return err

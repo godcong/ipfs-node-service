@@ -27,8 +27,8 @@ type Streamer struct {
 	KeyName     string
 	KeyInfoName string
 	KeyDest     string
-	FileSource  string
-	FileDest    string
+	Download    string
+	Transfer    string
 	Callback    string
 }
 
@@ -43,8 +43,8 @@ func NewStreamer() *Streamer {
 		KeyInfoName: "",
 		KeyDest:     "",
 		//FileName:    util.GenerateRandomString(64),
-		FileSource: "",
-		FileDest:   "",
+		Download: "",
+		Transfer: "",
 	}
 }
 
@@ -58,8 +58,8 @@ func NewStreamerWithConfig(cfg *config.Configure, id string) *Streamer {
 		KeyName:     cfg.Media.KeyFile,
 		KeyInfoName: cfg.Media.KeyInfoFile,
 		KeyDest:     cfg.Media.KeyDest,
-		FileSource:  cfg.Media.Upload,
-		FileDest:    cfg.Media.Transfer,
+		Download:    cfg.Media.Download,
+		Transfer:    cfg.Media.Transfer,
 	}
 }
 
@@ -86,36 +86,41 @@ func (s *Streamer) SetEncrypt(encrypt bool) {
 // KeyFile ...
 func (s *Streamer) KeyFile() string {
 	var err error
-	dst := filepath.Join(s.FileDest, s.FileName())
-	err = os.Mkdir(dst, os.ModePerm)
+	dst := filepath.Join(s.KeyDest, s.ID)
+	abs, err := filepath.Abs(dst)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
+		return ""
+	}
+	err = os.Mkdir(abs, os.ModePerm)
+	if err != nil {
+		log.Error(err)
 		return ""
 	}
 
-	err = openssl.KeyFile(s.KeyDest, s.KeyName, s.Key, s.KeyInfoName, s.KeyURL, true)
+	err = openssl.KeyFile(abs, s.KeyName, s.Key, s.KeyInfoName, s.KeyURL, true)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return ""
 	}
 
-	return dst + "/" + s.KeyInfoName
+	return abs + "/" + s.KeyInfoName
 }
 
 // SourceFile ...
 func (s *Streamer) SourceFile() string {
-	return filepath.Join(s.FileSource, s.ID, s.FileName())
+	return filepath.Join(s.Download, s.ID)
 }
 
 // DestPath ...
 func (s *Streamer) DestPath() string {
-	return filepath.Join(s.FileDest, s.ID)
+	return filepath.Join(s.Transfer, s.ID)
 }
 
 // FromConfig ...
 func (s *Streamer) FromConfig(cfg *config.Configure) error {
-	s.FileDest = cfg.Media.Transfer
-	s.FileSource = cfg.Media.Upload
+	s.Transfer = cfg.Media.Transfer
+	s.Download = cfg.Media.Download
 	return nil
 }
 

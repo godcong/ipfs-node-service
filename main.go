@@ -23,9 +23,9 @@ func main() {
 	flag.Parse()
 
 	if *elk {
-		trait.InitElasticLog("ipfs-node-service", nil)
+		trait.InitElasticLog("ipfs-node-service")
 	} else {
-		trait.InitRotateLog(*logPath, nil)
+		trait.InitRotateLog(*logPath, trait.RotateLogLevel(trait.RotateLogDebug))
 	}
 
 	err := config.Initialize(*configPath)

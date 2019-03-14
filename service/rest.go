@@ -42,7 +42,7 @@ func (s *RestServer) Start() {
 	}
 	reg := consul.NewRegistry()
 	s.service = web.NewService(
-		web.Name("go.micro.api.node"),
+		web.Name("vlavr.rest.node"),
 		web.Registry(reg),
 	)
 
