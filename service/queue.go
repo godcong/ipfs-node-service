@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-redis/redis"
 	"github.com/godcong/ipfs-node-service/config"
+	"github.com/godcong/ipfs-node-service/openssl"
 	"github.com/json-iterator/go"
 	"github.com/mitchellh/mapstructure"
 	log "github.com/sirupsen/logrus"
@@ -89,7 +90,16 @@ func transfer(ch chan<- string, info *Streamer) {
 	globalQueue.Set(info.ID, StatusTransferring, 0)
 	log.Info(info.SourceFile())
 	log.Info(info.Encrypt)
+
 	if info.Encrypt {
+		if info.Key == "" {
+			b, e := openssl.Base64Key()
+			if e != nil {
+				log.Error(e)
+				return
+			}
+			info.Key = string(b)
+		}
 		name := info.KeyFile()
 		err = toM3U8WithKey(info.ID, info.SourceFile(), info.Transfer, name)
 	} else {
@@ -112,7 +122,7 @@ func transfer(ch chan<- string, info *Streamer) {
 		log.Error(err)
 		return
 	}
-
+	qr.Key = info.Key
 	log.Info(qr)
 	err = NewBack().Callback(&qr)
 
@@ -135,6 +145,7 @@ type QueueResult struct {
 		Name  string `json:"name" mapstructure:"name"`
 		Value string `json:"value" mapstructure:"value"`
 	} `json:"ns_info" mapstructure:"ns_info"`
+	Key string `json:"key" mapstructure:"key"`
 }
 
 // JSON ...

@@ -23,7 +23,8 @@ func Router(engine *gin.Engine) {
 	})
 	ver := "v0"
 	group := engine.Group(ver)
-
+	engine.Static("video", "./transfer")
+	engine.Static("key", "./output_key")
 	//上传文件
 	//group.POST("/upload", UploadPost(ver))
 	//获取文件

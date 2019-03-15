@@ -186,9 +186,9 @@ func DefaultConfigure() *Configure {
 			KeyInfoFile: "KeyInfoFile",
 		},
 		Node: Node{
-			ManagerName: "",
-			NodeName:    "",
-			CensorName:  "",
+			ManagerName: "godcong.grpc.manager",
+			NodeName:    "godcong.grpc.node",
+			CensorName:  "godcong.grpc.censor",
 			EnableGRPC:  true,
 			EnableREST:  true,
 			REST: REST{
@@ -197,7 +197,7 @@ func DefaultConfigure() *Configure {
 				Path:   "",
 				Port:   ":7787",
 			},
-			RequestType: "",
+			RequestType: "grpc",
 		},
 		IPFS:     IPFS{},
 		Callback: Callback{},

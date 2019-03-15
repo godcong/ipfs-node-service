@@ -74,8 +74,10 @@ func (s *Streamer) FileName() string {
 
 // SetEncrypt ...
 func (s *Streamer) SetEncrypt(keyURL string) {
-	s.Encrypt = true
-	s.KeyURL = config.DefaultString(keyURL, s.KeyURL)
+	if keyURL != "" {
+		s.Encrypt = true
+		s.KeyURL = config.DefaultString(keyURL, s.KeyURL)
+	}
 }
 
 // KeyFile ...

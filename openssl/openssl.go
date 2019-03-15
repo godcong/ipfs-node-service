@@ -122,14 +122,6 @@ func Number32(i int) string {
 func KeyFile(path, keyName, key, keyInfo, uri string, iv bool) error {
 	var err error
 
-	if key == "" {
-		b, e := Base64Key()
-		if e != nil {
-			return e
-		}
-		key = string(b)
-	}
-
 	err = SaveTo(filepath.Join(path, keyName), key)
 	if err != nil {
 		return err
