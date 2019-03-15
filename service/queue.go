@@ -87,7 +87,9 @@ func transfer(ch chan<- string, info *Streamer) {
 	}
 
 	globalQueue.Set(info.ID, StatusTransferring, 0)
-	if info.Encrypt() {
+	log.Info(info.SourceFile())
+	log.Info(info.Encrypt)
+	if info.Encrypt {
 		name := info.KeyFile()
 		err = toM3U8WithKey(info.ID, info.SourceFile(), info.Transfer, name)
 	} else {

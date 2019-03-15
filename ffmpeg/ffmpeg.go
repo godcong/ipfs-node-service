@@ -4,6 +4,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"os"
 	"os/exec"
+	"path/filepath"
 )
 
 // Mpeg ...
@@ -92,8 +93,8 @@ func Split(src string, out string, media, m3u8 string) (string, error) {
 		//"-hls_playlist_type", "vod",
 		"-hls_list_size", "0",
 		//"-segment_format", "mpegts",
-		"-hls_segment_filename", out+"/"+media+"-%03d.ts",
-		out+"/"+m3u8)
+		"-hls_segment_filename", filepath.Join(out, media+"-%03d.ts"),
+		filepath.Join(out, m3u8))
 }
 
 // QuickSplit ...
@@ -108,8 +109,8 @@ func QuickSplit(src string, out string, media, m3u8 string) (string, error) {
 		//"-hls_playlist_type", "vod",
 		"-hls_list_size", "0",
 		//"-segment_format", "mpegts",
-		"-hls_segment_filename", out+"/"+media+"-%03d.ts",
-		out+"/"+m3u8)
+		"-hls_segment_filename", filepath.Join(out, media+"-%03d.ts"),
+		filepath.Join(out, m3u8))
 }
 
 // SplitWithKey ...
@@ -124,9 +125,9 @@ func SplitWithKey(src string, out string, key string, media, m3u8 string) (strin
 		"-f", "hls", "-hls_time", "10",
 		"-hls_playlist_type", "vod",
 		//"-segment_format", "mpegts",
-		"-hls_segment_filename", out+"/"+media+"-%03d.ts",
-		"-hls_key_info_file", out+"/"+key,
-		out+"/"+m3u8)
+		"-hls_segment_filename", filepath.Join(out, media+"-%03d.ts"),
+		"-hls_key_info_file", key,
+		filepath.Join(out, m3u8))
 }
 
 // QuickSplitWithKey ...
@@ -140,9 +141,9 @@ func QuickSplitWithKey(src string, out string, key string, media, m3u8 string) (
 		"-f", "hls", "-hls_time", "10",
 		"-hls_playlist_type", "vod",
 		//"-segment_format", "mpegts",
-		"-hls_segment_filename", out+"/"+media+"-%03d.ts",
+		"-hls_segment_filename", filepath.Join(out, media+"-%03d.ts"),
 		"-hls_key_info_file", key,
-		out+"/"+m3u8)
+		filepath.Join(out, m3u8))
 }
 
 // SplitWithKey1 废弃

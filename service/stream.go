@@ -19,7 +19,7 @@ type StreamerCallback interface {
 // Streamer ...
 type Streamer struct {
 	config      *config.Configure
-	encrypt     bool
+	Encrypt     bool
 	ID          string
 	Key         string
 	ObjectKey   string
@@ -35,7 +35,7 @@ type Streamer struct {
 // NewStreamer ...
 func NewStreamer() *Streamer {
 	return &Streamer{
-		encrypt:     false,
+		Encrypt:     false,
 		ID:          uuid.New().String(),
 		Key:         "",
 		KeyURL:      "",
@@ -52,14 +52,17 @@ func NewStreamer() *Streamer {
 func NewStreamerWithConfig(cfg *config.Configure, id string) *Streamer {
 	return &Streamer{
 		config:      cfg,
-		encrypt:     false,
+		Encrypt:     false,
 		ID:          config.DefaultString(id, uuid.New().String()),
-		KeyURL:      cfg.Media.KeyURL,
-		KeyName:     cfg.Media.KeyFile,
-		KeyInfoName: cfg.Media.KeyInfoFile,
-		KeyDest:     cfg.Media.KeyDest,
-		Download:    cfg.Media.Download,
-		Transfer:    cfg.Media.Transfer,
+		Key:         "",
+		ObjectKey:   "",
+		KeyURL:      config.DefaultString(cfg.Media.KeyURL, "http://localhost:8080"),
+		KeyName:     config.DefaultString(cfg.Media.KeyFile, "key"),
+		KeyInfoName: config.DefaultString(cfg.Media.KeyInfoFile, "KeyInfoFile"),
+		KeyDest:     config.DefaultString(cfg.Media.KeyDest, "output_key"),
+		Download:    config.DefaultString(cfg.Media.Download, "download"),
+		Transfer:    config.DefaultString(cfg.Media.Transfer, "transfer"),
+		Callback:    "",
 	}
 }
 
@@ -69,18 +72,10 @@ func (s *Streamer) FileName() string {
 	return file
 }
 
-// Encrypt ...
-func (s *Streamer) Encrypt() bool {
-	return s.encrypt
-}
-
 // SetEncrypt ...
-func (s *Streamer) SetEncrypt(encrypt bool) {
-	s.encrypt = true
-	s.KeyURL = s.config.Media.KeyURL
-	s.KeyName = s.config.Media.KeyFile
-	s.KeyInfoName = s.config.Media.KeyInfoFile
-	s.KeyDest = s.config.Media.KeyDest
+func (s *Streamer) SetEncrypt(keyURL string) {
+	s.Encrypt = true
+	s.KeyURL = config.DefaultString(keyURL, s.KeyURL)
 }
 
 // KeyFile ...
@@ -104,7 +99,7 @@ func (s *Streamer) KeyFile() string {
 		return ""
 	}
 
-	return abs + "/" + s.KeyInfoName
+	return filepath.Join(abs, s.KeyInfoName)
 }
 
 // SourceFile ...

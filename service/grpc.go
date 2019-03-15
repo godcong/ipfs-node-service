@@ -24,7 +24,7 @@ func (s *GRPCServer) RemoteDownload(ctx context.Context, req *proto.RemoteDownlo
 	stream := NewStreamerWithConfig(s.config, req.ID)
 	//stream.Dir, stream.FileName = filepath.Split(key)
 	stream.ObjectKey = req.ObjectKey
-	stream.SetEncrypt(false)
+	stream.SetEncrypt(req.KeyURL)
 	stream.Callback = s.config.Node.RequestType
 	//stream.SetURI("")
 	//stream.Transfer = config.Media.Upload
@@ -55,6 +55,7 @@ func NewGRPCClient(cfg *config.Configure) *GRPCClient {
 	client := &GRPCClient{
 		service: micro.NewService(
 			micro.Registry(reg)),
+
 		config: cfg,
 	}
 	client.service.Init()
@@ -97,8 +98,8 @@ func (s *GRPCServer) Start() {
 
 	s.service = micro.NewService(
 		micro.Name(s.config.Node.NodeName),
-		micro.RegisterTTL(time.Second*30),
-		micro.RegisterInterval(time.Second*15),
+		micro.RegisterTTL(time.Second*15),
+		micro.RegisterInterval(time.Second*5),
 		micro.Registry(reg),
 	)
 	s.service.Init()

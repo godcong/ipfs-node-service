@@ -103,6 +103,13 @@ func Initialize(filePath ...string) error {
 	}
 
 	cfg := LoadConfig(filePath[0])
+	cfg.Media.Download = DefaultString(cfg.Media.Download, "download")
+	if !IsExists(cfg.Media.Download) {
+		err := os.Mkdir(cfg.Media.Download, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
 
 	cfg.Media.Upload = DefaultString(cfg.Media.Upload, "upload")
 	if !IsExists(cfg.Media.Upload) {

@@ -111,7 +111,7 @@ func RemoteDownloadPost(vertion string) gin.HandlerFunc {
 		stream := NewStreamerWithConfig(config.Config(), ctx.PostForm("id"))
 		//stream.Dir, stream.FileName = filepath.Split(key)
 		stream.ObjectKey = key
-		stream.SetEncrypt(false)
+		stream.SetEncrypt("")
 		stream.Callback = config.Config().Node.RequestType
 		//stream.SetURI("")
 		//stream.Transfer = config.Media.Upload
@@ -177,17 +177,17 @@ func TransferPost(version string) gin.HandlerFunc {
 		//	url = config.Media.KeyURL + "/" + config.Media.Transfer + "/" + id + "/key"
 		//}
 		//
-		//en := ctx.PostForm("encrypt")
-		//encrypt := false
+		//en := ctx.PostForm("Encrypt")
+		//Encrypt := false
 		//if en != "" {
-		//	encrypt, err = strconv.ParseBool(en)
+		//	Encrypt, err = strconv.ParseBool(en)
 		//	if err != nil {
-		//		encrypt = false
+		//		Encrypt = false
 		//	}
 		//}
 		//
 		//stream := NewStreamer(objectKey)
-		////stream.SetEncrypt(encrypt)
+		////stream.SetEncrypt(Encrypt)
 		////stream.SetURI(url)
 		////stream.SetDst(config.Media.Transfer)
 		////stream.SetSrc(config.Media.Upload)

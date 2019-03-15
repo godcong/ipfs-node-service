@@ -11,7 +11,7 @@ import (
 
 // toM3U8WithKey ...
 func toM3U8WithKey(id, source, dest string, key string) error {
-	log.Info("trans:", id, source, dest)
+	log.Infof("trans:%s,%s,%s", id, source, dest)
 	output := filepath.Join(dest, id)
 	probe := ffprobe.New(source)
 
@@ -36,8 +36,8 @@ func toM3U8WithKey(id, source, dest string, key string) error {
 }
 
 // toM3U8 ...
-func toM3U8(id string, source, dest string) error {
-	log.Info("trans:", id, source, dest)
+func toM3U8(id, source, dest string) error {
+	log.Infof("trans:%s,%s,%s", id, source, dest)
 	output := filepath.Join(dest, id)
 	_ = os.MkdirAll(output, os.ModePerm) //ignore err
 
