@@ -62,6 +62,7 @@ func KeyToHex(key []byte) string {
 
 // SaveTo ...
 func SaveTo(path string, data string) error {
+	_ = os.MkdirAll(filepath.Dir(path), os.ModePerm)
 	file, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR, os.ModePerm)
 	if err != nil {
 		return err
@@ -121,19 +122,27 @@ func Number32(i int) string {
 func KeyFile(path, keyName, key, keyInfo, uri string, iv bool) error {
 	var err error
 
-	err = SaveTo(path+"/"+keyName, key)
+	if key == "" {
+		b, e := Base64Key()
+		if e != nil {
+			return e
+		}
+		key = string(b)
+	}
+
+	err = SaveTo(filepath.Join(path, keyName), key)
 	if err != nil {
 		return err
 	}
 
-	file, err := os.OpenFile(path+"/"+keyInfo, os.O_RDWR|os.O_CREATE, os.ModePerm)
+	file, err := os.OpenFile(filepath.Join(path, keyInfo), os.O_RDWR|os.O_CREATE, os.ModePerm)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 	_, _ = file.WriteString(uri)
 	_, _ = file.WriteString("\n")
-	_, _ = file.WriteString(path + "/" + keyName)
+	_, _ = file.WriteString(filepath.Join(path, keyName))
 	_, _ = file.WriteString("\n")
 	if iv {
 		key, err := Run("rand", "-hex", "16")

@@ -13,6 +13,7 @@ import (
 func toM3U8WithKey(id, source, dest string, key string) error {
 	log.Infof("trans:%s,%s,%s", id, source, dest)
 	output := filepath.Join(dest, id)
+	_ = os.MkdirAll(output, os.ModePerm) //ignore err
 	probe := ffprobe.New(source)
 
 	//err := rdsQueue.Set(id, StatusTransferring, 0).Err()

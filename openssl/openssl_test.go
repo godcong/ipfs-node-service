@@ -80,6 +80,6 @@ func TestRun2(t *testing.T) {
 
 // TestKeyFile ...
 func TestKeyFile(t *testing.T) {
-	err := KeyFile("./tmp/", "text", "http://localhost:8080/stream/", true)
+	err := KeyFile("tmp", "text", "", "KeyInfoFile", "http://localhost:8080/stream/", true)
 	t.Log(err)
 }
