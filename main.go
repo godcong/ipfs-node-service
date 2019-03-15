@@ -1,5 +1,5 @@
-//go:generate apidoc -i ./service
-//go:generate statik -f -src=./doc
+////go:generate apidoc -i ./service
+////go:generate statik -f -src=./doc
 //go:generate protoc --go_out=plugins=grpc:./proto --micro_out=./proto node.proto
 package main
 
