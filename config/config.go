@@ -8,14 +8,16 @@ import (
 
 // Media ...
 type Media struct {
-	Upload      string `toml:"upload"`        //上传路径
-	Download    string `toml:"download"`      //下载路径
-	Transfer    string `toml:"transfer"`      //转换路径
-	M3U8        string `toml:"m3u8"`          //m3u8文件名
-	KeyURL      string `toml:"key_url"`       //default url
-	KeyDest     string `toml:"key_dest"`      //key 文件输出目录
-	KeyFile     string `toml:"key_file"`      //key文件名
-	KeyInfoFile string `toml:"key_info_file"` //keyFile文件名
+	Upload      string `toml:"upload"`   //上传路径
+	Download    string `toml:"download"` //下载路径
+	Transfer    string `toml:"transfer"` //转换路径
+	M3U8        string `toml:"m3u8"`     //m3u8文件名
+	KeyURL      string `toml:"key_url"`  //default url
+	KeyDest     string `toml:"key_dest"` //key 文件输出目录
+	KeyFile     string `toml:"key_file"` //key文件名
+	KeyInfoFile string `toml:"key_info_file"`
+
+	//keyFile文件名
 }
 
 // IPFS ...
@@ -69,6 +71,7 @@ type Node struct {
 	EnableREST  bool   `toml:"enable_rest"`
 	REST        REST   `toml:"rest"`
 	RequestType string `toml:"request_type"`
+	Clear       bool   `toml:"clear"`
 }
 
 // Callback ...
@@ -176,6 +179,7 @@ func DefaultConfigure() *Configure {
 			//key_file = "key"
 			//key_dest = "output_key"
 			//key_info_file = "KeyInfoFile"
+
 			Download:    "download",
 			Upload:      "upload",
 			Transfer:    "transfer",
@@ -191,6 +195,7 @@ func DefaultConfigure() *Configure {
 			CensorName:  "godcong.grpc.censor",
 			EnableGRPC:  true,
 			EnableREST:  true,
+			Clear:       false,
 			REST: REST{
 				Enable: true,
 				Type:   "",

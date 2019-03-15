@@ -8,6 +8,8 @@ import (
 	"github.com/json-iterator/go"
 	"github.com/mitchellh/mapstructure"
 	log "github.com/sirupsen/logrus"
+	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -70,27 +72,25 @@ func (s *QueueServer) Pop() *Streamer {
 }
 
 func transfer(ch chan<- string, info *Streamer) {
-	var err error
+	var e error
 	chanRes := info.FileName()
 	defer func() {
-		if err != nil {
-			log.Error(err)
+		if e != nil {
+			log.Error(e)
 			globalQueue.Set(info.ID, StatusFailed, 0)
-			chanRes = info.FileName() + ":[" + err.Error() + "]"
+			chanRes = info.FileName() + ":[" + e.Error() + "]"
 		}
 		ch <- chanRes
 	}()
 
 	globalQueue.Set(info.ID, StatusDownloading, 0)
-	err = downloadFromOSS(info)
-	if err != nil {
+	e = downloadFromOSS(info)
+	if e != nil {
 		return
 	}
 
 	globalQueue.Set(info.ID, StatusTransferring, 0)
-	log.Info(info.SourceFile())
-	log.Info(info.Encrypt)
-
+	log.Infof("%+v", info)
 	if info.Encrypt {
 		if info.Key == "" {
 			b, e := openssl.Base64Key()
@@ -101,36 +101,75 @@ func transfer(ch chan<- string, info *Streamer) {
 			info.Key = string(b)
 		}
 		name := info.KeyFile()
-		err = toM3U8WithKey(info.ID, info.SourceFile(), info.Transfer, name)
+		e = toM3U8WithKey(info.ID, info.SourceFile(), info.Transfer, name)
 	} else {
-		err = toM3U8(info.ID, info.SourceFile(), info.Transfer)
+		e = toM3U8(info.ID, info.SourceFile(), info.Transfer)
 	}
 
-	if err != nil {
+	if e != nil {
 		return
 	}
 
-	detail, err := commitToIPNS(info.ID, info.DestPath())
-	if err != nil {
+	detail, e := commitToIPNS(info.ID, info.DestPath())
+	if e != nil {
 		return
 	}
 
 	var qr QueueResult
 
-	err = mapstructure.Decode(detail, &qr)
-	if err != nil {
-		log.Error(err)
+	e = mapstructure.Decode(detail, &qr)
+	if e != nil {
+		log.Error(e)
 		return
 	}
 	qr.Key = info.Key
 	log.Info(qr)
-	err = NewBack().Callback(&qr)
+	e = NewBack().Callback(&qr)
 
-	if err != nil {
-		log.Error(err)
+	if e != nil {
+		log.Error(e)
 		return
 	}
 
+	cfg := config.Config()
+	if cfg.Node.Clear {
+		e = clearDownload(info.SourceFile())
+		if e != nil {
+			log.Error(e)
+			return
+		}
+		//e = clearTransfer(info.Transfer, info.ID)
+		//if e != nil {
+		//	log.Error(e)
+		//	return
+		//}
+	}
+
+}
+
+func clearTransfer(file string, id string) error {
+	filename := filepath.Join(file, id)
+	info, e := os.Stat(filename)
+	log.Printf("%s,%+v,%+v\n", filename, info, e) //has nil
+	if e == nil {
+		e = os.RemoveAll(filename)
+		if e == nil {
+			return nil
+		}
+	}
+	return e
+}
+
+func clearDownload(filename string) error {
+	info, e := os.Stat(filename)
+	log.Printf("%s,%+v,%+v\n", filename, info, e) //has nil
+	if e == nil {
+		e = os.Remove(filename)
+		if e == nil {
+			return nil
+		}
+	}
+	return e
 }
 
 // QueueResult ...

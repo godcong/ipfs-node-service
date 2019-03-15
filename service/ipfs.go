@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/godcong/ipfs-node-service/ipfs"
 	log "github.com/sirupsen/logrus"
+	"path/filepath"
 )
 
 var api ipfs.API
@@ -19,23 +20,28 @@ func DefaultIPFS() ipfs.API {
 }
 
 func commitToIPNS(id, source string) (map[string]interface{}, error) {
+	log.Infof("commit info:%s,%s", id, source)
 	api = DefaultIPFS()
-	fs, err := api.AddDir(source)
-	if err != nil {
-		return nil, err
+	s, e := filepath.Abs(source)
+	if e != nil {
+		return nil, e
+	}
+	fs, e := api.AddDir(s)
+	if e != nil {
+		return nil, e
 	}
 	log.Println(fs)
 
-	if id != "" || err != nil {
+	if id != "" || e != nil {
 		m, _ := api.Key().Gen(id, "rsa", 2048)
-		if err != nil {
+		if e != nil {
 			//ignore error
 		}
-		log.Println(m, err)
+		log.Println(m, e)
 	}
-	ns, err := api.Name().PublishWithKey("/ipfs/"+fs["Hash"], id)
-	if err != nil {
-		return nil, err
+	ns, e := api.Name().PublishWithKey("/ipfs/"+fs["Hash"], id)
+	if e != nil {
+		return nil, e
 	}
 	log.Println(ns)
 
