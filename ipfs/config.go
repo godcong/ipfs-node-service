@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/ipfs/go-ipfs-cmdkit/files"
+	"github.com/ipfs/go-ipfs-files"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
@@ -155,16 +155,16 @@ func get(host string, values url.Values) (map[string]string, error) {
 }
 
 func post(host string, values url.Values, body io.Reader) (map[string]string, error) {
-	//json := jsoniter.ConfigCompatibleWithStandardLibrary
-
-	req, err := http.NewRequest("POST", host+"?"+values.Encode(), body)
+	urls := host + "?" + values.Encode()
+	log.Info(urls)
+	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
 		return nil, err
 	}
 
 	if fr, ok := body.(*files.MultiFileReader); ok {
 		req.Header.Set("Content-Type", "multipart/form-data; boundary="+fr.Boundary())
-		req.Header.Set("Content-Disposition", "form-data: name=\"files\"")
+		req.Header.Set("Content-Disposition", "form-data; name=\"files\"")
 	}
 
 	resp, err := client().Do(req)

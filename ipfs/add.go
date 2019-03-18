@@ -1,7 +1,7 @@
 package ipfs
 
 import (
-	"github.com/ipfs/go-ipfs-cmdkit/files"
+	"github.com/ipfs/go-ipfs-files"
 	log "github.com/sirupsen/logrus"
 	"net/url"
 	"os"
@@ -16,12 +16,12 @@ func (a *api) AddDir(dir string) (map[string]string, error) {
 		return nil, err
 	}
 
-	sf, err := files.NewSerialFile(path.Base(dir), dir, false, stat)
+	sf, err := files.NewSerialFile(dir, false, stat)
 	if err != nil {
 		return nil, err
 	}
 	log.Info(sf)
-	slf := files.NewSliceFile("", dir, []files.File{sf})
+	slf := files.NewSliceDirectory([]files.DirEntry{files.FileEntry(path.Base(dir), sf)})
 	reader := files.NewMultiFileReader(slf, true)
 	a.SetSelf("add")
 	host := URL(a, "")
